@@ -4,7 +4,7 @@
 
 namespace susumu {
 
-	class SUSUMU_API Game
+	class SU_API Game
 	{
 	public:
 		Game();

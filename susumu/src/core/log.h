@@ -7,7 +7,7 @@
 
 namespace susumu {
 
-	class SUSUMU_API Log
+	class SU_API Log
 	{
 	public:
 		static void Init();

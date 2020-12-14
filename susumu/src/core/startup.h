@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef SUSUMU_PLATFORM_WINDOWS
+#ifdef SU_PLATFORM_WINDOWS
 
 extern susumu::Game* susumu::CreateGame();
 
