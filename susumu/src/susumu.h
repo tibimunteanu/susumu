@@ -4,4 +4,5 @@
 
 #include <stdio.h>
 #include "core/game.h"
+#include "core/log.h"
 #include "core/startup.h"

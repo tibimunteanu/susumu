@@ -6,7 +6,10 @@ extern susumu::Game* susumu::CreateGame();
 
 int main(int argc, char** argv)
 {
-	printf("susumu started!");
+	susumu::Log::Init();
+	SU_CORE_WARN("initialized core logger");
+	SU_INFO("initialized client logger");
+
 	auto game = susumu::CreateGame();
 	game->Run();
 	delete game;
