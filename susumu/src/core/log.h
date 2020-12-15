@@ -4,6 +4,7 @@
 
 #include "core.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 
 namespace susumu {
 
@@ -13,10 +14,10 @@ namespace susumu {
 		static void Init();
 
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+		inline static std::shared_ptr<spdlog::logger>& GetAppLogger() { return s_AppLogger; }
 	private:
 		static std::shared_ptr<spdlog::logger> s_CoreLogger;
-		static std::shared_ptr<spdlog::logger> s_ClientLogger;
+		static std::shared_ptr<spdlog::logger> s_AppLogger;
 	};
 
 }
@@ -29,8 +30,8 @@ namespace susumu {
 #define SU_CORE_TRACE(...) ::susumu::Log::GetCoreLogger()->trace(__VA_ARGS__)
 
 //client log macros
-#define SU_FATAL(...) ::susumu::Log::GetClientLogger()->fatal(__VA_ARGS__)
-#define SU_ERROR(...) ::susumu::Log::GetClientLogger()->error(__VA_ARGS__)
-#define SU_WARN(...) ::susumu::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define SU_INFO(...) ::susumu::Log::GetClientLogger()->info(__VA_ARGS__)
-#define SU_TRACE(...) ::susumu::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define SU_FATAL(...) ::susumu::Log::GetAppLogger()->fatal(__VA_ARGS__)
+#define SU_ERROR(...) ::susumu::Log::GetAppLogger()->error(__VA_ARGS__)
+#define SU_WARN(...) ::susumu::Log::GetAppLogger()->warn(__VA_ARGS__)
+#define SU_INFO(...) ::susumu::Log::GetAppLogger()->info(__VA_ARGS__)
+#define SU_TRACE(...) ::susumu::Log::GetAppLogger()->trace(__VA_ARGS__)

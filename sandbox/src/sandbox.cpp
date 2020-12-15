@@ -1,6 +1,6 @@
 #include <susumu.h>
 
-class Sandbox : public susumu::Game
+class Sandbox : public susumu::App
 {
 public:
 	Sandbox()
@@ -14,7 +14,7 @@ public:
 	}
 };
 
-susumu::Game* susumu::CreateGame()
+susumu::App* susumu::CreateApp()
 {
 	return new Sandbox();
 }

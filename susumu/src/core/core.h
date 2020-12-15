@@ -9,3 +9,5 @@
 #else
 	#error susumu only runs on windows for now!
 #endif
+
+#define BIT(x) (1 << x)

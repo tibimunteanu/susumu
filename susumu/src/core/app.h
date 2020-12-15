@@ -1,19 +1,20 @@
 #pragma once
 
 #include "core.h"
+#include "events/event.h"
 
 namespace susumu {
 
-	class SU_API Game
+	class SU_API App
 	{
 	public:
-		Game();
-		virtual ~Game();
+		App();
+		virtual ~App();
 
 		void Run();
 	};
 
 	//to be defined in client
-	Game* CreateGame();
+	App* CreateApp();
 
 }

@@ -2,17 +2,17 @@
 
 #ifdef SU_PLATFORM_WINDOWS
 
-extern susumu::Game* susumu::CreateGame();
+extern susumu::App* susumu::CreateApp();
 
 int main(int argc, char** argv)
 {
 	susumu::Log::Init();
 	SU_CORE_WARN("initialized core logger");
-	SU_INFO("initialized client logger");
+	SU_INFO("initialized app logger");
 
-	auto game = susumu::CreateGame();
-	game->Run();
-	delete game;
+	auto app = susumu::CreateApp();
+	app->Run();
+	delete app;
 
 	return 0;
 }

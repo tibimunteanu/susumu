@@ -4,13 +4,28 @@
     <Filter Include="core">
       <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core\events">
+      <UniqueIdentifier>{92DC566A-FE91-CF5F-8786-C936F33AC663}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\app.h">
+      <Filter>core</Filter>
+    </ClInclude>
     <ClInclude Include="src\core\core.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\game.h">
-      <Filter>core</Filter>
+    <ClInclude Include="src\core\events\app_event.h">
+      <Filter>core\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\events\event.h">
+      <Filter>core\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\events\key_event.h">
+      <Filter>core\events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\events\mouse_event.h">
+      <Filter>core\events</Filter>
     </ClInclude>
     <ClInclude Include="src\core\log.h">
       <Filter>core</Filter>
@@ -21,7 +36,7 @@
     <ClInclude Include="src\susumu.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\game.cpp">
+    <ClCompile Include="src\core\app.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\log.cpp">
