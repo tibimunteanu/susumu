@@ -1,8 +1,8 @@
 #pragma once
 
-//include this header in susumu games
+//include this header in susumu apps
 
-#include <stdio.h>
 #include "core/app.h"
+#include "core/layer.h"
 #include "core/log.h"
 #include "core/startup.h"

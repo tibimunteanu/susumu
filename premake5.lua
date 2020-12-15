@@ -64,14 +64,17 @@ project "susumu"
 
 	filter "configurations:Debug"
 		defines "SU_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SU_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SU_DIST"
+		buildoptions "/MD"
 		optimize "On"
 	
 project "sandbox"
@@ -113,13 +116,16 @@ project "sandbox"
 
 	filter "configurations:Debug"
 		defines "SU_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SU_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SU_DIST"
+		buildoptions "/MD"
 		optimize "On"
 	

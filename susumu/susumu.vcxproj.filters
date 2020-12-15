@@ -33,6 +33,12 @@
     <ClInclude Include="src\core\events\mouse_event.h">
       <Filter>core\events</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\layer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\layer_stack.h">
+      <Filter>core</Filter>
+    </ClInclude>
     <ClInclude Include="src\core\log.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -50,6 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\app.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\layer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\layer_stack.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="src\core\log.cpp">
