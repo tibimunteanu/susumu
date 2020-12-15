@@ -1,5 +1,4 @@
-#include <string>
-#include <functional>
+#include "supch.h"
 
 #include <susumu.h>
 
