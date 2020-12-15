@@ -1,3 +1,6 @@
 [submodule "susumu/vendor/spdlog"]
 	path = susumu/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "susumu/vendor/GLFW"]
+	path = susumu/vendor/GLFW
+	url = https://github.com/TheCherno/glfw

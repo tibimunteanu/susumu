@@ -2,8 +2,6 @@
 
 #include "event.h"
 
-#include <sstream> 
-
 namespace susumu {
 
 	class SU_API WindowResizeEvent : public Event

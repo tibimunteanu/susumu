@@ -10,6 +10,12 @@ workspace "susumu"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- include directories relative to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["GLFW"] = "susumu/vendor/GLFW/include"
+
+include "susumu/vendor/GLFW"
+
 project "susumu"
 	location "susumu"
 	kind "SharedLib"
@@ -17,6 +23,9 @@ project "susumu"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "supch.h"
+	pchsource "susumu/src/supch.cpp"
 
 	files
 	{
@@ -27,7 +36,14 @@ project "susumu"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -62,6 +78,7 @@ project "sandbox"
 	location "sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -75,7 +92,8 @@ project "sandbox"
 	includedirs
 	{
 		"susumu/vendor/spdlog/include",
-		"susumu/src"
+		"susumu/src",
+		"susumu/vendor",
 	}
 
 	links

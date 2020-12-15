@@ -7,6 +7,12 @@
     <Filter Include="core\events">
       <UniqueIdentifier>{92DC566A-FE91-CF5F-8786-C936F33AC663}</UniqueIdentifier>
     </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\windows">
+      <UniqueIdentifier>{A44FC440-9048-E392-B97A-C817A5D2C29E}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\app.h">
@@ -33,6 +39,13 @@
     <ClInclude Include="src\core\startup.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\window.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\windows_window.h">
+      <Filter>platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\supch.h" />
     <ClInclude Include="src\susumu.h" />
   </ItemGroup>
   <ItemGroup>
@@ -42,5 +55,9 @@
     <ClCompile Include="src\core\log.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\windows\windows_window.cpp">
+      <Filter>platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\supch.cpp" />
   </ItemGroup>
 </Project>

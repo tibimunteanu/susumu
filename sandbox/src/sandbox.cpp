@@ -1,3 +1,6 @@
+#include <string>
+#include <functional>
+
 #include <susumu.h>
 
 class Sandbox : public susumu::App
