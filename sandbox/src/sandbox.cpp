@@ -12,12 +12,12 @@ public:
 
 	void OnUpdate() override
 	{
-		SU_INFO("ExampleLayer::OnUpdate");
+		//SU_INFO("ExampleLayer::OnUpdate");
 	}
 
 	void OnEvent(susumu::Event& event) override
 	{
-		SU_TRACE("ExampleLayer::OnEvent {0}", event);
+		//SU_TRACE("ExampleLayer::OnEvent {0}", event);
 	}
 };
 
