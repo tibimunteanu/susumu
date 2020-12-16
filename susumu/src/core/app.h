@@ -5,6 +5,7 @@
 #include "core/layer_stack.h"
 #include "core/events/event.h"
 #include "core/events/app_event.h"
+#include "core/imgui/imgui_layer.h"
 
 namespace susumu {
 
@@ -25,6 +26,7 @@ namespace susumu {
 		bool OnWindowClosed(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 	private:

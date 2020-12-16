@@ -87,9 +87,6 @@
     <ClInclude Include="src\core\window.h">
       <Filter>src\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\platform\opengl\imgui_opengl_renderer.h">
-      <Filter>src\platform\opengl</Filter>
-    </ClInclude>
     <ClInclude Include="src\platform\windows\windows_input.h">
       <Filter>src\platform\windows</Filter>
     </ClInclude>
@@ -1358,9 +1355,6 @@
     <ClCompile Include="src\core\log.cpp">
       <Filter>src\core</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\opengl\imgui_opengl_renderer.cpp">
-      <Filter>src\platform\opengl</Filter>
-    </ClCompile>
     <ClCompile Include="src\platform\windows\windows_input.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
@@ -1370,5 +1364,6 @@
     <ClCompile Include="src\supch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\imgui\imgui_build.cpp" />
   </ItemGroup>
 </Project>

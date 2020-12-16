@@ -1,5 +1,3 @@
-#include "supch.h"
-
 #include <susumu.h>
 
 class ExampleLayer : public susumu::Layer 
@@ -27,7 +25,6 @@ public:
 	Sandbox()
 	{
 		PushLayer(new ExampleLayer());
-		PushOverlay(new susumu::ImGuiLayer());
 	}
 
 	~Sandbox()
