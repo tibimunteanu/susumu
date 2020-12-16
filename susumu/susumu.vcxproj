@@ -141,6 +141,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\platform\opengl\opengl_context.h" />
     <ClInclude Include="src\core\app.h" />
     <ClInclude Include="src\core\core.h" />
     <ClInclude Include="src\core\events\app_event.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="src\core\layer.h" />
     <ClInclude Include="src\core\layer_stack.h" />
     <ClInclude Include="src\core\log.h" />
+    <ClInclude Include="src\core\renderer\graphics_context.h" />
     <ClInclude Include="src\core\startup.h" />
     <ClInclude Include="src\core\window.h" />
     <ClInclude Include="src\platform\windows\windows_input.h" />
@@ -574,6 +576,7 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\platform\opengl\opengl_context.cpp" />
     <ClCompile Include="src\core\app.cpp" />
     <ClCompile Include="src\core\imgui\imgui_build.cpp" />
     <ClCompile Include="src\core\imgui\imgui_layer.cpp" />
