@@ -19,8 +19,8 @@ namespace susumu {
     void OpenGLContext::Init() 
     {
         glfwMakeContextCurrent(m_WindowHandle);
-        int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-        SU_CORE_ASSERT(status, "Could not initialize Glad!");
+        int gladStatus = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        SU_CORE_ASSERT(gladStatus, "Could not initialize Glad!");
     }
 
     void OpenGLContext::SwapBuffers() 

@@ -30,6 +30,8 @@ namespace susumu {
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
+
+        unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
     private:
         static App* s_Instance;
     };
