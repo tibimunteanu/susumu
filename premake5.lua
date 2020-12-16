@@ -1,5 +1,6 @@
 workspace "susumu"
 	architecture "x64"
+	startproject "sandbox"
 
 	configurations
 	{
@@ -16,14 +17,17 @@ IncludeDir["GLFW"] = "susumu/vendor/GLFW/include"
 IncludeDir["Glad"] = "susumu/vendor/GLAD/include"
 IncludeDir["ImGui"] = "susumu/vendor/imgui"
 
-include "susumu/vendor/GLFW"
-include "susumu/vendor/Glad"
-include "susumu/vendor/imgui"
+group "Dependencies"
+	include "susumu/vendor/GLFW"
+	include "susumu/vendor/Glad"
+	include "susumu/vendor/imgui"
+group ""
 
 project "susumu"
 	location "susumu"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -56,7 +60,6 @@ project "susumu"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -68,29 +71,29 @@ project "susumu"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/sandbox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/sandbox/\"")
 		}
 
 	filter "configurations:Debug"
 		defines "SU_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SU_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SU_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 	
 project "sandbox"
 	location "sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "on"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -115,7 +118,6 @@ project "sandbox"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -125,16 +127,16 @@ project "sandbox"
 
 	filter "configurations:Debug"
 		defines "SU_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SU_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SU_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 	

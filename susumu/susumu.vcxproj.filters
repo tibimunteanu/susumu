@@ -65,6 +65,8 @@
     </ClInclude>
     <ClInclude Include="src\supch.h" />
     <ClInclude Include="src\susumu.h" />
+    <ClInclude Include="src\core\input.h" />
+    <ClInclude Include="src\platform\windows\windows_input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\app.cpp">
@@ -89,5 +91,6 @@
       <Filter>platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\supch.cpp" />
+    <ClCompile Include="src\platform\windows\windows_input.cpp" />
   </ItemGroup>
 </Project>
