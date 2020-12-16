@@ -15,7 +15,7 @@ namespace susumu {
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
-		virtual void OnImGuiRender();
+		virtual void OnImGuiRender() override;
 
 		void Begin();
 		void End();

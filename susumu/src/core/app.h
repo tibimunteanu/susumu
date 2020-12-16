@@ -25,10 +25,11 @@ namespace susumu {
 	private:
 		bool OnWindowClosed(WindowCloseEvent& e);
 
-		std::unique_ptr<Window> m_Window;
-		ImGuiLayer* m_ImGuiLayer;
+	private:
 		bool m_Running = true;
+		std::unique_ptr<Window> m_Window;
 		LayerStack m_LayerStack;
+		ImGuiLayer* m_ImGuiLayer;
 	private:
 		static App* s_Instance;
 	};
