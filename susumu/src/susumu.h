@@ -5,4 +5,5 @@
 #include "core/app.h"
 #include "core/layer.h"
 #include "core/log.h"
+#include "core/imgui/imgui_layer.h"
 #include "core/startup.h"

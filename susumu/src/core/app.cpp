@@ -7,12 +7,15 @@
 
 namespace susumu {
 
-#define BIND_EVENT_FN(x) std::bind(&App::x, this, std::placeholders::_1)
+	App* App::s_Instance = nullptr;
 
 	App::App()
 	{
+		SU_CORE_ASSERT(!s_Instance, "App already exists");
+		s_Instance = this;
+
 		m_Window = std::unique_ptr<Window>(Window::Create());
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window->SetEventCallback(SU_BIND_EVENT_FN(App::OnEvent));
 	}
 
 	App::~App()
@@ -22,17 +25,19 @@ namespace susumu {
 	void App::PushLayer(Layer* layer)
 	{
 		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
 	}
 
 	void App::PushOverlay(Layer* overlay)
 	{
 		m_LayerStack.PushOverlay(overlay);
+		overlay->OnAttach();
 	}
 
 	void App::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClosed));
+		dispatcher.Dispatch<WindowCloseEvent>(SU_BIND_EVENT_FN(App::OnWindowClosed));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{

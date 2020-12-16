@@ -7,8 +7,14 @@
     <Filter Include="core\events">
       <UniqueIdentifier>{92DC566A-FE91-CF5F-8786-C936F33AC663}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core\imgui">
+      <UniqueIdentifier>{38D00F51-2488-519E-8D8F-2AFA7966EC8E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="platform">
       <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\opengl">
+      <UniqueIdentifier>{9E4DBFD0-0AD9-2C95-13EA-AF897FF48895}</UniqueIdentifier>
     </Filter>
     <Filter Include="platform\windows">
       <UniqueIdentifier>{A44FC440-9048-E392-B97A-C817A5D2C29E}</UniqueIdentifier>
@@ -33,6 +39,9 @@
     <ClInclude Include="src\core\events\mouse_event.h">
       <Filter>core\events</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\imgui\imgui_layer.h">
+      <Filter>core\imgui</Filter>
+    </ClInclude>
     <ClInclude Include="src\core\layer.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -48,6 +57,9 @@
     <ClInclude Include="src\core\window.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="src\platform\opengl\imgui_opengl_renderer.h">
+      <Filter>platform\opengl</Filter>
+    </ClInclude>
     <ClInclude Include="src\platform\windows\windows_window.h">
       <Filter>platform\windows</Filter>
     </ClInclude>
@@ -58,6 +70,9 @@
     <ClCompile Include="src\core\app.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\imgui\imgui_layer.cpp">
+      <Filter>core\imgui</Filter>
+    </ClCompile>
     <ClCompile Include="src\core\layer.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -66,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="src\core\log.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\imgui_opengl_renderer.cpp">
+      <Filter>platform\opengl</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\windows\windows_window.cpp">
       <Filter>platform\windows</Filter>

@@ -4,3 +4,6 @@
 [submodule "susumu/vendor/GLFW"]
 	path = susumu/vendor/GLFW
 	url = https://github.com/TheCherno/glfw
+[submodule "susumu/vendor/imgui"]
+	path = susumu/vendor/imgui
+	url = https://github.com/TheCherno/imgui
