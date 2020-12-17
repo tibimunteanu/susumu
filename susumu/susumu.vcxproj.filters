@@ -1338,6 +1338,9 @@
     <ClInclude Include="src\core\renderer\graphics_context.h" />
     <ClInclude Include="src\platform\opengl\opengl_context.h" />
     <ClInclude Include="src\core\renderer\shader.h" />
+    <ClInclude Include="src\core\renderer\buffer.h" />
+    <ClInclude Include="src\platform\opengl\opengl_buffer.h" />
+    <ClInclude Include="src\core\renderer\renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\app.cpp">
@@ -1369,5 +1372,8 @@
     </ClCompile>
     <ClCompile Include="src\platform\opengl\opengl_context.cpp" />
     <ClCompile Include="src\core\renderer\shader.cpp" />
+    <ClCompile Include="src\core\renderer\buffer.cpp" />
+    <ClCompile Include="src\platform\opengl\opengl_buffer.cpp" />
+    <ClCompile Include="src\core\renderer\renderer.cpp" />
   </ItemGroup>
 </Project>

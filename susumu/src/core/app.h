@@ -6,6 +6,7 @@
 #include "core/events/event.h"
 #include "core/events/app_event.h"
 #include "core/imgui/imgui_layer.h"
+#include "core/renderer/buffer.h"
 
 //TEMP:
 #include "core/renderer/shader.h"
@@ -34,8 +35,10 @@ namespace susumu {
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
 
-        unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+        unsigned int m_VertexArray;
         std::unique_ptr<Shader> m_Shader;
+        std::unique_ptr<VertexBuffer> m_VertexBuffer;
+        std::unique_ptr<IndexBuffer> m_IndexBuffer;
     private:
         static App* s_Instance;
     };
