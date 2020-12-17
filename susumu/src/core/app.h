@@ -7,6 +7,9 @@
 #include "core/events/app_event.h"
 #include "core/imgui/imgui_layer.h"
 
+//TEMP:
+#include "core/renderer/shader.h"
+
 namespace susumu {
 
     class SU_API App
@@ -32,6 +35,7 @@ namespace susumu {
         ImGuiLayer* m_ImGuiLayer;
 
         unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+        std::unique_ptr<Shader> m_Shader;
     private:
         static App* s_Instance;
     };

@@ -141,6 +141,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\renderer\shader.h" />
     <ClInclude Include="src\platform\opengl\opengl_context.h" />
     <ClInclude Include="src\core\app.h" />
     <ClInclude Include="src\core\core.h" />
@@ -576,6 +577,7 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\renderer\shader.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_context.cpp" />
     <ClCompile Include="src\core\app.cpp" />
     <ClCompile Include="src\core\imgui\imgui_build.cpp" />
