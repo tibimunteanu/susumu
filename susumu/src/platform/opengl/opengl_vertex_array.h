@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/renderer/vertex_array.h"
+#include "engine/renderer/vertex_array.h"
 
 namespace susumu {
 

@@ -2,10 +2,10 @@
 
 #include "core.h"
 #include "window.h"
-#include "core/layer_stack.h"
-#include "core/events/event.h"
-#include "core/events/app_event.h"
-#include "core/imgui/imgui_layer.h"
+#include "engine/layer_stack.h"
+#include "engine/events/event.h"
+#include "engine/events/app_event.h"
+#include "engine/imgui/imgui_layer.h"
 
 namespace susumu {
 
@@ -17,8 +17,8 @@ namespace susumu {
 
         void Run();
         void OnEvent(Event& e);
-        void PushLayer(Layer* layer);
-        void PushOverlay(Layer* layer);
+        void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
+        void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
 
         inline Window& GetWindow() { return *m_Window; }
         inline static App& Get() { return *s_Instance; }

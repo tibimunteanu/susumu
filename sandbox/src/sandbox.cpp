@@ -4,8 +4,41 @@ class ExampleLayer : public susumu::Layer
 {
 public:
     ExampleLayer()
-        : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+        : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
     {
+        std::string vertexSource = R"(
+            #version 330 core
+
+            layout(location = 0) in vec3 a_Position;
+            layout(location = 1) in vec4 a_Color;
+
+            uniform mat4 u_ViewProjection;
+
+            out vec3 v_Position;
+            out vec4 v_Color;
+            
+            void main()
+            {
+                v_Position = a_Position;
+                v_Color = a_Color;
+                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+            }
+        )";
+        std::string fragmentSource = R"(
+            #version 330 core
+
+            layout(location = 0) out vec4 color;
+
+            in vec3 v_Position;
+            in vec4 v_Color;
+            
+            void main()
+            {
+                color = v_Color;
+            }
+        )";
+        m_Shader.reset(new susumu::Shader(vertexSource, fragmentSource));
+
         float vertices[3 * 7] =
         {
             -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -26,41 +59,6 @@ public:
         std::shared_ptr<susumu::IndexBuffer> indexBuffer;
         indexBuffer.reset(susumu::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
-
-        std::string vertexSource = R"(
-            #version 330 core
-
-            layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec4 a_Color;
-
-            uniform mat4 u_ViewProjection;
-
-            out vec3 v_Position;
-            out vec4 v_Color;
-            
-            void main()
-            {
-                v_Position = a_Position;
-                v_Color = a_Color;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
-            }
-        )";
-
-        std::string fragmentSource = R"(
-            #version 330 core
-
-            layout(location = 0) out vec4 color;
-
-            in vec3 v_Position;
-            in vec4 v_Color;
-            
-            void main()
-            {
-                color = v_Color;
-            }
-        )";
-
-        m_Shader.reset(new susumu::Shader(vertexSource, fragmentSource));
     }
 
     void OnUpdate() override
@@ -96,9 +94,11 @@ private:
     std::shared_ptr<susumu::VertexArray> m_VertexArray;
 
     susumu::OrthographicCamera m_Camera;
-    glm::vec3 m_CameraPosition;
-    float m_CameraMoveSpeed = 0.1f;
+
+    glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
     float m_CameraRotation = 0.0f;
+
+    float m_CameraMoveSpeed = 0.1f;
     float m_CameraRotationSpeed = 2.0f;
 };
 

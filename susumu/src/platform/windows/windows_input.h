@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/input.h"
+#include "engine/input.h"
 
 namespace susumu {
 

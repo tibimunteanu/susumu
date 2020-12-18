@@ -1,7 +1,7 @@
 #pragma once
 
 #include "supch.h"
-#include "core/renderer/buffer.h"
+#include "engine/renderer/buffer.h"
 
 namespace susumu {
 

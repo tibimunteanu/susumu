@@ -4,17 +4,23 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\core">
-      <UniqueIdentifier>{C55F2ECF-B12C-89DA-DA45-7782C671BE68}</UniqueIdentifier>
+    <Filter Include="src\engine">
+      <UniqueIdentifier>{32B5D758-1E6D-19A6-8774-F201734BB496}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\core\events">
-      <UniqueIdentifier>{29103182-959B-9E46-9EAC-213B0AB7FA46}</UniqueIdentifier>
+    <Filter Include="src\engine\events">
+      <UniqueIdentifier>{F66870E7-627F-6E7D-ABF6-F99E174C3F05}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\core\imgui">
-      <UniqueIdentifier>{EF6C1688-DB3A-0A8E-C4CE-7AB4B03BE6F2}</UniqueIdentifier>
+    <Filter Include="src\engine\imgui">
+      <UniqueIdentifier>{1C6037C9-0859-561B-318B-3BA01DE33527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\engine\renderer">
+      <UniqueIdentifier>{388D297C-A4EE-068A-2D5C-4D3C99BC3D49}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\opengl">
+      <UniqueIdentifier>{B57427EB-21D6-04F9-AA43-4BAB16A43BB8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\platform\windows">
       <UniqueIdentifier>{9B5931A8-87E8-BA71-3007-CF6C1C75CB17}</UniqueIdentifier>
@@ -42,47 +48,83 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\app.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\app.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\core.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\core.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\events\app_event.h">
-      <Filter>src\core\events</Filter>
+    <ClInclude Include="src\engine\events\app_event.h">
+      <Filter>src\engine\events</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\events\event.h">
-      <Filter>src\core\events</Filter>
+    <ClInclude Include="src\engine\events\event.h">
+      <Filter>src\engine\events</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\events\key_event.h">
-      <Filter>src\core\events</Filter>
+    <ClInclude Include="src\engine\events\key_event.h">
+      <Filter>src\engine\events</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\events\mouse_event.h">
-      <Filter>src\core\events</Filter>
+    <ClInclude Include="src\engine\events\mouse_event.h">
+      <Filter>src\engine\events</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\imgui\imgui_layer.h">
-      <Filter>src\core\imgui</Filter>
+    <ClInclude Include="src\engine\imgui\imgui_layer.h">
+      <Filter>src\engine\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\input.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\input.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\keycodes.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\keycodes.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\layer.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\layer.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\layer_stack.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\layer_stack.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\log.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\log.h">
+      <Filter>src\engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\startup.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\renderer\buffer.h">
+      <Filter>src\engine\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\window.h">
-      <Filter>src\core</Filter>
+    <ClInclude Include="src\engine\renderer\camera.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\graphics_context.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\render_command.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\renderer.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\renderer_api.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\shader.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\vertex_array.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\startup.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\window.h">
+      <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_buffer.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_context.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_renderer_api.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_vertex_array.h">
+      <Filter>src\platform\opengl</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\windows\windows_input.h">
       <Filter>src\platform\windows</Filter>
@@ -1335,37 +1377,58 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\renderer\graphics_context.h" />
-    <ClInclude Include="src\platform\opengl\opengl_context.h" />
-    <ClInclude Include="src\core\renderer\shader.h" />
-    <ClInclude Include="src\core\renderer\buffer.h" />
-    <ClInclude Include="src\platform\opengl\opengl_buffer.h" />
-    <ClInclude Include="src\core\renderer\renderer.h" />
-    <ClInclude Include="src\core\renderer\vertex_array.h" />
-    <ClInclude Include="src\platform\opengl\opengl_vertex_array.h" />
-    <ClInclude Include="src\core\renderer\render_command.h" />
-    <ClInclude Include="src\core\renderer\renderer_api.h" />
-    <ClInclude Include="src\platform\opengl\opengl_renderer_api.h" />
-    <ClInclude Include="src\core\renderer\camera.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\core\app.cpp">
-      <Filter>src\core</Filter>
+    <ClCompile Include="src\engine\app.cpp">
+      <Filter>src\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\imgui\imgui_build.cpp">
-      <Filter>src\core\imgui</Filter>
+    <ClCompile Include="src\engine\imgui\imgui_build.cpp">
+      <Filter>src\engine\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\imgui\imgui_layer.cpp">
-      <Filter>src\core\imgui</Filter>
+    <ClCompile Include="src\engine\imgui\imgui_layer.cpp">
+      <Filter>src\engine\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\layer.cpp">
-      <Filter>src\core</Filter>
+    <ClCompile Include="src\engine\layer.cpp">
+      <Filter>src\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\layer_stack.cpp">
-      <Filter>src\core</Filter>
+    <ClCompile Include="src\engine\layer_stack.cpp">
+      <Filter>src\engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\log.cpp">
-      <Filter>src\core</Filter>
+    <ClCompile Include="src\engine\log.cpp">
+      <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\buffer.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\camera.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\render_command.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\renderer.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\renderer_api.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\shader.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\vertex_array.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_buffer.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_context.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_vertex_array.cpp">
+      <Filter>src\platform\opengl</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\windows\windows_input.cpp">
       <Filter>src\platform\windows</Filter>
@@ -1376,16 +1439,5 @@
     <ClCompile Include="src\supch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\opengl\opengl_context.cpp" />
-    <ClCompile Include="src\core\renderer\shader.cpp" />
-    <ClCompile Include="src\core\renderer\buffer.cpp" />
-    <ClCompile Include="src\platform\opengl\opengl_buffer.cpp" />
-    <ClCompile Include="src\core\renderer\renderer.cpp" />
-    <ClCompile Include="src\core\renderer\vertex_array.cpp" />
-    <ClCompile Include="src\platform\opengl\opengl_vertex_array.cpp" />
-    <ClCompile Include="src\core\renderer\renderer_api.cpp" />
-    <ClCompile Include="src\core\renderer\render_command.cpp" />
-    <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp" />
-    <ClCompile Include="src\core\renderer\camera.cpp" />
   </ItemGroup>
 </Project>

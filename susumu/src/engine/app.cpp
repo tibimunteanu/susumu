@@ -1,7 +1,7 @@
 #include "supch.h"
 #include "app.h"
 #include "input.h"
-#include "core/log.h"
+#include "engine/log.h"
 
 namespace susumu {
 
@@ -17,16 +17,6 @@ namespace susumu {
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
-    }
-
-    void App::PushLayer(Layer* layer)
-    {
-        m_LayerStack.PushLayer(layer);
-    }
-
-    void App::PushOverlay(Layer* overlay)
-    {
-        m_LayerStack.PushOverlay(overlay);
     }
 
     void App::OnEvent(Event& e)

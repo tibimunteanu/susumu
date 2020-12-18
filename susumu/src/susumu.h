@@ -2,20 +2,20 @@
 
 //include this header in susumu apps
 
-#include "core/app.h"
-#include "core/input.h"
-#include "core/keycodes.h"
-#include "core/layer.h"
-#include "core/log.h"
-#include "core/imgui/imgui_layer.h"
+#include "engine/app.h"
+#include "engine/input.h"
+#include "engine/keycodes.h"
+#include "engine/layer.h"
+#include "engine/log.h"
+#include "engine/imgui/imgui_layer.h"
 
 //renderer
-#include "core/renderer/renderer.h"
-#include "core/renderer/render_command.h"
-#include "core/renderer/shader.h"
-#include "core/renderer/buffer.h"
-#include "core/renderer/vertex_array.h"
-#include "core/renderer/camera.h"
+#include "engine/renderer/renderer.h"
+#include "engine/renderer/render_command.h"
+#include "engine/renderer/shader.h"
+#include "engine/renderer/buffer.h"
+#include "engine/renderer/vertex_array.h"
+#include "engine/renderer/camera.h"
 
 //entry point
-#include "core/startup.h"
+#include "engine/startup.h"

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "core/layer.h"
-#include "core/events/app_event.h"
-#include "core/events/key_event.h"
-#include "core/events/mouse_event.h"
+#include "engine/layer.h"
+#include "engine/events/app_event.h"
+#include "engine/events/key_event.h"
+#include "engine/events/mouse_event.h"
 
 namespace susumu {
 

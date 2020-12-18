@@ -2,8 +2,8 @@
 
 #include "supch.h"
 
-#include "core/core.h"
-#include "core/events/event.h"
+#include "engine/core.h"
+#include "engine/events/event.h"
 
 namespace susumu {
 
