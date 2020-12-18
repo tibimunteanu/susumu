@@ -11,6 +11,7 @@
 
 //TEMP:
 #include "core/renderer/shader.h"
+#include "core/renderer/camera.h"
 
 namespace susumu {
 
@@ -38,6 +39,8 @@ namespace susumu {
 
         std::shared_ptr<Shader> m_Shader;
         std::shared_ptr<VertexArray> m_VertexArray;
+
+        OrthographicCamera m_Camera;
     private:
         static App* s_Instance;
     };
