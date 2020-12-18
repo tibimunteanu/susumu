@@ -6,12 +6,6 @@
 #include "core/events/event.h"
 #include "core/events/app_event.h"
 #include "core/imgui/imgui_layer.h"
-#include "core/renderer/buffer.h"
-#include "core/renderer/vertex_array.h"
-
-//TEMP:
-#include "core/renderer/shader.h"
-#include "core/renderer/camera.h"
 
 namespace susumu {
 
@@ -36,11 +30,6 @@ namespace susumu {
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
-
-        std::shared_ptr<Shader> m_Shader;
-        std::shared_ptr<VertexArray> m_VertexArray;
-
-        OrthographicCamera m_Camera;
     private:
         static App* s_Instance;
     };
