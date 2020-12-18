@@ -2,6 +2,7 @@
 
 #include "engine/core.h"
 #include "engine/events/event.h"
+#include "engine/core/timestep.h"
 
 namespace susumu {
 
@@ -13,7 +14,7 @@ namespace susumu {
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(Timestep dt) {}
         virtual void OnImGuiRender() {}
         virtual void OnEvent(Event& event) {}
 

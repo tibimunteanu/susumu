@@ -1377,6 +1377,7 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\core\timestep.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\app.cpp">

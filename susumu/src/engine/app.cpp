@@ -2,6 +2,10 @@
 #include "app.h"
 #include "input.h"
 #include "engine/log.h"
+#include "engine/core/timestep.h"
+
+//TEMP
+#include <GLFW/glfw3.h>
 
 namespace susumu {
 
@@ -14,6 +18,7 @@ namespace susumu {
 
         m_Window = std::unique_ptr<Window>(Window::Create());
         m_Window->SetEventCallback(SU_BIND_EVENT_FN(App::OnEvent));
+        //m_Window->SetVSync(false);
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -38,9 +43,13 @@ namespace susumu {
     {
         while (m_Running)
         {
+            float time = (float)glfwGetTime(); //TODO: Platform::GetTime
+            Timestep dt = time - m_LastFrameTime;
+            m_LastFrameTime = time;
+
             for (Layer* layer : m_LayerStack)
             {
-                layer->OnUpdate();
+                layer->OnUpdate(dt);
             }
 
             m_ImGuiLayer->Begin();

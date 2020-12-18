@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="src\engine\app.h" />
     <ClInclude Include="src\engine\core.h" />
+    <ClInclude Include="src\engine\core\timestep.h" />
     <ClInclude Include="src\engine\events\app_event.h" />
     <ClInclude Include="src\engine\events\event.h" />
     <ClInclude Include="src\engine\events\key_event.h" />

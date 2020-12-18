@@ -30,6 +30,7 @@ namespace susumu {
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
         ImGuiLayer* m_ImGuiLayer;
+        float m_LastFrameTime = 0.0f;
     private:
         static App* s_Instance;
     };

@@ -61,16 +61,18 @@ public:
         m_VertexArray->SetIndexBuffer(indexBuffer);
     }
 
-    void OnUpdate() override
+    void OnUpdate(susumu::Timestep dt) override
     {
-        if (susumu::Input::IsKeyPressed(SU_KEY_LEFT)) m_CameraPosition.x -= m_CameraMoveSpeed;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_RIGHT)) m_CameraPosition.x += m_CameraMoveSpeed;
+        SU_CORE_TRACE("{0}s, {1}ms", dt.GetSeconds(), dt.GetMilliseconds());
 
-        if (susumu::Input::IsKeyPressed(SU_KEY_DOWN)) m_CameraPosition.y -= m_CameraMoveSpeed;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_UP)) m_CameraPosition.y += m_CameraMoveSpeed;
+        if (susumu::Input::IsKeyPressed(SU_KEY_LEFT)) m_CameraPosition.x -= m_CameraMoveSpeed * dt;
+        else if (susumu::Input::IsKeyPressed(SU_KEY_RIGHT)) m_CameraPosition.x += m_CameraMoveSpeed * dt;
 
-        if (susumu::Input::IsKeyPressed(SU_KEY_SPACE)) m_CameraRotation -= m_CameraRotationSpeed;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_LEFT_SHIFT)) m_CameraRotation += m_CameraRotationSpeed;
+        if (susumu::Input::IsKeyPressed(SU_KEY_DOWN)) m_CameraPosition.y -= m_CameraMoveSpeed * dt;
+        else if (susumu::Input::IsKeyPressed(SU_KEY_UP)) m_CameraPosition.y += m_CameraMoveSpeed * dt;
+
+        if (susumu::Input::IsKeyPressed(SU_KEY_SPACE)) m_CameraRotation -= m_CameraRotationSpeed * dt;
+        else if (susumu::Input::IsKeyPressed(SU_KEY_LEFT_SHIFT)) m_CameraRotation += m_CameraRotationSpeed * dt;
 
         susumu::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         susumu::RenderCommand::Clear();
@@ -98,8 +100,8 @@ private:
     glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
     float m_CameraRotation = 0.0f;
 
-    float m_CameraMoveSpeed = 0.1f;
-    float m_CameraRotationSpeed = 2.0f;
+    float m_CameraMoveSpeed = 2.0f;
+    float m_CameraRotationSpeed = 90.0f;
 };
 
 class Sandbox : public susumu::App
