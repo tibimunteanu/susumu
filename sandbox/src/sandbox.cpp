@@ -1,5 +1,7 @@
 #include <susumu.h>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 class ExampleLayer : public susumu::Layer
 {
 public:
@@ -10,18 +12,16 @@ public:
             #version 330 core
 
             layout(location = 0) in vec3 a_Position;
-            layout(location = 1) in vec4 a_Color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Transform;
 
             out vec3 v_Position;
-            out vec4 v_Color;
             
             void main()
             {
                 v_Position = a_Position;
-                v_Color = a_Color;
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
             }
         )";
         std::string fragmentSource = R"(
@@ -30,32 +30,31 @@ public:
             layout(location = 0) out vec4 color;
 
             in vec3 v_Position;
-            in vec4 v_Color;
             
             void main()
             {
-                color = v_Color;
+                color = vec4(0.2, 0.3, 0.8, 1.0);
             }
         )";
         m_Shader.reset(new susumu::Shader(vertexSource, fragmentSource));
 
-        float vertices[3 * 7] =
+        float vertices[3 * 4] =
         {
-            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f, 
+            0.5f, -0.5f, 0.0f, 
+            0.5f, 0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f
         };
         std::shared_ptr<susumu::VertexBuffer> vertexBuffer;
         vertexBuffer.reset(susumu::VertexBuffer::Create(vertices, sizeof(vertices)));
         vertexBuffer->SetLayout({
-            { susumu::ShaderDataType::Float3, "a_Position" },
-            { susumu::ShaderDataType::Float4, "a_Color" }
+            { susumu::ShaderDataType::Float3, "a_Position" }
         });
 
         m_VertexArray.reset(susumu::VertexArray::Create());
         m_VertexArray->AddVertexBuffer(vertexBuffer);
 
-        uint32_t indices[3] = { 0, 1, 2 };
+        uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
         std::shared_ptr<susumu::IndexBuffer> indexBuffer;
         indexBuffer.reset(susumu::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
@@ -63,7 +62,7 @@ public:
 
     void OnUpdate(susumu::Timestep dt) override
     {
-        SU_CORE_TRACE("{0}s, {1}ms", dt.GetSeconds(), dt.GetMilliseconds());
+        //SU_CORE_TRACE("{0}s, {1}ms", dt.GetSeconds(), dt.GetMilliseconds());
 
         if (susumu::Input::IsKeyPressed(SU_KEY_LEFT)) m_CameraPosition.x -= m_CameraMoveSpeed * dt;
         else if (susumu::Input::IsKeyPressed(SU_KEY_RIGHT)) m_CameraPosition.x += m_CameraMoveSpeed * dt;
@@ -82,7 +81,16 @@ public:
 
         susumu::Renderer::BeginScene(m_Camera);
         {
-            susumu::Renderer::Submit(m_Shader, m_VertexArray);
+            glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+            for (int y = -10; y < 10; y++)
+            {
+                for (int x = -12; x < 12; x++)
+                {
+                    glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+                    glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+                    susumu::Renderer::Submit(m_Shader, m_VertexArray, transform);
+                }
+            }
         }
         susumu::Renderer::EndScene();
     }
