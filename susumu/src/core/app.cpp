@@ -1,10 +1,8 @@
 #include "supch.h"
 #include "app.h"
 #include "input.h"
-
 #include "core/log.h"
-
-#include <glad/glad.h>
+#include "core/renderer/renderer.h"
 
 namespace susumu {
 
@@ -77,20 +75,14 @@ namespace susumu {
         m_Shader.reset(new Shader(vertexSource, fragmentSource));
     }
 
-    App::~App()
-    {
-    }
-
     void App::PushLayer(Layer* layer)
     {
         m_LayerStack.PushLayer(layer);
-        layer->OnAttach();
     }
 
     void App::PushOverlay(Layer* overlay)
     {
         m_LayerStack.PushOverlay(overlay);
-        overlay->OnAttach();
     }
 
     void App::OnEvent(Event& e)
@@ -112,12 +104,15 @@ namespace susumu {
     {
         while (m_Running)
         {
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+            RenderCommand::Clear();
 
-            m_Shader->Bind();
-            m_VertexArray->Bind();
-            glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            Renderer::BeginScene();
+            {
+                m_Shader->Bind();
+                Renderer::Submit(m_VertexArray);
+            }
+            Renderer::EndScene();
 
             for (Layer* layer : m_LayerStack)
             {

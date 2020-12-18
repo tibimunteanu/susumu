@@ -18,7 +18,7 @@ namespace susumu {
     {
     public:
         App();
-        virtual ~App();
+        virtual ~App() = default;
 
         void Run();
         void OnEvent(Event& e);

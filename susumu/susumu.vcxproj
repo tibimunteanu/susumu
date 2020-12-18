@@ -143,6 +143,8 @@
   <ItemGroup>
     <ClInclude Include="src\core\renderer\buffer.h" />
     <ClInclude Include="src\core\renderer\renderer.h" />
+    <ClInclude Include="src\core\renderer\renderer_api.h" />
+    <ClInclude Include="src\core\renderer\render_command.h" />
     <ClInclude Include="src\core\renderer\shader.h" />
     <ClInclude Include="src\core\renderer\vertex_array.h" />
     <ClInclude Include="src\platform\opengl\opengl_buffer.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="src\core\startup.h" />
     <ClInclude Include="src\core\window.h" />
     <ClInclude Include="src\platform\opengl\opengl_vertex_array.h" />
+    <ClInclude Include="src\platform\opengl\opengl_renderer_api.h" />
     <ClInclude Include="src\platform\windows\windows_input.h" />
     <ClInclude Include="src\platform\windows\windows_window.h" />
     <ClInclude Include="src\supch.h" />
@@ -584,6 +587,8 @@
   <ItemGroup>
     <ClCompile Include="src\core\renderer\buffer.cpp" />
     <ClCompile Include="src\core\renderer\renderer.cpp" />
+    <ClCompile Include="src\core\renderer\renderer_api.cpp" />
+    <ClCompile Include="src\core\renderer\render_command.cpp" />
     <ClCompile Include="src\core\renderer\shader.cpp" />
     <ClCompile Include="src\core\renderer\vertex_array.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_buffer.cpp" />
@@ -595,6 +600,7 @@
     <ClCompile Include="src\core\layer_stack.cpp" />
     <ClCompile Include="src\core\log.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_vertex_array.cpp" />
+    <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp" />
     <ClCompile Include="src\platform\windows\windows_input.cpp" />
     <ClCompile Include="src\platform\windows\windows_window.cpp" />
     <ClCompile Include="src\supch.cpp">

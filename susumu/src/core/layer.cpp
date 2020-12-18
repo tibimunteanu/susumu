@@ -8,8 +8,4 @@ namespace susumu {
     {
     }
 
-
-    Layer::~Layer()
-    {
-    }
 }
