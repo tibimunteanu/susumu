@@ -1,6 +1,11 @@
 #include <susumu.h>
 
+#include <imgui/imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+//TEMP
+#include "platform/opengl/opengl_shader.h"
 
 class ExampleLayer : public susumu::Layer
 {
@@ -29,14 +34,16 @@ public:
 
             layout(location = 0) out vec4 color;
 
+            uniform vec3 u_Color;
+
             in vec3 v_Position;
             
             void main()
             {
-                color = vec4(0.2, 0.3, 0.8, 1.0);
+                color = vec4(u_Color, 1.0);
             }
         )";
-        m_Shader.reset(new susumu::Shader(vertexSource, fragmentSource));
+        m_Shader.reset(susumu::Shader::Create(vertexSource, fragmentSource));
 
         float vertices[3 * 4] =
         {
@@ -81,7 +88,11 @@ public:
 
         susumu::Renderer::BeginScene(m_Camera);
         {
+            std::dynamic_pointer_cast<susumu::OpenGLShader>(m_Shader)->Bind();
+            std::dynamic_pointer_cast<susumu::OpenGLShader>(m_Shader)->UploadUniformFloat3("u_Color", m_Color);
+
             glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
             for (int y = -10; y < 10; y++)
             {
                 for (int x = -12; x < 12; x++)
@@ -95,6 +106,13 @@ public:
         susumu::Renderer::EndScene();
     }
 
+    void OnImGuiRender() override
+    {
+        ImGui::Begin("Settings");
+        ImGui::ColorEdit3("Square color", glm::value_ptr(m_Color));
+        ImGui::End();
+    }
+
     void OnEvent(susumu::Event& event) override
     {
     }
@@ -105,6 +123,7 @@ private:
 
     susumu::OrthographicCamera m_Camera;
 
+    glm::vec3 m_Color = { 0.2f, 0.3f, 0.8f };
     glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
     float m_CameraRotation = 0.0f;
 

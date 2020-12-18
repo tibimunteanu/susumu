@@ -1378,6 +1378,7 @@
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\core\timestep.h" />
+    <ClInclude Include="src\platform\opengl\opengl_shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\app.cpp">
@@ -1440,5 +1441,6 @@
     <ClCompile Include="src\supch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_shader.cpp" />
   </ItemGroup>
 </Project>
