@@ -52,7 +52,7 @@ public:
             0.5f, 0.5f, 0.0f,
             -0.5f, 0.5f, 0.0f
         };
-        std::shared_ptr<susumu::VertexBuffer> vertexBuffer;
+        susumu::Ref<susumu::VertexBuffer> vertexBuffer;
         vertexBuffer.reset(susumu::VertexBuffer::Create(vertices, sizeof(vertices)));
         vertexBuffer->SetLayout({
             { susumu::ShaderDataType::Float3, "a_Position" }
@@ -62,7 +62,7 @@ public:
         m_VertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
-        std::shared_ptr<susumu::IndexBuffer> indexBuffer;
+        susumu::Ref<susumu::IndexBuffer> indexBuffer;
         indexBuffer.reset(susumu::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
     }
@@ -118,8 +118,8 @@ public:
     }
 
 private:
-    std::shared_ptr<susumu::Shader> m_Shader;
-    std::shared_ptr<susumu::VertexArray> m_VertexArray;
+    susumu::Ref<susumu::Shader> m_Shader;
+    susumu::Ref<susumu::VertexArray> m_VertexArray;
 
     susumu::OrthographicCamera m_Camera;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef SU_PLATFORM_WINDOWS
 #ifdef SU_DYNAMIC_LINK
     #ifdef SU_BUILD_DLL
@@ -29,3 +31,13 @@
 #define BIT(x) (1 << x)
 
 #define SU_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+
+namespace susumu {
+
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+
+    template<typename T>
+    using Ref = std::shared_ptr<T>;
+
+}
