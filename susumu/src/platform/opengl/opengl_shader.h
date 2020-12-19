@@ -3,11 +3,15 @@
 #include "engine/renderer/shader.h"
 #include <glm/glm.hpp>
 
+//TODO: remove
+typedef unsigned int GLenum;
+
 namespace susumu {
 
     class OpenGLShader : public Shader
     {
     public:
+        OpenGLShader(const std::string& filepath);
         OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
         virtual ~OpenGLShader();
 
@@ -23,6 +27,10 @@ namespace susumu {
 
         void UploadUniformMat3(const std::string& name, const glm::mat3& value);
         void UploadUniformMat4(const std::string& name, const glm::mat4& value);
+    private:
+        std::string ReadFile(const std::string& filepath);
+        std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+        void Compile(std::unordered_map<GLenum, std::string>& shaderSources);
     private:
         uint32_t m_RendererID;
     };
