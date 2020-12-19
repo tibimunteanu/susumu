@@ -9,6 +9,7 @@
 #include "engine/log.h"
 #include "engine/core/timestep.h"
 #include "engine/imgui/imgui_layer.h"
+#include "engine/orthographic_camera_controller.h"
 
 //renderer
 #include "engine/renderer/renderer.h"

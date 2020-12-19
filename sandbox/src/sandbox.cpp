@@ -11,7 +11,7 @@ class ExampleLayer : public susumu::Layer
 {
 public:
     ExampleLayer()
-        : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+        : Layer("Example"), m_CameraController(960.0f / 540.0f)
     {
         //load textures
         m_SpaceTexture = susumu::Texture2D::Create("assets/textures/space.png");
@@ -49,24 +49,15 @@ public:
     {
         //SU_CORE_TRACE("{0}s, {1}ms", dt.GetSeconds(), dt.GetMilliseconds());
 
-        //move and rotate camera from input
-        if (susumu::Input::IsKeyPressed(SU_KEY_LEFT)) m_CameraPosition.x -= m_CameraMoveSpeed * dt;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_RIGHT)) m_CameraPosition.x += m_CameraMoveSpeed * dt;
+        ////////////////////////// Update ///////////////////////////////////////////////////////
+        m_CameraController.OnUpdate(dt);
 
-        if (susumu::Input::IsKeyPressed(SU_KEY_DOWN)) m_CameraPosition.y -= m_CameraMoveSpeed * dt;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_UP)) m_CameraPosition.y += m_CameraMoveSpeed * dt;
-
-        if (susumu::Input::IsKeyPressed(SU_KEY_SPACE)) m_CameraRotation -= m_CameraRotationSpeed * dt;
-        else if (susumu::Input::IsKeyPressed(SU_KEY_LEFT_SHIFT)) m_CameraRotation += m_CameraRotationSpeed * dt;
-
-        m_Camera.SetPosition(m_CameraPosition);
-        m_Camera.SetRotation(m_CameraRotation);
-
+        ////////////////////////// Render ///////////////////////////////////////////////////////
         //render a scene
         susumu::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         susumu::RenderCommand::Clear();
 
-        susumu::Renderer::BeginScene(m_Camera);
+        susumu::Renderer::BeginScene(m_CameraController.GetCamera());
         {
             //set uniforms
             auto flatColorShader = m_ShaderLibrary.Get("flat_color");
@@ -89,7 +80,7 @@ public:
 
             //submit space texture
             m_SpaceTexture->Bind(0);
-            susumu::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.48f)));
+            susumu::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
             //submit earth texture
             m_EarthTexture->Bind(0);
@@ -107,10 +98,11 @@ public:
 
     void OnEvent(susumu::Event& event) override
     {
+        m_CameraController.OnEvent(event);
     }
 
 private:
-    susumu::OrthographicCamera m_Camera;
+    susumu::OrthographicCameraController m_CameraController;
     susumu::ShaderLibrary m_ShaderLibrary;
 
     susumu::Ref<susumu::VertexArray> m_VertexArray;
@@ -118,11 +110,6 @@ private:
     susumu::Ref<susumu::Texture2D> m_EarthTexture;
 
     glm::vec3 m_Color = { 0.2f, 0.3f, 0.8f };
-    glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
-    float m_CameraRotation = 0.0f;
-
-    float m_CameraMoveSpeed = 2.0f;
-    float m_CameraRotationSpeed = 90.0f;
 };
 
 class Sandbox : public susumu::App

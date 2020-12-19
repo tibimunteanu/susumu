@@ -154,6 +154,7 @@
     <ClInclude Include="src\engine\layer.h" />
     <ClInclude Include="src\engine\layer_stack.h" />
     <ClInclude Include="src\engine\log.h" />
+    <ClInclude Include="src\engine\orthographic_camera_controller.h" />
     <ClInclude Include="src\engine\renderer\buffer.h" />
     <ClInclude Include="src\engine\renderer\camera.h" />
     <ClInclude Include="src\engine\renderer\graphics_context.h" />
@@ -597,6 +598,7 @@
     <ClCompile Include="src\engine\layer.cpp" />
     <ClCompile Include="src\engine\layer_stack.cpp" />
     <ClCompile Include="src\engine\log.cpp" />
+    <ClCompile Include="src\engine\orthographic_camera_controller.cpp" />
     <ClCompile Include="src\engine\renderer\buffer.cpp" />
     <ClCompile Include="src\engine\renderer\camera.cpp" />
     <ClCompile Include="src\engine\renderer\render_command.cpp" />
