@@ -18,12 +18,28 @@ namespace susumu {
 
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
+        // extract shader name from filepath (assets/shaders/texture.glsl -> texture)
+        auto lastSlashIndex = filepath.find_last_of("/\\");
+        lastSlashIndex = lastSlashIndex == std::string::npos ? 0 : lastSlashIndex + 1;
+        auto lastDotIndex = filepath.rfind('.');
+        auto length = lastDotIndex == std::string::npos ? filepath.size() - 1 - lastSlashIndex : lastDotIndex - lastSlashIndex;
+        m_Name = filepath.substr(lastSlashIndex, length);
+
         std::string source = ReadFile(filepath);
         auto shaderSources = PreProcess(source);
         Compile(shaderSources);
     }
 
-    OpenGLShader::OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource)
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& filepath)
+        : m_Name(name)
+    {
+        std::string source = ReadFile(filepath);
+        auto shaderSources = PreProcess(source);
+        Compile(shaderSources);
+    }
+
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource)
+        : m_Name(name)
     {
         std::unordered_map<GLenum, std::string> shaderSources;
         shaderSources[GL_VERTEX_SHADER] = vertexSource;
@@ -91,7 +107,7 @@ namespace susumu {
     std::string OpenGLShader::ReadFile(const std::string& filepath)
     {
         std::string result;
-        std::ifstream in(filepath, std::ios::in, std::ios::binary);
+        std::ifstream in(filepath, std::ios::in | std::ios::binary);
         if (in)
         {
             in.seekg(0, std::ios::end);
@@ -132,7 +148,10 @@ namespace susumu {
     void OpenGLShader::Compile(std::unordered_map<GLenum, std::string>& shaderSources)
     {
         GLuint program = glCreateProgram();
-        std::vector<GLint> glShaderIDs(shaderSources.size());
+        const int maxShadersInFile = 4;
+        SU_CORE_ASSERT(shaderSources.size() <= maxShadersInFile, "Cannot have more than {0} shaders in file!", maxShadersInFile);
+        std::array<GLint, maxShadersInFile> glShaderIDs;
+        int glShaderIDIndex = 0;
 
         for (auto& kv : shaderSources)
         {
@@ -161,7 +180,7 @@ namespace susumu {
                 break;
             }
             glAttachShader(program, shader);
-            glShaderIDs.push_back(shader);
+            glShaderIDs[glShaderIDIndex++] = shader;
         }
 
         glLinkProgram(program);

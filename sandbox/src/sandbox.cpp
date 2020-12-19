@@ -13,8 +13,8 @@ public:
     ExampleLayer()
         : Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
     {
-        m_FlatColorShader.reset(susumu::Shader::Create("assets/shaders/flat_color.glsl"));
-        m_TextureShader.reset(susumu::Shader::Create("assets/shaders/texture.glsl"));
+        auto flatColorShader = m_ShaderLibrary.Load("assets/shaders/flat_color.glsl");
+        auto textureShader = m_ShaderLibrary.Load("assets/shaders/texture.glsl");
 
         float vertices[5 * 4] =
         {
@@ -41,8 +41,8 @@ public:
         m_SpaceTexture = susumu::Texture2D::Create("assets/textures/space.png");
         m_EarthTexture = susumu::Texture2D::Create("assets/textures/earth.png");
 
-        std::dynamic_pointer_cast<susumu::OpenGLShader>(m_TextureShader)->Bind();
-        std::dynamic_pointer_cast<susumu::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+        std::dynamic_pointer_cast<susumu::OpenGLShader>(textureShader)->Bind();
+        std::dynamic_pointer_cast<susumu::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
     }
 
     void OnUpdate(susumu::Timestep dt) override
@@ -64,10 +64,13 @@ public:
         m_Camera.SetPosition(m_CameraPosition);
         m_Camera.SetRotation(m_CameraRotation);
 
+        auto flatColorShader = m_ShaderLibrary.Get("flat_color");
+        auto textureShader = m_ShaderLibrary.Get("texture");
+
         susumu::Renderer::BeginScene(m_Camera);
         {
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(m_FlatColorShader)->Bind();
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_Color);
+            std::dynamic_pointer_cast<susumu::OpenGLShader>(flatColorShader)->Bind();
+            std::dynamic_pointer_cast<susumu::OpenGLShader>(flatColorShader)->UploadUniformFloat3("u_Color", m_Color);
 
             glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
@@ -77,15 +80,15 @@ public:
                 {
                     glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
                     glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-                    susumu::Renderer::Submit(m_FlatColorShader, m_VertexArray, transform);
+                    susumu::Renderer::Submit(flatColorShader, m_VertexArray, transform);
                 }
             }
 
             m_SpaceTexture->Bind(0);
-            susumu::Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.48f)));
+            susumu::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.48f)));
 
             m_EarthTexture->Bind(0);
-            susumu::Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
+            susumu::Renderer::Submit(textureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
         }
         susumu::Renderer::EndScene();
     }
@@ -102,14 +105,12 @@ public:
     }
 
 private:
-    susumu::Ref<susumu::Shader> m_FlatColorShader;
-    susumu::Ref<susumu::Shader> m_TextureShader;
-    susumu::Ref<susumu::VertexArray> m_VertexArray;
+    susumu::OrthographicCamera m_Camera;
+    susumu::ShaderLibrary m_ShaderLibrary;
 
+    susumu::Ref<susumu::VertexArray> m_VertexArray;
     susumu::Ref<susumu::Texture2D> m_SpaceTexture;
     susumu::Ref<susumu::Texture2D> m_EarthTexture;
-
-    susumu::OrthographicCamera m_Camera;
 
     glm::vec3 m_Color = { 0.2f, 0.3f, 0.8f };
     glm::vec3 m_CameraPosition = { 0.0f, 0.0f, 0.0f };
