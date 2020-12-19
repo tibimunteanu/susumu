@@ -1,8 +1,8 @@
 #pragma once
 
-#include "engine/core.h"
+#include "core.h"
 #include "engine/events/event.h"
-#include "engine/core/timestep.h"
+#include "timestep.h"
 
 namespace susumu {
 

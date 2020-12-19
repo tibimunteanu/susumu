@@ -1,9 +1,9 @@
 #include "supch.h"
 #include "app.h"
 #include "input.h"
-#include "engine/log.h"
+#include "log.h"
+#include "timestep.h"
 #include "engine/renderer/renderer.h"
-#include "engine/core/timestep.h"
 
 //TEMP
 #include <GLFW/glfw3.h>

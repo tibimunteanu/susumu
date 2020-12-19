@@ -54,13 +54,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\engine\app.h">
-      <Filter>src\engine</Filter>
+    <ClInclude Include="src\engine\core\app.h">
+      <Filter>src\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\core.h">
-      <Filter>src\engine</Filter>
+    <ClInclude Include="src\engine\core\core.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\input.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\keycodes.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\layer.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\layer_stack.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\log.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\startup.h">
+      <Filter>src\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\core\timestep.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\window.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\events\app_event.h">
@@ -78,21 +99,6 @@
     <ClInclude Include="src\engine\imgui\imgui_layer.h">
       <Filter>src\engine\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\input.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\keycodes.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\layer.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\layer_stack.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\log.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\renderer\buffer.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
@@ -100,6 +106,9 @@
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\graphics_context.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\orthographic_camera_controller.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\render_command.h">
@@ -119,12 +128,6 @@
     </ClInclude>
     <ClInclude Include="src\engine\renderer\vertex_array.h">
       <Filter>src\engine\renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\startup.h">
-      <Filter>src\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\window.h">
-      <Filter>src\engine</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_buffer.h">
       <Filter>src\platform\opengl</Filter>
@@ -1398,11 +1401,19 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\orthographic_camera_controller.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\engine\app.cpp">
-      <Filter>src\engine</Filter>
+    <ClCompile Include="src\engine\core\app.cpp">
+      <Filter>src\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\layer.cpp">
+      <Filter>src\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\layer_stack.cpp">
+      <Filter>src\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\log.cpp">
+      <Filter>src\engine\core</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\imgui\imgui_build.cpp">
       <Filter>src\engine\imgui</Filter>
@@ -1410,19 +1421,13 @@
     <ClCompile Include="src\engine\imgui\imgui_layer.cpp">
       <Filter>src\engine\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\layer.cpp">
-      <Filter>src\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\layer_stack.cpp">
-      <Filter>src\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\log.cpp">
-      <Filter>src\engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\renderer\buffer.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\camera.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\render_command.cpp">
@@ -1473,6 +1478,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\orthographic_camera_controller.cpp" />
   </ItemGroup>
 </Project>

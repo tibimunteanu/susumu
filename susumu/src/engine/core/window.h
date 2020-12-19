@@ -2,7 +2,7 @@
 
 #include "supch.h"
 
-#include "engine/core.h"
+#include "core.h"
 #include "engine/events/event.h"
 
 namespace susumu {

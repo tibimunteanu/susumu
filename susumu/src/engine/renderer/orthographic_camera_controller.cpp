@@ -1,7 +1,7 @@
 #include "supch.h"
 #include "orthographic_camera_controller.h"
-#include "engine/input.h"
-#include "engine/keycodes.h"
+#include "engine/core/input.h"
+#include "engine/core/keycodes.h"
 
 namespace susumu {
 

@@ -2,13 +2,12 @@
 
 //include this header in susumu apps
 
-#include "engine/app.h"
-#include "engine/log.h"
-#include "engine/layer.h"
+#include "engine/core/app.h"
+#include "engine/core/log.h"
+#include "engine/core/layer.h"
 
-#include "engine/input.h"
-#include "engine/keycodes.h"
-#include "engine/orthographic_camera_controller.h"
+#include "engine/core/input.h"
+#include "engine/core/keycodes.h"
 
 #include "engine/core/timestep.h"
 
@@ -21,5 +20,6 @@
 #include "engine/renderer/buffer.h"
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/camera.h"
+#include "engine/renderer/orthographic_camera_controller.h"
 
-#include "engine/startup.h"
+#include "engine/core/startup.h"
