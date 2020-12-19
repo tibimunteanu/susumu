@@ -10,7 +10,7 @@ namespace susumu {
     {
     public:
         OpenGLContext(GLFWwindow* windowHandle);
-        virtual ~OpenGLContext();
+
         virtual void Init() override;
         virtual void SwapBuffers() override;
     private:

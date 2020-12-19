@@ -21,15 +21,15 @@ namespace susumu {
 }
 
 //core log macros
-#define SU_CORE_FATAL(...) ::susumu::Log::GetCoreLogger()->critical(__VA_ARGS__)
-#define SU_CORE_ERROR(...) ::susumu::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define SU_CORE_WARN(...) ::susumu::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define SU_CORE_INFO(...) ::susumu::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define SU_CORE_TRACE(...) ::susumu::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define SU_CORE_INFO(...) ::susumu::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define SU_CORE_WARN(...) ::susumu::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define SU_CORE_ERROR(...) ::susumu::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define SU_CORE_CRITICAL(...) ::susumu::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 //client log macros
-#define SU_FATAL(...) ::susumu::Log::GetAppLogger()->critical(__VA_ARGS__)
-#define SU_ERROR(...) ::susumu::Log::GetAppLogger()->error(__VA_ARGS__)
-#define SU_WARN(...) ::susumu::Log::GetAppLogger()->warn(__VA_ARGS__)
-#define SU_INFO(...) ::susumu::Log::GetAppLogger()->info(__VA_ARGS__)
 #define SU_TRACE(...) ::susumu::Log::GetAppLogger()->trace(__VA_ARGS__)
+#define SU_INFO(...) ::susumu::Log::GetAppLogger()->info(__VA_ARGS__)
+#define SU_WARN(...) ::susumu::Log::GetAppLogger()->warn(__VA_ARGS__)
+#define SU_ERROR(...) ::susumu::Log::GetAppLogger()->error(__VA_ARGS__)
+#define SU_CRITICAL(...) ::susumu::Log::GetAppLogger()->critical(__VA_ARGS__)

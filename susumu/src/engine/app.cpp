@@ -30,6 +30,7 @@ namespace susumu {
     {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(SU_BIND_EVENT_FN(App::OnWindowClosed));
+        dispatcher.Dispatch<WindowResizeEvent>(SU_BIND_EVENT_FN(App::OnWindowResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
         {
@@ -49,9 +50,12 @@ namespace susumu {
             Timestep dt = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
-            for (Layer* layer : m_LayerStack)
+            if (!m_Minimized)
             {
-                layer->OnUpdate(dt);
+                for (Layer* layer : m_LayerStack)
+                {
+                    layer->OnUpdate(dt);
+                }
             }
 
             m_ImGuiLayer->Begin();
@@ -69,6 +73,20 @@ namespace susumu {
     {
         m_Running = false;
         return true;
+    }
+
+    bool App::OnWindowResize(WindowResizeEvent& e)
+    {
+        if (e.GetWidth() == 0 || e.GetHeight() == 0)
+        {
+            m_Minimized = true;
+            return false;
+        }
+
+        m_Minimized = false;
+        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+        return false;
     }
 
 }

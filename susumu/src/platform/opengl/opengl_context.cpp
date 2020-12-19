@@ -12,10 +12,6 @@ namespace susumu {
         SU_CORE_ASSERT(windowHandle, "Window handle is null!");
     }
 
-    OpenGLContext::~OpenGLContext()
-    {
-    }
-
     void OpenGLContext::Init() 
     {
         glfwMakeContextCurrent(m_WindowHandle);

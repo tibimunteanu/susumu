@@ -40,8 +40,8 @@ namespace susumu {
 
         if (!s_GLFWInitialized)
         {
-            int success = glfwInit();
-            SU_CORE_ASSERT(success, "Could not initialize GLFW!");
+            int glfwSuccess = glfwInit();
+            SU_CORE_ASSERT(glfwSuccess, "Could not initialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
 
             s_GLFWInitialized = true;
@@ -79,24 +79,24 @@ namespace susumu {
 
                 switch (action)
                 {
-                case GLFW_PRESS:
-                {
-                    KeyPressedEvent event(key, 0);
-                    data.EventCallback(event);
-                    break;
-                }
-                case GLFW_RELEASE:
-                {
-                    KeyReleasedEvent event(key);
-                    data.EventCallback(event);
-                    break;
-                }
-                case GLFW_REPEAT:
-                {
-                    KeyPressedEvent event(key, 1);
-                    data.EventCallback(event);
-                    break;
-                }
+                    case GLFW_PRESS:
+                    {
+                        KeyPressedEvent event(key, 0);
+                        data.EventCallback(event);
+                        break;
+                    }
+                    case GLFW_RELEASE:
+                    {
+                        KeyReleasedEvent event(key);
+                        data.EventCallback(event);
+                        break;
+                    }
+                    case GLFW_REPEAT:
+                    {
+                        KeyPressedEvent event(key, 1);
+                        data.EventCallback(event);
+                        break;
+                    }
                 }
             });
 
@@ -113,18 +113,18 @@ namespace susumu {
 
                 switch (action)
                 {
-                case GLFW_PRESS:
-                {
-                    MouseButtonPressedEvent event(button);
-                    data.EventCallback(event);
-                    break;
-                }
-                case GLFW_RELEASE:
-                {
-                    MouseButtonReleasedEvent event(button);
-                    data.EventCallback(event);
-                    break;
-                }
+                    case GLFW_PRESS:
+                    {
+                        MouseButtonPressedEvent event(button);
+                        data.EventCallback(event);
+                        break;
+                    }
+                    case GLFW_RELEASE:
+                    {
+                        MouseButtonReleasedEvent event(button);
+                        data.EventCallback(event);
+                        break;
+                    }
                 }
             });
 
