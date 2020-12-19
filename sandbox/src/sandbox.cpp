@@ -99,7 +99,8 @@ public:
         indexBuffer.reset(susumu::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
-        m_Texture = susumu::Texture2D::Create("assets/textures/earth.png");
+        m_SpaceTexture = susumu::Texture2D::Create("assets/textures/space.png");
+        m_EarthTexture = susumu::Texture2D::Create("assets/textures/earth.png");
 
         std::dynamic_pointer_cast<susumu::OpenGLShader>(m_TextureShader)->Bind();
         std::dynamic_pointer_cast<susumu::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
@@ -141,7 +142,10 @@ public:
                 }
             }
 
-            m_Texture->Bind(0);
+            m_SpaceTexture->Bind(0);
+            susumu::Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.48f)));
+
+            m_EarthTexture->Bind(0);
             susumu::Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
         }
         susumu::Renderer::EndScene();
@@ -163,7 +167,8 @@ private:
     susumu::Ref<susumu::Shader> m_TextureShader;
     susumu::Ref<susumu::VertexArray> m_VertexArray;
 
-    susumu::Ref<susumu::Texture2D> m_Texture;
+    susumu::Ref<susumu::Texture2D> m_SpaceTexture;
+    susumu::Ref<susumu::Texture2D> m_EarthTexture;
 
     susumu::OrthographicCamera m_Camera;
 

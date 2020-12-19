@@ -2,6 +2,7 @@
 #include "app.h"
 #include "input.h"
 #include "engine/log.h"
+#include "engine/renderer/renderer.h"
 #include "engine/core/timestep.h"
 
 //TEMP
@@ -18,7 +19,8 @@ namespace susumu {
 
         m_Window = std::unique_ptr<Window>(Window::Create());
         m_Window->SetEventCallback(SU_BIND_EVENT_FN(App::OnEvent));
-        //m_Window->SetVSync(false);
+
+        Renderer::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
