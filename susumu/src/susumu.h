@@ -14,6 +14,7 @@
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/render_command.h"
 #include "engine/renderer/shader.h"
+#include "engine/renderer/texture.h"
 #include "engine/renderer/buffer.h"
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/camera.h"

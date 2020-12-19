@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "susumu/vendor/GLFW/include"
 IncludeDir["Glad"] = "susumu/vendor/GLAD/include"
 IncludeDir["ImGui"] = "susumu/vendor/imgui"
 IncludeDir["glm"] = "susumu/vendor/glm"
+IncludeDir["stb_image"] = "susumu/vendor/stb_image"
 
 group "Dependencies"
     include "susumu/vendor/GLFW"
@@ -41,6 +42,8 @@ project "susumu"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/stb_image/**.h",
+        "%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
     }
@@ -58,6 +61,7 @@ project "susumu"
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}",
     }
 
     links

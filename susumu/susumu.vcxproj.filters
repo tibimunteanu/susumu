@@ -7,6 +7,9 @@
     <Filter Include="src\engine">
       <UniqueIdentifier>{32B5D758-1E6D-19A6-8774-F201734BB496}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\core">
+      <UniqueIdentifier>{EA741D25-5600-8BE9-5F11-0EDECB1BE7E9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\engine\events">
       <UniqueIdentifier>{F66870E7-627F-6E7D-ABF6-F99E174C3F05}</UniqueIdentifier>
     </Filter>
@@ -46,6 +49,9 @@
     <Filter Include="vendor\glm\glm\gtx">
       <UniqueIdentifier>{B3A6A76B-9F8A-68C1-08EB-6214F4ED5243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\stb_image">
+      <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\app.h">
@@ -53,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\core.h">
       <Filter>src\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\timestep.h">
+      <Filter>src\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\events\app_event.h">
       <Filter>src\engine\events</Filter>
@@ -105,6 +114,9 @@
     <ClInclude Include="src\engine\renderer\shader.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\renderer\texture.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\renderer\vertex_array.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
@@ -121,6 +133,12 @@
       <Filter>src\platform\opengl</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_renderer_api.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_shader.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_texture.h">
       <Filter>src\platform\opengl</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_vertex_array.h">
@@ -1377,8 +1395,9 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\core\timestep.h" />
-    <ClInclude Include="src\platform\opengl\opengl_shader.h" />
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>vendor\stb_image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\app.cpp">
@@ -1417,6 +1436,9 @@
     <ClCompile Include="src\engine\renderer\shader.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\renderer\texture.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\engine\renderer\vertex_array.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
@@ -1427,6 +1449,12 @@
       <Filter>src\platform\opengl</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_shader.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_texture.cpp">
       <Filter>src\platform\opengl</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\opengl\opengl_vertex_array.cpp">
@@ -1441,6 +1469,8 @@
     <ClCompile Include="src\supch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\opengl\opengl_shader.cpp" />
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>vendor\stb_image</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
