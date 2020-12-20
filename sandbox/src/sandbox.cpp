@@ -63,9 +63,9 @@ public:
             auto flatColorShader = m_ShaderLibrary.Get("flat_color");
             auto textureShader = m_ShaderLibrary.Get("texture");
             flatColorShader->Bind();
-            flatColorShader->UploadUniformFloat3("u_Color", m_Color);
+            flatColorShader->SetFloat3("u_Color", m_Color);
             textureShader->Bind();
-            textureShader->UploadUniformInt("u_Texture", 0);
+            textureShader->SetInt("u_Texture", 0);
 
             //submit grid of squares
             for (int y = -10; y < 10; y++)
