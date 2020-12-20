@@ -1,5 +1,5 @@
 @echo off
-pushd ..\
+REM pushd ..\
 call vendor\bin\premake\premake5.exe vs2019
-popd
+REM popd
 PAUSE

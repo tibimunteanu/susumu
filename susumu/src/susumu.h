@@ -21,5 +21,3 @@
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/camera.h"
 #include "engine/renderer/orthographic_camera_controller.h"
-
-#include "engine/core/startup.h"

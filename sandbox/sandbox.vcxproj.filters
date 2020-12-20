@@ -18,9 +18,13 @@
     <ClCompile Include="src\sandbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\sandbox_2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shaders\texture.glsl" />
-    <None Include="assets\shaders\flat_color.glsl" />
+    <ClInclude Include="src\sandbox_2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

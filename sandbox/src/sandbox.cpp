@@ -1,4 +1,7 @@
 #include <susumu.h>
+#include <engine/core/startup.h>
+
+#include "sandbox_2d.h"
 
 #include <imgui/imgui.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -117,7 +120,8 @@ class Sandbox : public susumu::App
 public:
     Sandbox()
     {
-        PushLayer(new ExampleLayer());
+        //PushLayer(new ExampleLayer());
+        PushLayer(new Sandbox2D());
     }
 
     ~Sandbox()
