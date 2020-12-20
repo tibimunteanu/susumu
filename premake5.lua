@@ -9,6 +9,11 @@ workspace "susumu"
         "Dist"
     }
 
+    flags
+    {
+        "MultiProcessorCompile"
+    }
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (solution directory)
@@ -77,7 +82,6 @@ project "susumu"
 
         defines
         {
-            "SU_PLATFORM_WINDOWS",
             "SU_BUILD_DLL",
             "GLFW_INCLUDE_NONE"
         }
@@ -128,11 +132,6 @@ project "sandbox"
 
     filter "system:windows"
         systemversion "latest"
-
-        defines
-        {
-            "SU_PLATFORM_WINDOWS"
-        }
 
     filter "configurations:Debug"
         defines "SU_DEBUG"

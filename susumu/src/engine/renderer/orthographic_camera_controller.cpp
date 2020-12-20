@@ -13,19 +13,38 @@ namespace susumu {
     void OrthographicCameraController::OnUpdate(Timestep dt)
     {
         //move and rotate camera from input
-        if (Input::IsKeyPressed(SU_KEY_A)) m_CameraPosition.x -= m_CameraTranslationSpeed * dt;
-        else if (Input::IsKeyPressed(SU_KEY_D)) m_CameraPosition.x += m_CameraTranslationSpeed * dt;
+        if (Input::IsKeyPressed(SU_KEY_A))
+		{
+			m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+			m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+		}
+		else if (Input::IsKeyPressed(SU_KEY_D))
+		{
+			m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+			m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+		}
 
-        if (Input::IsKeyPressed(SU_KEY_S)) m_CameraPosition.y -= m_CameraTranslationSpeed * dt;
-        else if (Input::IsKeyPressed(SU_KEY_W)) m_CameraPosition.y += m_CameraTranslationSpeed * dt;
+		if (Input::IsKeyPressed(SU_KEY_W))
+		{
+			m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+			m_CameraPosition.y += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+		}
+		else if (Input::IsKeyPressed(SU_KEY_S))
+		{
+			m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+			m_CameraPosition.y -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
+		}
 
-        if (m_Rotation)
-        {
-            if (Input::IsKeyPressed(SU_KEY_Q)) m_CameraRotation -= m_CameraRotationSpeed * dt;
-            else if (Input::IsKeyPressed(SU_KEY_E)) m_CameraRotation += m_CameraRotationSpeed * dt;
+		if (m_Rotation)
+		{
+			if (Input::IsKeyPressed(SU_KEY_Q)) m_CameraRotation += m_CameraRotationSpeed * dt;
+			if (Input::IsKeyPressed(SU_KEY_E)) m_CameraRotation -= m_CameraRotationSpeed * dt;
 
-            m_Camera.SetRotation(m_CameraRotation);
-        }
+			if (m_CameraRotation > 180.0f) m_CameraRotation -= 360.0f;
+			else if (m_CameraRotation <= -180.0f) m_CameraRotation += 360.0f;
+
+			m_Camera.SetRotation(m_CameraRotation);
+		}
 
         m_Camera.SetPosition(m_CameraPosition);
 

@@ -1,12 +1,16 @@
 [submodule "susumu/vendor/spdlog"]
 	path = susumu/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+	branch = v1.x
 [submodule "susumu/vendor/GLFW"]
 	path = susumu/vendor/GLFW
 	url = https://github.com/TheCherno/glfw
+	branch = master
 [submodule "susumu/vendor/imgui"]
 	path = susumu/vendor/imgui
 	url = https://github.com/TheCherno/imgui
+	branch = docking
 [submodule "susumu/vendor/glm"]
 	path = susumu/vendor/glm
 	url = https://github.com/g-truc/glm
+	branch = master

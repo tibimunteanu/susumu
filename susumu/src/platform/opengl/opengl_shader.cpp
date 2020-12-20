@@ -62,25 +62,25 @@ namespace susumu {
         glUseProgram(0);
     }
 
-    void OpenGLShader::UploadUniformInt(const std::string & name, int value)
+    void OpenGLShader::UploadUniformInt(const std::string& name, int value)
     {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniform1i(location, value);
     }
 
-    void OpenGLShader::UploadUniformFloat(const std::string & name, float value)
+    void OpenGLShader::UploadUniformFloat(const std::string& name, float value)
     {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniform1f(location, value);
     }
 
-    void OpenGLShader::UploadUniformFloat2(const std::string & name, const glm::vec2 & value)
+    void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
     {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniform2f(location, value.x, value.y);
     }
 
-    void OpenGLShader::UploadUniformFloat3(const std::string & name, const glm::vec3 & value)
+    void OpenGLShader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
     {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniform3f(location, value.x, value.y, value.z);
@@ -92,7 +92,7 @@ namespace susumu {
         glUniform4f(location, value.x, value.y, value.z, value.w);
     }
 
-    void OpenGLShader::UploadUniformMat3(const std::string & name, const glm::mat3 & value)
+    void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& value)
     {
         GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
@@ -123,24 +123,27 @@ namespace susumu {
         return result;
     }
 
-    std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string & source)
+    std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
     {
         std::unordered_map<GLenum, std::string> shaderSources;
 
         const char* typeToken = "#type";
         size_t typeTokenLength = strlen(typeToken);
-        size_t pos = source.find(typeToken, 0);
+        size_t pos = source.find(typeToken, 0); //start of shader type declaration line
         while (pos != std::string::npos)
         {
-            size_t eol = source.find_first_of("\r\n", pos);
+            size_t eol = source.find_first_of("\r\n", pos); //end of shader type declaration line
             SU_CORE_ASSERT(eol != std::string::npos, "Syntax error");
-            size_t begin = pos + typeTokenLength + 1;
+            size_t begin = pos + typeTokenLength + 1; //start of shader type name (after "#type " keyword)
             std::string type = source.substr(begin, eol - begin);
             SU_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
 
-            size_t nextLinePos = source.find_first_of("\r\n", eol);
-            pos = source.find(typeToken, nextLinePos);
-            shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+            size_t nextLinePos = source.find_first_of("\r\n", eol); // start of shader code after shader type declaration line
+            SU_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+            pos = source.find(typeToken, nextLinePos); //start of next shader type declaration line
+            shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) 
+                ? source.substr(nextLinePos) 
+                : source.substr(nextLinePos, pos - nextLinePos);
         }
         return shaderSources;
     }
@@ -185,7 +188,7 @@ namespace susumu {
 
         glLinkProgram(program);
         GLint isLinked = 0;
-        glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
+        glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
         if (isLinked == GL_FALSE)
         {
             GLint maxLength = 0;
@@ -207,6 +210,7 @@ namespace susumu {
         for (auto id : glShaderIDs)
         {
             glDetachShader(program, id);
+            glDeleteShader(id);
         }
 
         m_RendererID = program;

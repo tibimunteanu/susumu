@@ -15,7 +15,7 @@ namespace susumu {
         switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None: SU_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(filepath);
+            case RendererAPI::API::OpenGL: return CreateRef<OpenGLShader>(filepath);
 
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
@@ -26,7 +26,7 @@ namespace susumu {
         switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None: SU_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(name, filepath);
+            case RendererAPI::API::OpenGL: return CreateRef<OpenGLShader>(name, filepath);
 
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
@@ -37,7 +37,7 @@ namespace susumu {
         switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None: SU_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL: return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
+            case RendererAPI::API::OpenGL: return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
 
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }

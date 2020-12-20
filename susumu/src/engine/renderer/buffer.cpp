@@ -10,7 +10,7 @@ namespace susumu {
         switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None: SU_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL: return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+            case RendererAPI::API::OpenGL: return CreateRef<OpenGLVertexBuffer>(vertices, size);
 
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
@@ -21,7 +21,7 @@ namespace susumu {
         switch (Renderer::GetAPI())
         {
             case RendererAPI::API::None: SU_CORE_ASSERT(false, "RendererAPI::None is not supported!"); return nullptr;
-            case RendererAPI::API::OpenGL: return std::make_shared<OpenGLIndexBuffer>(indices, count);
+            case RendererAPI::API::OpenGL: return CreateRef<OpenGLIndexBuffer>(indices, count);
 
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
