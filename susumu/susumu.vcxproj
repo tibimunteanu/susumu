@@ -163,9 +163,9 @@
     <ClInclude Include="src\engine\renderer\camera.h" />
     <ClInclude Include="src\engine\renderer\graphics_context.h" />
     <ClInclude Include="src\engine\renderer\orthographic_camera_controller.h" />
-    <ClInclude Include="src\engine\renderer\renderer_2d.h" />
     <ClInclude Include="src\engine\renderer\render_command.h" />
     <ClInclude Include="src\engine\renderer\renderer.h" />
+    <ClInclude Include="src\engine\renderer\renderer_2d.h" />
     <ClInclude Include="src\engine\renderer\renderer_api.h" />
     <ClInclude Include="src\engine\renderer\shader.h" />
     <ClInclude Include="src\engine\renderer\texture.h" />
@@ -605,9 +605,9 @@
     <ClCompile Include="src\engine\renderer\buffer.cpp" />
     <ClCompile Include="src\engine\renderer\camera.cpp" />
     <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp" />
-    <ClCompile Include="src\engine\renderer\renderer_2d.cpp" />
     <ClCompile Include="src\engine\renderer\render_command.cpp" />
     <ClCompile Include="src\engine\renderer\renderer.cpp" />
+    <ClCompile Include="src\engine\renderer\renderer_2d.cpp" />
     <ClCompile Include="src\engine\renderer\renderer_api.cpp" />
     <ClCompile Include="src\engine\renderer\shader.cpp" />
     <ClCompile Include="src\engine\renderer\texture.cpp" />

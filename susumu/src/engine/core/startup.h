@@ -7,7 +7,7 @@ extern susumu::App* susumu::CreateApp();
 int main(int argc, char** argv)
 {
     susumu::Log::Init();
-    SU_CORE_WARN("initialized core logger");
+    SU_CORE_INFO("initialized core logger");
     SU_INFO("initialized app logger");
 
     auto app = susumu::CreateApp();

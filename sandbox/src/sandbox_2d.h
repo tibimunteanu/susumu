@@ -18,8 +18,9 @@ private:
     susumu::OrthographicCameraController m_CameraController;
 
     //TEMP
-    susumu::Ref<susumu::Shader> m_FlatColorShader;
     susumu::Ref<susumu::VertexArray> m_SquareVertexArray;
+    susumu::Ref<susumu::Texture2D> m_SpaceTexture;
+    susumu::Ref<susumu::Texture2D> m_EarthTexture;
 
     glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 

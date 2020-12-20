@@ -11,6 +11,9 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
+    //load textures
+    m_SpaceTexture = susumu::Texture2D::Create("assets/textures/space.png");
+    m_EarthTexture = susumu::Texture2D::Create("assets/textures/earth.png");
 }
 
 void Sandbox2D::OnDetach()
@@ -31,6 +34,8 @@ void Sandbox2D::OnUpdate(susumu::Timestep dt)
     {
         susumu::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
         susumu::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, m_SquareColor);
+        susumu::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 2.0f, 2.0f }, m_SpaceTexture, { 1.0f, 0.0f, 0.0f, 1.0f });
+        susumu::Renderer2D::DrawQuad({ 0.2f, 0.5f }, { 1.0f, 1.0f }, m_EarthTexture);
     }
     susumu::Renderer2D::EndScene();
 }
