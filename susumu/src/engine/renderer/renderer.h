@@ -4,8 +4,8 @@
 #include "camera.h"
 #include "shader.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class Renderer
     {
     public:
@@ -26,5 +26,4 @@ namespace susumu {
 
         static Scope<SceneData> m_SceneData;
     };
-
 }

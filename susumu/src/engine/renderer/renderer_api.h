@@ -4,8 +4,8 @@
 
 #include <glm/glm.hpp>
 
-namespace susumu {
-
+namespace susumu
+{
     class RendererAPI
     {
     public:
@@ -25,5 +25,4 @@ namespace susumu {
     private:
         static API s_API;
     };
-
 }

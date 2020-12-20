@@ -4,8 +4,8 @@
 #include "engine/events/event.h"
 #include "timestep.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API Layer
     {
     public:
@@ -22,5 +22,4 @@ namespace susumu {
     protected:
         std::string m_DebugName;
     };
-
 }

@@ -1,12 +1,11 @@
 #include "supch.h"
 #include "layer_stack.h"
 
-namespace susumu {
-
+namespace susumu
+{
     LayerStack::LayerStack()
     {
     }
-
 
     LayerStack::~LayerStack()
     {

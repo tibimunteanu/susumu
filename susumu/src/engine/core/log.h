@@ -4,8 +4,8 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API Log
     {
     public:
@@ -17,7 +17,6 @@ namespace susumu {
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
         static std::shared_ptr<spdlog::logger> s_AppLogger;
     };
-
 }
 
 //core log macros

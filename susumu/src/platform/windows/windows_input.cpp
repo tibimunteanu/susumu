@@ -4,8 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
-namespace susumu {
-
+namespace susumu
+{
     Scope<Input> Input::s_Instance = CreateScope<WindowsInput>();
 
     bool WindowsInput::IsKeyPressedImpl(int keycode)
@@ -32,14 +32,13 @@ namespace susumu {
 
     float WindowsInput::GetMouseXImpl()
     {
-        auto[x, y] = GetMousePositionImpl();
+        auto [x, y] = GetMousePositionImpl();
         return x;
     }
 
     float WindowsInput::GetMouseYImpl()
     {
-        auto[x, y] = GetMousePositionImpl();
+        auto [x, y] = GetMousePositionImpl();
         return y;
     }
-
 }

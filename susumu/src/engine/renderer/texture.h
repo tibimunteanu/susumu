@@ -4,8 +4,8 @@
 
 #include <string>
 
-namespace susumu {
-
+namespace susumu
+{
     class Texture
     {
     public:
@@ -16,10 +16,9 @@ namespace susumu {
         virtual void Bind(uint32_t slot = 0) const = 0;
     };
 
-    class Texture2D : public Texture 
+    class Texture2D : public Texture
     {
     public:
         static Ref<Texture2D> Create(const std::string& path);
     };
-
 }

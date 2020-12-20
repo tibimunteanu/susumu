@@ -5,8 +5,8 @@
 #include "engine/events/mouse_event.h"
 #include "platform/opengl/opengl_context.h"
 
-namespace susumu {
-
+namespace susumu
+{
     static bool s_GLFWInitialized = false;
 
     static void GLFWErrorCallback(int error, const char* description)
@@ -23,7 +23,6 @@ namespace susumu {
     {
         Init(props);
     }
-
 
     WindowsWindow::~WindowsWindow()
     {
@@ -166,5 +165,4 @@ namespace susumu {
     {
         return m_Data.VSync;
     }
-
 }

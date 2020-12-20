@@ -4,8 +4,8 @@
 
 #include <memory>
 
-namespace susumu {
-
+namespace susumu
+{
     class VertexArray
     {
     public:
@@ -22,5 +22,4 @@ namespace susumu {
     public:
         static Ref<VertexArray> Create();
     };
-
 }

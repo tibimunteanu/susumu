@@ -3,8 +3,8 @@
 
 #include <glad/glad.h>
 
-namespace susumu {
-
+namespace susumu
+{
     void OpenGLRendererAPI::Init()
     {
         glEnable(GL_BLEND);
@@ -16,7 +16,7 @@ namespace susumu {
         glViewport(x, y, width, height);
     }
 
-    void OpenGLRendererAPI::SetClearColor(const glm::vec4 & color)
+    void OpenGLRendererAPI::SetClearColor(const glm::vec4& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
     }
@@ -30,5 +30,4 @@ namespace susumu {
     {
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
-
 }

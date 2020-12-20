@@ -2,8 +2,8 @@
 
 #include "engine/renderer/texture.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class OpenGLTexture2D : public Texture2D
     {
     public:
@@ -20,5 +20,4 @@ namespace susumu {
         uint32_t m_Height;
         uint32_t m_RendererID;
     };
-
 }

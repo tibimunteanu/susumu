@@ -14,6 +14,7 @@
 #include "engine/imgui/imgui_layer.h"
 
 #include "engine/renderer/renderer.h"
+#include "engine/renderer/renderer_2d.h"
 #include "engine/renderer/render_command.h"
 #include "engine/renderer/shader.h"
 #include "engine/renderer/texture.h"

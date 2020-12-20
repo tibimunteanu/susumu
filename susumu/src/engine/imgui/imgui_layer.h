@@ -5,8 +5,8 @@
 #include "engine/events/key_event.h"
 #include "engine/events/mouse_event.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API ImGuiLayer : public Layer
     {
     public:
@@ -22,5 +22,4 @@ namespace susumu {
     private:
         float m_Time = 0.0f;
     };
-
 }

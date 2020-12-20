@@ -3,8 +3,7 @@
 
 #include "platform/opengl/opengl_renderer_api.h"
 
-namespace susumu {
-
+namespace susumu
+{
     Scope<RendererAPI> RenderCommand::s_RendererAPI = CreateScope<OpenGLRendererAPI>();
-
 }

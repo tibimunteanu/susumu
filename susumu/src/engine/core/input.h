@@ -2,8 +2,8 @@
 
 #include "core.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API Input
     {
     protected:
@@ -26,5 +26,4 @@ namespace susumu {
     private:
         static Scope<Input> s_Instance;
     };
-
 }

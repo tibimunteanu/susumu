@@ -1,7 +1,7 @@
 #pragma once
 
-namespace susumu {
-
+namespace susumu
+{
     class Timestep
     {
     public:
@@ -17,5 +17,4 @@ namespace susumu {
     private:
         float m_Time;
     };
-
 }

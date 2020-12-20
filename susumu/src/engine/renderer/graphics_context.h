@@ -1,7 +1,7 @@
 #pragma once
 
-namespace susumu {
-
+namespace susumu
+{
     class GraphicsContext
     {
     public:
@@ -10,5 +10,4 @@ namespace susumu {
         virtual void Init() = 0;
         virtual void SwapBuffers() = 0;
     };
-
 }

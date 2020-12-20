@@ -4,8 +4,8 @@
 #include "renderer.h"
 #include "platform/opengl/opengl_shader.h"
 
-namespace susumu {
-
+namespace susumu
+{
     ////////////////////////////////////////////////////////////////////////////////
     // Shader //////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ namespace susumu {
         return shader;
     }
 
-    Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string & filepath)
+    Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath)
     {
         auto shader = Shader::Create(name, filepath);
         Add(shader);
@@ -79,5 +79,4 @@ namespace susumu {
     {
         return m_Shaders.find(name) != m_Shaders.end();
     }
-
 }

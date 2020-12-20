@@ -7,8 +7,8 @@
 #include "engine/events/app_event.h"
 #include "engine/imgui/imgui_layer.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API App
     {
     public:
@@ -39,5 +39,4 @@ namespace susumu {
 
     //to be defined in client
     App* CreateApp();
-
 }

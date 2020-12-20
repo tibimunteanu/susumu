@@ -4,8 +4,8 @@
 #include "stb_image.h"
 #include<glad/glad.h>
 
-namespace susumu {
-
+namespace susumu
+{
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
         : m_Path(path)
     {
@@ -51,6 +51,5 @@ namespace susumu {
     {
         glBindTextureUnit(slot, m_RendererID);
     }
-
 }
 

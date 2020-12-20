@@ -3,13 +3,13 @@
 
 #include <glad/glad.h>
 
-namespace susumu {
-
+namespace susumu
+{
     ////////////////////////////////////////////////////////////////////////////////
     // VertexBuffer ////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    OpenGLVertexBuffer::OpenGLVertexBuffer(float * vertices, uint32_t size)
+    OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
     {
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -36,7 +36,7 @@ namespace susumu {
     // IndexBuffer /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t * indices, uint32_t count)
+    OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
         : m_Count(count)
     {
         glCreateBuffers(1, &m_RendererID);
@@ -58,5 +58,4 @@ namespace susumu {
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
-
 }

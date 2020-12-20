@@ -3,8 +3,8 @@
 
 #include <glad/glad.h>
 
-namespace susumu {
-
+namespace susumu
+{
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
     {
         switch (type)
@@ -56,11 +56,11 @@ namespace susumu {
         for (const auto& element : layout)
         {
             glEnableVertexAttribArray(m_VertexBufferIndex);
-            glVertexAttribPointer(m_VertexBufferIndex, 
-                element.GetComponentCount(), 
-                ShaderDataTypeToOpenGLBaseType(element.Type), 
-                element.Normalized ? GL_TRUE : GL_FALSE, 
-                layout.GetStride(), 
+            glVertexAttribPointer(m_VertexBufferIndex,
+                element.GetComponentCount(),
+                ShaderDataTypeToOpenGLBaseType(element.Type),
+                element.Normalized ? GL_TRUE : GL_FALSE,
+                layout.GetStride(),
                 (const void*)(intptr_t)element.Offset);
             m_VertexBufferIndex++;
         }
@@ -75,5 +75,4 @@ namespace susumu {
 
         m_IndexBuffer = indexBuffer;
     }
-
 }

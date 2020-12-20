@@ -5,8 +5,8 @@
 #include "core.h"
 #include "engine/events/event.h"
 
-namespace susumu {
-
+namespace susumu
+{
     struct WindowProps
     {
         std::string Title;
@@ -14,8 +14,8 @@ namespace susumu {
         unsigned int Height;
 
         WindowProps(const std::string& title = "Susumu",
-                    unsigned int width = 960,
-                    unsigned int height = 540)
+            unsigned int width = 960,
+            unsigned int height = 540)
             : Title(title), Width(width), Height(height)
         {
         }
@@ -41,5 +41,4 @@ namespace susumu {
 
         static Window* Create(const WindowProps& props = WindowProps());
     };
-
 }

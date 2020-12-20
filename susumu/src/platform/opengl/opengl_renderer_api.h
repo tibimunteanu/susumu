@@ -2,8 +2,8 @@
 
 #include "engine/renderer/renderer_api.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class OpenGLRendererAPI : public RendererAPI
     {
     public:
@@ -14,5 +14,4 @@ namespace susumu {
 
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) override;
     };
-
 }

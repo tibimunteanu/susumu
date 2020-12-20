@@ -7,9 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//TEMP
-#include "platform/opengl/opengl_shader.h"
-
 class ExampleLayer : public susumu::Layer
 {
 public:
@@ -65,10 +62,10 @@ public:
             //set uniforms
             auto flatColorShader = m_ShaderLibrary.Get("flat_color");
             auto textureShader = m_ShaderLibrary.Get("texture");
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(flatColorShader)->Bind();
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(flatColorShader)->UploadUniformFloat3("u_Color", m_Color);
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(textureShader)->Bind();
-            std::dynamic_pointer_cast<susumu::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
+            flatColorShader->Bind();
+            flatColorShader->UploadUniformFloat3("u_Color", m_Color);
+            textureShader->Bind();
+            textureShader->UploadUniformInt("u_Texture", 0);
 
             //submit grid of squares
             for (int y = -10; y < 10; y++)

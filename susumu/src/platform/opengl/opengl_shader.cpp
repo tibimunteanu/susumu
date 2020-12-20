@@ -5,8 +5,8 @@
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace susumu {
-
+namespace susumu
+{
     static GLenum ShaderTypeFromString(const std::string& type)
     {
         if (type == "vertex") return GL_VERTEX_SHADER;
@@ -141,8 +141,8 @@ namespace susumu {
             size_t nextLinePos = source.find_first_of("\r\n", eol); // start of shader code after shader type declaration line
             SU_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
             pos = source.find(typeToken, nextLinePos); //start of next shader type declaration line
-            shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) 
-                ? source.substr(nextLinePos) 
+            shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos)
+                ? source.substr(nextLinePos)
                 : source.substr(nextLinePos, pos - nextLinePos);
         }
         return shaderSources;
@@ -215,5 +215,4 @@ namespace susumu {
 
         m_RendererID = program;
     }
-
 }

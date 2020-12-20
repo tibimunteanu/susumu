@@ -2,8 +2,8 @@
 
 #include "engine/renderer/vertex_array.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class OpenGLVertexArray : public VertexArray
     {
     public:
@@ -24,5 +24,4 @@ namespace susumu {
         std::vector<Ref<VertexBuffer>> m_VertexBuffers;
         Ref<IndexBuffer> m_IndexBuffer;
     };
-
 }

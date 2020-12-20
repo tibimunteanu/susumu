@@ -5,8 +5,8 @@
 
 #include <vector>
 
-namespace susumu {
-
+namespace susumu
+{
     class SU_API LayerStack
     {
     public:
@@ -24,5 +24,4 @@ namespace susumu {
         std::vector<Layer*> m_Layers;
         unsigned int m_LayerInsertIndex = 0;
     };
-
 }

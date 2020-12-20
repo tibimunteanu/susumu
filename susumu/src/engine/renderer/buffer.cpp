@@ -3,8 +3,8 @@
 #include "renderer.h"
 #include "platform/opengl/opengl_buffer.h"
 
-namespace susumu {
-
+namespace susumu
+{
     Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
     {
         switch (Renderer::GetAPI())
@@ -26,5 +26,4 @@ namespace susumu {
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
     }
-
 }

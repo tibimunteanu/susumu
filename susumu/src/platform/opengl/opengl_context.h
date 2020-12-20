@@ -4,8 +4,8 @@
 
 struct GLFWwindow;
 
-namespace susumu {
-
+namespace susumu
+{
     class OpenGLContext : public GraphicsContext
     {
     public:
@@ -16,5 +16,4 @@ namespace susumu {
     private:
         GLFWwindow* m_WindowHandle;
     };
-
 }

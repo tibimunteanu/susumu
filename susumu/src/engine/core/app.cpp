@@ -8,8 +8,8 @@
 //TEMP
 #include <GLFW/glfw3.h>
 
-namespace susumu {
-
+namespace susumu
+{
     App* App::s_Instance = nullptr;
 
     App::App()
@@ -88,5 +88,4 @@ namespace susumu {
 
         return false;
     }
-
 }

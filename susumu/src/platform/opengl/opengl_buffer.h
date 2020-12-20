@@ -3,8 +3,8 @@
 #include "supch.h"
 #include "engine/renderer/buffer.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class OpenGLVertexBuffer : public VertexBuffer
     {
     public:
@@ -35,5 +35,4 @@ namespace susumu {
         uint32_t m_RendererID;
         uint32_t m_Count;
     };
-
 }

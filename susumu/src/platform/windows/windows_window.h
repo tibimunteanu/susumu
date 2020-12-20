@@ -5,8 +5,8 @@
 
 #include <GLFW/glfw3.h>
 
-namespace susumu {
-
+namespace susumu
+{
     class WindowsWindow : public Window
     {
     public:
@@ -41,5 +41,4 @@ namespace susumu {
 
         WindowData m_Data;
     };
-
 }

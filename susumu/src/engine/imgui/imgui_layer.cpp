@@ -11,8 +11,8 @@
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
 
-namespace susumu {
-
+namespace susumu
+{
     ImGuiLayer::ImGuiLayer()
         : Layer("InGuiLayer")
     {
@@ -88,5 +88,4 @@ namespace susumu {
         //static bool show = true;
         //ImGui::ShowDemoWindow(&show);
     }
-
 }

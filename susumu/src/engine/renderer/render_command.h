@@ -2,8 +2,8 @@
 
 #include "renderer_api.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class RenderCommand
     {
     public:
@@ -34,5 +34,4 @@ namespace susumu {
     private:
         static Scope<RendererAPI> s_RendererAPI;
     };
-
 }

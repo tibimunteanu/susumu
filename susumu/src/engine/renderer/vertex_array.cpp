@@ -3,8 +3,8 @@
 #include "renderer.h"
 #include "platform/opengl/opengl_vertex_array.h"
 
-namespace susumu {
-
+namespace susumu
+{
     Ref<VertexArray> VertexArray::Create()
     {
         switch (Renderer::GetAPI())
@@ -15,5 +15,4 @@ namespace susumu {
             default: SU_CORE_ASSERT(false, "Unknown RendererAPI!"); return nullptr;
         }
     }
-
 }

@@ -5,8 +5,8 @@
 #include "engine/events/app_event.h"
 #include "engine/events/mouse_event.h"
 
-namespace susumu {
-
+namespace susumu
+{
     class OrthographicCameraController
     {
     public:
@@ -33,5 +33,4 @@ namespace susumu {
         float m_CameraTranslationSpeed = 4.0f;
         float m_CameraRotationSpeed = 90.0f;
     };
-
 }
