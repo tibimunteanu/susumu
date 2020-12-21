@@ -26,11 +26,14 @@ void Sandbox2D::OnUpdate(susumu::Timestep dt)
 {
     SU_PROFILE_FUNCTION();
 
+    SU_TRACE("Frame time: {0}, FPS {1}", dt, 1.0f / dt);
+
     ////////////////////////// Update ///////////////////////////////////////////////////////
     m_CameraController.OnUpdate(dt);
 
     ////////////////////////// Render ///////////////////////////////////////////////////////
     //render a scene
+    susumu::Renderer2D::ResetStats();
     susumu::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
     susumu::RenderCommand::Clear();
 
@@ -38,10 +41,26 @@ void Sandbox2D::OnUpdate(susumu::Timestep dt)
         SU_PROFILE_SCOPE("Renderer Draw");
         susumu::Renderer2D::BeginScene(m_CameraController.GetCamera());
         {
-            susumu::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-            susumu::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, m_SquareColor);
-            susumu::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 2.0f, 2.0f }, m_SpaceTexture, { 1.0f, 0.0f, 0.0f, 1.0f });
-            susumu::Renderer2D::DrawQuad({ 0.2f, 0.5f }, { 1.0f, 1.0f }, m_EarthTexture);
+            static float rot = 0.0f;
+            rot += dt * 2.0f;
+
+            susumu::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, 0.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
+            susumu::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, 0.0f, m_SquareColor);
+            susumu::Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 2.0f, 2.0f }, 0.0f, m_SpaceTexture, { 1.0f, 0.5f, 0.5f, 1.0f });
+            susumu::Renderer2D::DrawQuad({ 0.2f, 0.5f }, { 1.0f, 1.0f }, rot, m_EarthTexture);
+        }
+        susumu::Renderer2D::EndScene();
+
+        susumu::Renderer2D::BeginScene(m_CameraController.GetCamera());
+        {
+            for (float y = -5.0f; y < 5.0f; y += 0.5f)
+            {
+                for (float x = -5.0f; x < 5.0f; x += 0.5f)
+                {
+                    glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 1.0f };
+                    susumu::Renderer2D::DrawQuad({ x, y, -0.1f }, { 0.5f, 0.5f }, 0.0f, nullptr, color);
+                }
+            }
         }
         susumu::Renderer2D::EndScene();
     }
@@ -57,7 +76,16 @@ void Sandbox2D::OnImGuiRender()
     SU_PROFILE_FUNCTION();
 
     ImGui::Begin("Settings");
+
+    auto stats = susumu::Renderer2D::GetStats();
+    ImGui::Text("Renderer2D Stats:");
+    ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+    ImGui::Text("Quads: %d", stats.QuadCount);
+    ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+    ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
     ImGui::ColorEdit4("Square color", glm::value_ptr(m_SquareColor));
+
     ImGui::End();
 }
 
