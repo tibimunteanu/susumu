@@ -1,28 +1,29 @@
 #pragma once
 
-#include "event.h"
+#include "engine/events/event.h"
+#include "engine/core/input.h"
 
 namespace susumu
 {
-    class SU_API KeyEvent : public Event
+    class KeyEvent : public Event
     {
     public:
-        inline int GetKeyCode() const { return m_KeyCode; }
+        inline KeyCode GetKeyCode() const { return m_KeyCode; }
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
     protected:
-        KeyEvent(int keyCode)
+        KeyEvent(KeyCode keyCode)
             : m_KeyCode(keyCode)
         {
         }
 
-        int m_KeyCode;
+        KeyCode m_KeyCode;
     };
 
-    class SU_API KeyTypedEvent : public KeyEvent
+    class KeyTypedEvent : public KeyEvent
     {
     public:
-        KeyTypedEvent(int keyCode)
+        KeyTypedEvent(KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }
@@ -37,10 +38,10 @@ namespace susumu
         EVENT_CLASS_TYPE(KeyTyped)
     };
 
-    class SU_API KeyPressedEvent : public KeyEvent
+    class KeyPressedEvent : public KeyEvent
     {
     public:
-        KeyPressedEvent(int keyCode, int repeatCount)
+        KeyPressedEvent(KeyCode keyCode, int repeatCount)
             : KeyEvent(keyCode), m_RepeatCount(repeatCount)
         {
         }
@@ -59,10 +60,10 @@ namespace susumu
         int m_RepeatCount;
     };
 
-    class SU_API KeyReleasedEvent : public KeyEvent
+    class KeyReleasedEvent : public KeyEvent
     {
     public:
-        KeyReleasedEvent(int keyCode)
+        KeyReleasedEvent(KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }

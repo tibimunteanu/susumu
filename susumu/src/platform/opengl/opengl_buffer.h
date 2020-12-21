@@ -1,6 +1,5 @@
 #pragma once
 
-#include "supch.h"
 #include "engine/renderer/buffer.h"
 
 namespace susumu

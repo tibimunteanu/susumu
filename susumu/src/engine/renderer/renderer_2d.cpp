@@ -1,9 +1,8 @@
 #include "supch.h"
-#include "renderer_2d.h"
-
-#include "vertex_array.h"
-#include "shader.h"
-#include "render_command.h"
+#include "engine/renderer/renderer_2d.h"
+#include "engine/renderer/vertex_array.h"
+#include "engine/renderer/shader.h"
+#include "engine/renderer/render_command.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -21,22 +20,24 @@ namespace susumu
 
     void Renderer2D::Init()
     {
+        SU_PROFILE_FUNCTION();
+
         s_Data = new Renderer2DStorage();
 
-        //create default 1x1 white texture
+        //create the default 1x1 white texture
         uint32_t whiteTextureData = 0xffffffff;
         s_Data->WhiteTexture = Texture2D::Create(1, 1);
         s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-        //load shaders
+        //load the texture shader
         s_Data->TextureShader = Shader::Create("assets/shaders/texture.glsl");
         s_Data->TextureShader->Bind();
         s_Data->TextureShader->SetInt("u_Texture", 0);
 
-        //create vertex array
+        //create the quad vertex array
         s_Data->QuadVertexArray = VertexArray::Create();
 
-        //create and add vertex buffer
+        //create and add the quad vertex buffer
         float vertices[5 * 4] =
         {
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -51,7 +52,7 @@ namespace susumu
         });
         s_Data->QuadVertexArray->AddVertexBuffer(vertexBuffer);
 
-        //create and add index buffer
+        //create and add the quad index buffer
         uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
         auto indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
         s_Data->QuadVertexArray->SetIndexBuffer(indexBuffer);
@@ -59,17 +60,22 @@ namespace susumu
 
     void Renderer2D::Shutdown()
     {
+        SU_PROFILE_FUNCTION();
+
         delete s_Data;
     }
 
     void Renderer2D::BeginScene(const OrthographicCamera& camera)
     {
+        SU_PROFILE_FUNCTION();
+
         s_Data->TextureShader->Bind();
         s_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
     }
 
     void Renderer2D::EndScene()
     {
+        SU_PROFILE_FUNCTION();
     }
 
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
@@ -89,6 +95,8 @@ namespace susumu
 
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture2D>& texture, const glm::vec4& color)
     {
+        SU_PROFILE_FUNCTION();
+
         if (texture)
         {
             texture->Bind();

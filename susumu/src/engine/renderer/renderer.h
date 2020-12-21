@@ -1,8 +1,8 @@
 #pragma once
 
-#include "render_command.h"
-#include "camera.h"
-#include "shader.h"
+#include "engine/renderer/render_command.h"
+#include "engine/renderer/camera.h"
+#include "engine/renderer/shader.h"
 
 namespace susumu
 {
@@ -10,6 +10,7 @@ namespace susumu
     {
     public:
         static void Init();
+        static void Shutdown();
         static void OnWindowResize(uint32_t width, uint32_t height);
 
         static void BeginScene(OrthographicCamera& camera);

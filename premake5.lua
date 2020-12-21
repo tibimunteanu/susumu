@@ -1,5 +1,5 @@
 workspace "susumu"
-    architecture "x64"
+    architecture "x86_64"
     startproject "sandbox"
 
     configurations

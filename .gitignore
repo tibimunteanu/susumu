@@ -3,6 +3,10 @@
 !vendor/bin/premake/
 bin-int/
 
+# Susumu files
+*.log
+**Profile*.json
+
 # Visual Studio files and folders
 .vs/
 **.sln

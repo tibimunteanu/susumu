@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/renderer/texture.h"
+
 #include <glad/glad.h>
 
 namespace susumu

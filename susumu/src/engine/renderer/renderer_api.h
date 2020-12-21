@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vertex_array.h"
+#include "engine/renderer/vertex_array.h"
 
 #include <glm/glm.hpp>
 
@@ -22,6 +22,7 @@ namespace susumu
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray) = 0;
 
         inline static API GetAPI() { return s_API; }
+        static Scope<RendererAPI> Create();
     private:
         static API s_API;
     };

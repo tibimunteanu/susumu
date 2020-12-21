@@ -1,5 +1,5 @@
 #include "supch.h"
-#include "opengl_context.h"
+#include "platform/opengl/opengl_context.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -14,6 +14,8 @@ namespace susumu
 
     void OpenGLContext::Init()
     {
+        SU_PROFILE_FUNCTION();
+
         glfwMakeContextCurrent(m_WindowHandle);
         int gladStatus = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         SU_CORE_ASSERT(gladStatus, "Could not initialize Glad!");
@@ -35,6 +37,8 @@ namespace susumu
 
     void OpenGLContext::SwapBuffers()
     {
+        SU_PROFILE_FUNCTION();
+
         glfwSwapBuffers(m_WindowHandle);
     }
 }

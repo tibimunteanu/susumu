@@ -1,9 +1,10 @@
 #include "supch.h"
-#include "windows_window.h"
+#include "platform/windows/windows_window.h"
+#include "engine/core/input.h"
 #include "engine/events/app_event.h"
 #include "engine/events/key_event.h"
 #include "engine/events/mouse_event.h"
-#include "platform/opengl/opengl_context.h"
+#include "engine/renderer/renderer.h"
 
 namespace susumu
 {
@@ -14,23 +15,24 @@ namespace susumu
         SU_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    Window* Window::Create(const WindowProps& props)
-    {
-        return new WindowsWindow(props);
-    }
-
     WindowsWindow::WindowsWindow(const WindowProps& props)
     {
+        SU_PROFILE_FUNCTION();
+
         Init(props);
     }
 
     WindowsWindow::~WindowsWindow()
     {
+        SU_PROFILE_FUNCTION();
+
         Shutdown();
     }
 
     void WindowsWindow::Init(const WindowProps& props)
     {
+        SU_PROFILE_FUNCTION();
+
         m_Data.Title = props.Title;
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
@@ -39,16 +41,25 @@ namespace susumu
 
         if (s_GLFWWindowCount == 0)
         {
-            SU_CORE_INFO("Initializing GLFW");
-            int glfwSuccess = glfwInit();
-            SU_CORE_ASSERT(glfwSuccess, "Could not initialize GLFW!");
-            glfwSetErrorCallback(GLFWErrorCallback);
+            {
+                SU_PROFILE_SCOPE("glfwInit");
+                int glfwSuccess = glfwInit();
+                SU_CORE_ASSERT(glfwSuccess, "Could not initialize GLFW!");
+                glfwSetErrorCallback(GLFWErrorCallback);
+            }
         }
 
-        m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-        s_GLFWWindowCount++;
+        {
+            SU_PROFILE_SCOPE("glfwCreateWindow");
+        #if defined(SU_DEBUG)
+            if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        #endif
+            m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+            s_GLFWWindowCount++;
+        }
 
-        m_Context = CreateScope<OpenGLContext>(m_Window);
+        m_Context = GraphicsContext::Create(m_Window);
         m_Context->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -80,19 +91,19 @@ namespace susumu
             {
                 case GLFW_PRESS:
                 {
-                    KeyPressedEvent event(key, 0);
+                    KeyPressedEvent event(static_cast<KeyCode>(key), 0);
                     data.EventCallback(event);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    KeyReleasedEvent event(key);
+                    KeyReleasedEvent event(static_cast<KeyCode>(key));
                     data.EventCallback(event);
                     break;
                 }
                 case GLFW_REPEAT:
                 {
-                    KeyPressedEvent event(key, 1);
+                    KeyPressedEvent event(static_cast<KeyCode>(key), 1);
                     data.EventCallback(event);
                     break;
                 }
@@ -102,7 +113,7 @@ namespace susumu
         glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
         {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-            KeyTypedEvent event(keycode);
+            KeyTypedEvent event(static_cast<KeyCode>(keycode));
             data.EventCallback(event);
         });
 
@@ -114,13 +125,13 @@ namespace susumu
             {
                 case GLFW_PRESS:
                 {
-                    MouseButtonPressedEvent event(button);
+                    MouseButtonPressedEvent event(static_cast<MouseCode>(button));
                     data.EventCallback(event);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    MouseButtonReleasedEvent event(button);
+                    MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
                     data.EventCallback(event);
                     break;
                 }
@@ -146,24 +157,29 @@ namespace susumu
 
     void WindowsWindow::Shutdown()
     {
+        SU_PROFILE_FUNCTION();
+
         glfwDestroyWindow(m_Window);
 
         s_GLFWWindowCount--;
         if (s_GLFWWindowCount == 0)
         {
-            SU_CORE_INFO("Terminating GLFW");
             glfwTerminate();
         }
     }
 
     void WindowsWindow::OnUpdate()
     {
+        SU_PROFILE_FUNCTION();
+
         glfwPollEvents();
         m_Context->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)
     {
+        SU_PROFILE_FUNCTION();
+
         glfwSwapInterval(enabled ? 1 : 0);
         m_Data.VSync = enabled;
     }

@@ -34,7 +34,7 @@ namespace susumu
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
-    class SU_API Event
+    class Event
     {
         friend class EventDispatcher;
     public:
@@ -45,10 +45,7 @@ namespace susumu
         virtual int GetCategoryFlags() const = 0;
         virtual std::string ToString() const { return GetName(); }
 
-        inline bool IsInCategory(EventCategory category)
-        {
-            return GetCategoryFlags() & category;
-        }
+        inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
     };
 
     class EventDispatcher

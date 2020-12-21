@@ -1,6 +1,6 @@
 #include "supch.h"
-#include "buffer.h"
-#include "renderer.h"
+#include "engine/renderer/buffer.h"
+#include "engine/renderer/renderer.h"
 #include "platform/opengl/opengl_buffer.h"
 
 namespace susumu

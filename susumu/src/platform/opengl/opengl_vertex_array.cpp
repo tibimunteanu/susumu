@@ -1,5 +1,5 @@
 #include "supch.h"
-#include "opengl_vertex_array.h"
+#include "platform/opengl/opengl_vertex_array.h"
 
 #include <glad/glad.h>
 
@@ -27,26 +27,36 @@ namespace susumu
 
     OpenGLVertexArray::OpenGLVertexArray()
     {
+        SU_PROFILE_FUNCTION();
+
         glCreateVertexArrays(1, &m_RendererID);
     }
 
     OpenGLVertexArray::~OpenGLVertexArray()
     {
+        SU_PROFILE_FUNCTION();
+
         glDeleteVertexArrays(1, &m_RendererID);
     }
 
     void OpenGLVertexArray::Bind() const
     {
+        SU_PROFILE_FUNCTION();
+
         glBindVertexArray(m_RendererID);
     }
 
     void OpenGLVertexArray::Unbind() const
     {
+        SU_PROFILE_FUNCTION();
+
         glBindVertexArray(0);
     }
 
     void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
     {
+        SU_PROFILE_FUNCTION();
+
         SU_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "The vertexBuffer has no layout!");
 
         glBindVertexArray(m_RendererID);
@@ -70,6 +80,8 @@ namespace susumu
 
     void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
     {
+        SU_PROFILE_FUNCTION();
+
         glBindVertexArray(m_RendererID);
         indexBuffer->Bind();
 

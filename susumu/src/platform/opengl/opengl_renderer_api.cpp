@@ -1,12 +1,42 @@
 #include "supch.h"
-#include "opengl_renderer_api.h"
+#include "platform/opengl/opengl_renderer_api.h"
 
 #include <glad/glad.h>
 
 namespace susumu
 {
+    void OpenGLMessageCallback(
+        unsigned source,
+        unsigned type,
+        unsigned id,
+        unsigned severity,
+        int length,
+        const char* message,
+        const void* userParam)
+    {
+        switch (severity)
+        {
+            case GL_DEBUG_SEVERITY_HIGH:         SU_CORE_CRITICAL(message); return;
+            case GL_DEBUG_SEVERITY_MEDIUM:       SU_CORE_ERROR(message); return;
+            case GL_DEBUG_SEVERITY_LOW:          SU_CORE_WARN(message); return;
+            case GL_DEBUG_SEVERITY_NOTIFICATION: SU_CORE_TRACE(message); return;
+        }
+
+        SU_CORE_ASSERT(false, "Unknown severity level!");
+    }
+
     void OpenGLRendererAPI::Init()
     {
+        SU_PROFILE_FUNCTION();
+
+    #ifdef SU_DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+    #endif
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -30,6 +60,8 @@ namespace susumu
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray)
     {
+        SU_PROFILE_FUNCTION();
+
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);
     }

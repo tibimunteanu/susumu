@@ -1,7 +1,6 @@
 #include "supch.h"
-#include "shader.h"
-
-#include "renderer.h"
+#include "engine/renderer/shader.h"
+#include "engine/renderer/renderer.h"
 #include "platform/opengl/opengl_shader.h"
 
 namespace susumu

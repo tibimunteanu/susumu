@@ -1,6 +1,6 @@
 #include "supch.h"
-#include "texture.h"
-#include "renderer.h"
+#include "engine/renderer/texture.h"
+#include "engine/renderer/renderer.h"
 #include "platform/opengl/opengl_texture.h"
 
 namespace susumu

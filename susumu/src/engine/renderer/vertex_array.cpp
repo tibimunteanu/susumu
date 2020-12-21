@@ -1,6 +1,6 @@
 #include "supch.h"
-#include "vertex_array.h"
-#include "renderer.h"
+#include "engine/renderer/vertex_array.h"
+#include "engine/renderer/renderer.h"
 #include "platform/opengl/opengl_vertex_array.h"
 
 namespace susumu

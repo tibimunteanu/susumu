@@ -1,12 +1,12 @@
 #pragma once
 
-#include "core.h"
+#include "engine/core/core.h"
+#include "engine/core/timestep.h"
 #include "engine/events/event.h"
-#include "timestep.h"
 
 namespace susumu
 {
-    class SU_API Layer
+    class Layer
     {
     public:
         Layer(const std::string& debugName = "Layer");

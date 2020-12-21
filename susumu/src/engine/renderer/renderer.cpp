@@ -1,6 +1,6 @@
 #include "supch.h"
-#include "renderer.h"
-#include "renderer_2d.h"
+#include "engine/renderer/renderer.h"
+#include "engine/renderer/renderer_2d.h"
 
 namespace susumu
 {
@@ -8,8 +8,15 @@ namespace susumu
 
     void Renderer::Init()
     {
+        SU_PROFILE_FUNCTION();
+
         RenderCommand::Init();
         Renderer2D::Init();
+    }
+
+    void Renderer::Shutdown()
+    {
+        Renderer2D::Shutdown();
     }
 
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)

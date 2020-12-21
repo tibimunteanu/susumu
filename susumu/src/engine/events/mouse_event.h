@@ -1,10 +1,11 @@
 #pragma once
 
-#include "event.h"
+#include "engine/events/event.h"
+#include "engine/core/input.h"
 
 namespace susumu
 {
-    class SU_API MouseMovedEvent : public Event
+    class MouseMovedEvent : public Event
     {
     public:
         MouseMovedEvent(float x, float y)
@@ -22,13 +23,13 @@ namespace susumu
             return ss.str();
         }
 
-        EVENT_CLASS_TYPE(MouseMoved);
+        EVENT_CLASS_TYPE(MouseMoved)
         EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
     private:
         float m_MouseX, m_MouseY;
     };
 
-    class SU_API MouseScrolledEvent : public Event
+    class MouseScrolledEvent : public Event
     {
     public:
         MouseScrolledEvent(float xOffset, float yOffset)
@@ -46,30 +47,30 @@ namespace susumu
             return ss.str();
         }
 
-        EVENT_CLASS_TYPE(MouseScrolled);
+        EVENT_CLASS_TYPE(MouseScrolled)
         EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
     private:
         float m_XOffset, m_YOffset;
     };
 
-    class SU_API MouseButtonEvent : public Event
+    class MouseButtonEvent : public Event
     {
     public:
-        inline int GetMouseButton() const { return m_Button; }
+        inline MouseCode GetMouseButton() const { return m_Button; }
 
         EVENT_CLASS_CATEGORY(EventCategoryMouseButton | EventCategoryInput)
     protected:
-        MouseButtonEvent(int button)
+        MouseButtonEvent(MouseCode button)
             : m_Button(button)
         {
         }
-        int m_Button;
+        MouseCode m_Button;
     };
 
-    class SU_API MouseButtonPressedEvent : public MouseButtonEvent
+    class MouseButtonPressedEvent : public MouseButtonEvent
     {
     public:
-        MouseButtonPressedEvent(int button)
+        MouseButtonPressedEvent(MouseCode button)
             : MouseButtonEvent(button)
         {
         }
@@ -81,13 +82,13 @@ namespace susumu
             return ss.str();
         }
 
-        EVENT_CLASS_TYPE(MouseButtonPressed);
+        EVENT_CLASS_TYPE(MouseButtonPressed)
     };
 
-    class SU_API MouseButtonReleasedEvent : public MouseButtonEvent
+    class MouseButtonReleasedEvent : public MouseButtonEvent
     {
     public:
-        MouseButtonReleasedEvent(int button)
+        MouseButtonReleasedEvent(MouseCode button)
             : MouseButtonEvent(button)
         {
         }
@@ -99,6 +100,6 @@ namespace susumu
             return ss.str();
         }
 
-        EVENT_CLASS_TYPE(MouseButtonReleased);
+        EVENT_CLASS_TYPE(MouseButtonReleased)
     };
 }

@@ -1,12 +1,8 @@
 #include "supch.h"
-#include "layer_stack.h"
+#include "engine/core/layer_stack.h"
 
 namespace susumu
 {
-    LayerStack::LayerStack()
-    {
-    }
-
     LayerStack::~LayerStack()
     {
         for (Layer* layer : m_Layers)

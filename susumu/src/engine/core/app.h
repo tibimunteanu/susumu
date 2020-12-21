@@ -1,28 +1,33 @@
 #pragma once
 
-#include "core.h"
-#include "window.h"
-#include "layer_stack.h"
+#include "engine/core/core.h"
+#include "engine/core/window.h"
+#include "engine/core/layer_stack.h"
 #include "engine/events/event.h"
 #include "engine/events/app_event.h"
 #include "engine/imgui/imgui_layer.h"
 
+int main(int argc, char** argv);
+
 namespace susumu
 {
-    class SU_API App
+    class App
     {
     public:
         App();
-        virtual ~App() = default;
+        virtual ~App();
 
-        void Run();
         void OnEvent(Event& e);
-        void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
-        void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
+
+        inline void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
+        inline void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
+        inline void PushOverlay(Layer* overlay) { m_LayerStack.PushLayer(overlay); }
+        inline void PopOverlay(Layer* overlay) { m_LayerStack.PopLayer(overlay); }
 
         inline Window& GetWindow() { return *m_Window; }
         inline static App& Get() { return *s_Instance; }
     private:
+        void Run();
         bool OnWindowClosed(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
 
@@ -35,6 +40,7 @@ namespace susumu
         float m_LastFrameTime = 0.0f;
     private:
         static App* s_Instance;
+        friend int ::main(int argc, char** argv);
     };
 
     //to be defined in client

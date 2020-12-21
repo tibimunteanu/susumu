@@ -1,7 +1,7 @@
 #pragma once
 
-#include "camera.h"
-#include "texture.h"
+#include "engine/renderer/camera.h"
+#include "engine/renderer/texture.h"
 
 namespace susumu
 {

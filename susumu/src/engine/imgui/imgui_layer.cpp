@@ -1,15 +1,14 @@
 #include "supch.h"
-#include "imgui_layer.h"
-#include "imgui.h"
-
-#include "examples/imgui_impl_glfw.h"
-#include "examples/imgui_impl_opengl3.h"
-
+#include "engine/imgui/imgui_layer.h"
 #include "engine/core/app.h"
 
+#include <imgui.h>
+#include <examples/imgui_impl_glfw.h>
+#include <examples/imgui_impl_opengl3.h>
+
 //TEMP:
-#include "GLFW/glfw3.h"
-#include "glad/glad.h"
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace susumu
 {
@@ -20,6 +19,8 @@ namespace susumu
 
     void ImGuiLayer::OnAttach()
     {
+        SU_PROFILE_FUNCTION();
+
         //Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -52,6 +53,8 @@ namespace susumu
 
     void ImGuiLayer::OnDetach()
     {
+        SU_PROFILE_FUNCTION();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -59,6 +62,8 @@ namespace susumu
 
     void ImGuiLayer::Begin()
     {
+        SU_PROFILE_FUNCTION();
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -66,6 +71,8 @@ namespace susumu
 
     void ImGuiLayer::End()
     {
+        SU_PROFILE_FUNCTION();
+
         ImGuiIO& io = ImGui::GetIO();
         App& app = App::Get();
         io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());

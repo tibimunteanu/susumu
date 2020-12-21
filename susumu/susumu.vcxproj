@@ -151,9 +151,11 @@
     <ClInclude Include="src\engine\core\layer.h" />
     <ClInclude Include="src\engine\core\layer_stack.h" />
     <ClInclude Include="src\engine\core\log.h" />
+    <ClInclude Include="src\engine\core\mousecodes.h" />
     <ClInclude Include="src\engine\core\startup.h" />
     <ClInclude Include="src\engine\core\timestep.h" />
     <ClInclude Include="src\engine\core\window.h" />
+    <ClInclude Include="src\engine\debug\instrumentor.h" />
     <ClInclude Include="src\engine\events\app_event.h" />
     <ClInclude Include="src\engine\events\event.h" />
     <ClInclude Include="src\engine\events\key_event.h" />
@@ -597,13 +599,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp" />
+    <ClCompile Include="src\engine\core\input.cpp" />
     <ClCompile Include="src\engine\core\layer.cpp" />
     <ClCompile Include="src\engine\core\layer_stack.cpp" />
     <ClCompile Include="src\engine\core\log.cpp" />
+    <ClCompile Include="src\engine\core\window.cpp" />
     <ClCompile Include="src\engine\imgui\imgui_build.cpp" />
     <ClCompile Include="src\engine\imgui\imgui_layer.cpp" />
     <ClCompile Include="src\engine\renderer\buffer.cpp" />
     <ClCompile Include="src\engine\renderer\camera.cpp" />
+    <ClCompile Include="src\engine\renderer\graphics_context.cpp" />
     <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp" />
     <ClCompile Include="src\engine\renderer\render_command.cpp" />
     <ClCompile Include="src\engine\renderer\renderer.cpp" />
