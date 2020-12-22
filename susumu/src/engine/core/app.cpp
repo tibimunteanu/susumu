@@ -58,7 +58,7 @@ namespace susumu
             SU_PROFILE_SCOPE("RunLoop");
 
             float time = (float)glfwGetTime(); //TODO: Platform::GetTime
-            Timestep dt = time - m_LastFrameTime;
+            m_LastTimeStep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
             if (!m_Minimized)
@@ -67,7 +67,7 @@ namespace susumu
                     SU_PROFILE_SCOPE("LayerStack OnUpdate");
                     for (Layer* layer : m_LayerStack)
                     {
-                        layer->OnUpdate(dt);
+                        layer->OnUpdate(m_LastTimeStep);
                     }
                 }
             }

@@ -15,6 +15,9 @@ void Sandbox2D::OnAttach()
     //load some textures
     m_SpaceTexture = susumu::Texture2D::Create("assets/textures/space.png");
     m_EarthTexture = susumu::Texture2D::Create("assets/textures/earth.png");
+
+    //set vsync
+    susumu::App::Get().GetWindow().SetVSync(false);
 }
 
 void Sandbox2D::OnDetach()
@@ -25,8 +28,6 @@ void Sandbox2D::OnDetach()
 void Sandbox2D::OnUpdate(susumu::Timestep dt)
 {
     SU_PROFILE_FUNCTION();
-
-    SU_TRACE("Frame time: {0}, FPS {1}", dt, 1.0f / dt);
 
     ////////////////////////// Update ///////////////////////////////////////////////////////
     m_CameraController.OnUpdate(dt);
@@ -42,7 +43,7 @@ void Sandbox2D::OnUpdate(susumu::Timestep dt)
         susumu::Renderer2D::BeginScene(m_CameraController.GetCamera());
         {
             static float rot = 0.0f;
-            rot += dt * 2.0f;
+            rot += dt * 0.05f;
 
             susumu::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, 0.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
             susumu::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, 0.0f, m_SquareColor);
@@ -75,17 +76,21 @@ void Sandbox2D::OnImGuiRender()
 {
     SU_PROFILE_FUNCTION();
 
-    ImGui::Begin("Settings");
-
+    ImGui::Begin("Renderer2D Stats");
     auto stats = susumu::Renderer2D::GetStats();
-    ImGui::Text("Renderer2D Stats:");
+    susumu::App& app = susumu::App::Get();
+    float dt = app.GetLastTimeStep();
+    ImGui::Text("FPS: %.0f", 1.0f / dt);
+    ImGui::Text("Frame Time: %.4f ms", dt);
+    ImGui::Text("VSync: %s", app.GetWindow().IsVSync() ? "On" : "Off");
     ImGui::Text("Draw Calls: %d", stats.DrawCalls);
     ImGui::Text("Quads: %d", stats.QuadCount);
     ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
     ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+    ImGui::End();
 
+    ImGui::Begin("Properties");
     ImGui::ColorEdit4("Square color", glm::value_ptr(m_SquareColor));
-
     ImGui::End();
 }
 

@@ -19,13 +19,14 @@ namespace susumu
 
         void OnEvent(Event& e);
 
-        inline void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
-        inline void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
-        inline void PushOverlay(Layer* overlay) { m_LayerStack.PushLayer(overlay); }
-        inline void PopOverlay(Layer* overlay) { m_LayerStack.PopLayer(overlay); }
+        void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
+        void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
+        void PushOverlay(Layer* overlay) { m_LayerStack.PushLayer(overlay); }
+        void PopOverlay(Layer* overlay) { m_LayerStack.PopLayer(overlay); }
 
-        inline Window& GetWindow() { return *m_Window; }
-        inline static App& Get() { return *s_Instance; }
+        Window& GetWindow() { return *m_Window; }
+        float GetLastTimeStep() { return m_LastTimeStep; }
+        static App& Get() { return *s_Instance; }
     private:
         void Run();
         bool OnWindowClosed(WindowCloseEvent& e);
@@ -38,6 +39,7 @@ namespace susumu
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0.0f;
+        Timestep m_LastTimeStep;
     private:
         static App* s_Instance;
         friend int ::main(int argc, char** argv);

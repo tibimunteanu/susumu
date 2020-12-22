@@ -16,10 +16,10 @@ namespace susumu
         static void Flush();
 
         //primitives
-        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationDeg, const glm::vec4& color);
-        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationDeg, const glm::vec4& color);
-        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationDeg, const Ref<Texture2D>& texture, const glm::vec4& color = glm::vec4(1.0f));
-        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationDeg, const Ref<Texture2D>& texture, const glm::vec4& color = glm::vec4(1.0f));
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const glm::vec4& color);
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const glm::vec4& color);
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color = glm::vec4(1.0f));
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color = glm::vec4(1.0f));
 
         //stats
         struct Statistics

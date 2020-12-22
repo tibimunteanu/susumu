@@ -8,7 +8,7 @@ namespace susumu
     class KeyEvent : public Event
     {
     public:
-        inline KeyCode GetKeyCode() const { return m_KeyCode; }
+        KeyCode GetKeyCode() const { return m_KeyCode; }
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
     protected:
@@ -46,7 +46,7 @@ namespace susumu
         {
         }
 
-        inline int GetRepeatCount() const { return m_RepeatCount; }
+        int GetRepeatCount() const { return m_RepeatCount; }
 
         std::string ToString() const override
         {

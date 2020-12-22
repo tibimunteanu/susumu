@@ -19,7 +19,7 @@ namespace susumu
 
     struct Renderer2DData
     {
-        static const uint32_t MaxQuads = 30000;
+        static const uint32_t MaxQuads = 50000;
         static const uint32_t MaxVertices = MaxQuads * 4;
         static const uint32_t MaxIndices = MaxQuads * 6;
         static const uint32_t MaxTextureSlots = 32;
@@ -155,22 +155,22 @@ namespace susumu
         s_Data.TextureSlotIndex = 1;
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationDeg, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const glm::vec4& color)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationDeg, nullptr, color);
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationDeg, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const glm::vec4& color)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationDeg, nullptr, color);
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationDeg, const Ref<Texture2D>& texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationDeg, texture, color);
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, texture, color);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationDeg, const Ref<Texture2D>& texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
     {
         SU_PROFILE_FUNCTION();
 
@@ -201,7 +201,7 @@ namespace susumu
         }
 
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) //translation
-            * glm::rotate(glm::mat4(1.0f), glm::radians(rotationDeg), { 0.0f, 0.0f, 1.0f }) //rotation
+            * glm::rotate(glm::mat4(1.0f), rotationRad, { 0.0f, 0.0f, 1.0f }) //rotation
             * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }); //scale
 
 		for (size_t i = 0; i < 4; i++)
