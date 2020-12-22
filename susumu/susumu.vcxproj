@@ -145,7 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\core\app.h" />
-    <ClInclude Include="src\engine\core\core.h" />
+    <ClInclude Include="src\engine\core\base.h" />
     <ClInclude Include="src\engine\core\input.h" />
     <ClInclude Include="src\engine\core\keycodes.h" />
     <ClInclude Include="src\engine\core\layer.h" />

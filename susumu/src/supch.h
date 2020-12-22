@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "engine/core/core.h"
+#include "engine/core/base.h"
 #include "engine/core/log.h"
 #include "engine/debug/instrumentor.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/core/core.h"
+#include "engine/core/base.h"
 #include "engine/events/event.h"
 
 namespace susumu

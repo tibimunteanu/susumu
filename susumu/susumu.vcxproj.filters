@@ -57,9 +57,6 @@
     <ClInclude Include="src\engine\core\app.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\core\core.h">
-      <Filter>src\engine\core</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\core\input.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
@@ -1406,6 +1403,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\debug\instrumentor.h" />
     <ClInclude Include="src\engine\core\mousecodes.h" />
+    <ClInclude Include="src\engine\core\base.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">

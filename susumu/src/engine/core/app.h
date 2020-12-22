@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/core/core.h"
+#include "engine/core/base.h"
 #include "engine/core/window.h"
 #include "engine/core/layer_stack.h"
 #include "engine/events/event.h"
