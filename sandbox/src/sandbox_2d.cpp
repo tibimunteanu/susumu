@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Sandbox2D::Sandbox2D()
-    : Layer("Sandbox2D"), m_CameraController(960.0f / 540.0f)
+    : Layer("Sandbox2D"), m_CameraController(960.0f / 540.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
 {
 }
 

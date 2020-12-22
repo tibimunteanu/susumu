@@ -137,6 +137,8 @@ namespace susumu
     {
         SU_PROFILE_FUNCTION();
 
+        if (s_Data.QuadIndexCount == 0) return;
+
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
         {
             s_Data.TextureSlots[i]->Bind(i);
@@ -194,6 +196,11 @@ namespace susumu
             }
             if (texIndex == 0.0f)
             {
+                if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+                {
+                    FlushAndReset();
+                }
+
                 texIndex = (float)s_Data.TextureSlotIndex;
                 s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
                 s_Data.TextureSlotIndex++;

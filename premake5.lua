@@ -55,7 +55,8 @@ project "susumu"
 
     defines
     {
-        "_CRT_SECURE_NO_WARNINGS"
+        "_CRT_SECURE_NO_WARNINGS",
+        "GLFW_INCLUDE_NONE"
     }
 
     includedirs
@@ -79,12 +80,6 @@ project "susumu"
 
     filter "system:windows"
         systemversion "latest"
-
-        defines
-        {
-            "SU_BUILD_DLL",
-            "GLFW_INCLUDE_NONE"
-        }
 
     filter "configurations:Debug"
         defines "SU_DEBUG"
