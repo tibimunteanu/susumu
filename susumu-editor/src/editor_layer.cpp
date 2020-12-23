@@ -58,6 +58,8 @@ namespace susumu
         };
 
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnDetach()
@@ -169,6 +171,12 @@ namespace susumu
                 ImGui::EndMenuBar();
             }
 
+            ImGui::Begin("Console");
+            {
+
+            }
+            ImGui::End();
+
             ImGui::Begin("Renderer2D Stats");
             {
                 auto stats = Renderer2D::GetStats();
@@ -184,19 +192,21 @@ namespace susumu
             }
             ImGui::End();
 
-            ImGui::Begin("Properties");
+            m_SceneHierarchyPanel.OnImGuiRender();
+
+            ImGui::Begin("Inspector");
             {
                 if (m_SquareEntity)
                 {
                     ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
                     auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-                    ImGui::ColorEdit4("Square color", glm::value_ptr(squareColor));
+                    ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));
 
                     ImGui::Separator();
 
                     auto& camera = m_CameraEntity.GetComponent<CameraComponent>().Camera;
                     float orthoSize = camera.GetOrthographicSize();
-                    if (ImGui::DragFloat("Camera Orthographic Size", &orthoSize))
+                    if (ImGui::DragFloat("CamSize", &orthoSize))
                     {
                         camera.SetOrthographicSize(orthoSize);
                     }

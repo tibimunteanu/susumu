@@ -1,6 +1,8 @@
 #pragma once
 
 #include "susumu.h"
+#include "panels/scene_hierarchy_panel.h"
+
 namespace susumu
 {
     class EditorLayer : public Layer
@@ -37,5 +39,8 @@ namespace susumu
             float Time;
         };
         std::vector<ProfileResult> m_ProfileResults;
+
+        //panels
+        SceneHierarchyPanel m_SceneHierarchyPanel;
     };
 }
