@@ -16,6 +16,7 @@
 #include "engine/imgui/imgui_layer.h"
 #include "engine/scene/scene.h"
 #include "engine/scene/entity.h"
+#include "engine/scene/scriptable_entity.h"
 #include "engine/scene/components.h"
 
 #include "engine/renderer/renderer.h"

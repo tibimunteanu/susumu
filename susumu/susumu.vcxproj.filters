@@ -1420,6 +1420,7 @@
     <ClInclude Include="src\engine\scene\components.h" />
     <ClInclude Include="src\engine\scene\entity.h" />
     <ClInclude Include="src\engine\scene\scene_camera.h" />
+    <ClInclude Include="src\engine\scene\scriptable_entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
