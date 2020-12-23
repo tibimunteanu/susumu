@@ -1419,6 +1419,7 @@
     <ClInclude Include="src\engine\scene\scene.h" />
     <ClInclude Include="src\engine\scene\components.h" />
     <ClInclude Include="src\engine\scene\entity.h" />
+    <ClInclude Include="src\engine\scene\scene_camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
@@ -1513,5 +1514,6 @@
     </ClCompile>
     <ClCompile Include="src\engine\scene\scene.cpp" />
     <ClCompile Include="src\engine\scene\entity.cpp" />
+    <ClCompile Include="src\engine\scene\scene_camera.cpp" />
   </ItemGroup>
 </Project>

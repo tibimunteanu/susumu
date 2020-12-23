@@ -1,5 +1,7 @@
 #pragma once
 
+#include "engine/scene/scene_camera.h"
+
 #include<glm/glm.hpp>
 
 namespace susumu
@@ -10,7 +12,8 @@ namespace susumu
 
         TagComponent() = default;
         TagComponent(const TagComponent&) = default;
-        TagComponent(const std::string& tag) : Tag(tag) {}
+        TagComponent(const std::string& tag) 
+            : Tag(tag) {}
     };
 
     struct TransformComponent
@@ -19,7 +22,8 @@ namespace susumu
 
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
-        TransformComponent(const glm::mat4& transform) : Transform(transform) {}
+        TransformComponent(const glm::mat4& transform) 
+            : Transform(transform) {}
         operator glm::mat4& () { return Transform; }
         operator const glm::mat4& () const { return Transform; }
     };
@@ -30,7 +34,18 @@ namespace susumu
 
         SpriteRendererComponent() = default;
         SpriteRendererComponent(const SpriteRendererComponent&) = default;
-        SpriteRendererComponent(const glm::vec4& color) : Color(color) {}
+        SpriteRendererComponent(const glm::vec4& color) 
+            : Color(color) {}
+    };
+
+    struct CameraComponent
+    {
+        susumu::SceneCamera Camera;
+        bool IsPrimary = true;
+        bool IsFixedAspectRatio = false;
+
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
     };
 }
 

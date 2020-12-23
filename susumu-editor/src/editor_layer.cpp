@@ -30,6 +30,9 @@ namespace susumu
 
         m_SquareEntity = m_ActiveScene->CreateEntity("Square");
         m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.8f, 0.2f, 1.0f });
+
+        m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+        m_CameraEntity.AddComponent<CameraComponent>();
     }
 
     void EditorLayer::OnDetach()
@@ -40,6 +43,18 @@ namespace susumu
     void EditorLayer::OnUpdate(Timestep dt)
     {
         SU_PROFILE_FUNCTION();
+
+        // Resize
+        FramebufferSpec spec = m_Framebuffer->GetSpec();
+        if (m_ViewportSize.x > 0.0f 
+            && m_ViewportSize.y > 0.0f
+            && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+        {
+            m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+            m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+            m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        }
 
         ////////////////////////// Update ///////////////////////////////////////////////////////
         if (m_ViewportFocused)
@@ -53,13 +68,7 @@ namespace susumu
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
         RenderCommand::Clear();
-
-        Renderer2D::BeginScene(m_CameraController.GetCamera());
-        {
-            m_ActiveScene->OnUpdate(dt);
-        }
-        Renderer2D::EndScene();
-
+        m_ActiveScene->OnUpdate(dt);
         m_Framebuffer->Unbind();
     }
 
@@ -154,10 +163,18 @@ namespace susumu
             {
                 if (m_SquareEntity)
                 {
-                    ImGui::Separator();
                     ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
                     auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
                     ImGui::ColorEdit4("Square color", glm::value_ptr(squareColor));
+
+                    ImGui::Separator();
+
+                    auto& camera = m_CameraEntity.GetComponent<CameraComponent>().Camera;
+                    float orthoSize = camera.GetOrthographicSize();
+                    if (ImGui::DragFloat("Camera Orthographic Size", &orthoSize))
+                    {
+                        camera.SetOrthographicSize(orthoSize);
+                    }
                 }
             }
             ImGui::End();
@@ -170,14 +187,7 @@ namespace susumu
                 App::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                if (m_ViewportSize != *((glm::vec2*)&viewportSize)
-                    && viewportSize.x > 0
-                    && viewportSize.y > 0)
-                {
-                    m_Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-                    m_ViewportSize = { viewportSize.x, viewportSize.y };
-                    m_CameraController.OnResize(viewportSize.x, viewportSize.y);
-                }
+                m_ViewportSize = { viewportSize.x, viewportSize.y };
                 ImGui::Image((void*)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
             }
             ImGui::End();
