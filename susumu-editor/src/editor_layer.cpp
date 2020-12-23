@@ -37,7 +37,10 @@ namespace susumu
         SU_PROFILE_FUNCTION();
 
         ////////////////////////// Update ///////////////////////////////////////////////////////
-        m_CameraController.OnUpdate(dt);
+        if (m_ViewportFocused)
+        {
+            m_CameraController.OnUpdate(dt);
+        }
 
         ////////////////////////// Render ///////////////////////////////////////////////////////
         //render a scene
@@ -160,9 +163,11 @@ namespace susumu
                 ImGui::Text("Quads: %d", stats.QuadCount);
                 ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
                 ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-                ImGui::End();
+            }
+            ImGui::End();
 
-                ImGui::Begin("Properties");
+            ImGui::Begin("Properties");
+            {
                 ImGui::ColorEdit4("Square color", glm::value_ptr(m_SquareColor));
             }
             ImGui::End();
@@ -170,12 +175,18 @@ namespace susumu
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             ImGui::Begin("Scene");
             {
-                ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-                if (m_ViewportSize != *((glm::vec2*)&viewportPanelSize))
+                m_ViewportFocused = ImGui::IsWindowFocused();
+                m_ViewportHovered = ImGui::IsWindowHovered();
+                App::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+
+                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+                if (m_ViewportSize != *((glm::vec2*)&viewportSize)
+                    && viewportSize.x > 0
+                    && viewportSize.y > 0)
                 {
-                    m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-                    m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-                    m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
+                    m_Framebuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+                    m_ViewportSize = { viewportSize.x, viewportSize.y };
+                    m_CameraController.OnResize(viewportSize.x, viewportSize.y);
                 }
                 ImGui::Image((void*)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
             }

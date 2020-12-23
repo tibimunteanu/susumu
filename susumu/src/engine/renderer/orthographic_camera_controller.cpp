@@ -16,23 +16,23 @@ namespace susumu
         SU_PROFILE_FUNCTION();
 
         //move and rotate camera from input
-        if (Input::IsKeyPressed(KeyCode::A))
+        if (Input::IsKeyPressed(Key::A))
         {
             m_CameraPosition.x -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
             m_CameraPosition.y -= sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
         }
-        else if (Input::IsKeyPressed(KeyCode::D))
+        else if (Input::IsKeyPressed(Key::D))
         {
             m_CameraPosition.x += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
             m_CameraPosition.y += sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
         }
 
-        if (Input::IsKeyPressed(KeyCode::W))
+        if (Input::IsKeyPressed(Key::W))
         {
             m_CameraPosition.x += -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
             m_CameraPosition.y += cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
         }
-        else if (Input::IsKeyPressed(KeyCode::S))
+        else if (Input::IsKeyPressed(Key::S))
         {
             m_CameraPosition.x -= -sin(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
             m_CameraPosition.y -= cos(glm::radians(m_CameraRotation)) * m_CameraTranslationSpeed * dt;
@@ -40,8 +40,8 @@ namespace susumu
 
         if (m_Rotation)
         {
-            if (Input::IsKeyPressed(KeyCode::Q)) m_CameraRotation += m_CameraRotationSpeed * dt;
-            if (Input::IsKeyPressed(KeyCode::E)) m_CameraRotation -= m_CameraRotationSpeed * dt;
+            if (Input::IsKeyPressed(Key::Q)) m_CameraRotation += m_CameraRotationSpeed * dt;
+            if (Input::IsKeyPressed(Key::E)) m_CameraRotation -= m_CameraRotationSpeed * dt;
 
             if (m_CameraRotation > 180.0f) m_CameraRotation -= 360.0f;
             else if (m_CameraRotation <= -180.0f) m_CameraRotation += 360.0f;

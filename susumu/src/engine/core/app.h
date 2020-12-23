@@ -21,12 +21,13 @@ namespace susumu
 
         void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
         void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
-        void PushOverlay(Layer* overlay) { m_LayerStack.PushLayer(overlay); }
-        void PopOverlay(Layer* overlay) { m_LayerStack.PopLayer(overlay); }
+        void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
+        void PopOverlay(Layer* overlay) { m_LayerStack.PopOverlay(overlay); }
 
         Window& GetWindow() { return *m_Window; }
         float GetLastTimeStep() { return m_LastTimeStep; }
         void Close();
+        ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
         static App& Get() { return *s_Instance; }
     private:
         void Run();

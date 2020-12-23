@@ -5,6 +5,8 @@
 
 namespace susumu
 {
+    static const uint32_t s_MaxFramebufferSize = 8192;
+
     OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferSpec& spec)
         : m_Spec(spec)
     {
@@ -39,7 +41,7 @@ namespace susumu
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
         glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, m_Spec.Width, m_Spec.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+        glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Spec.Width, m_Spec.Height);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthAttachment, 0);
 
         SU_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
@@ -60,6 +62,18 @@ namespace susumu
 
     void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
     {
+        if (width == 0 
+            || height == 0 
+            || width > s_MaxFramebufferSize 
+            || height > s_MaxFramebufferSize)
+        {
+            SU_CORE_WARN("Attempted to resize framebuffer to {0}, {1}", width, height);
+
+            return;
+        }
+
+        SU_CORE_INFO("Resizing framebuffer to {0}, {1}", width, height);
+
         m_Spec.Width = width;
         m_Spec.Height = height;
         Invalidate();

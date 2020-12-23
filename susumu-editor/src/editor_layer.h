@@ -25,6 +25,8 @@ namespace susumu
 
         glm::vec4 m_SquareColor;
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
+        bool m_ViewportFocused = false;
+        bool m_ViewportHovered = false;
 
         struct ProfileResult
         {
