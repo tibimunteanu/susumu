@@ -10,6 +10,9 @@
     <Filter Include="src\engine\core">
       <UniqueIdentifier>{EA741D25-5600-8BE9-5F11-0EDECB1BE7E9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\debug">
+      <UniqueIdentifier>{486DD8C8-3466-F71A-5D98-DC9F49F0D626}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\engine\events">
       <UniqueIdentifier>{F66870E7-627F-6E7D-ABF6-F99E174C3F05}</UniqueIdentifier>
     </Filter>
@@ -57,6 +60,9 @@
     <ClInclude Include="src\engine\core\app.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\core\base.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\core\input.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
@@ -72,6 +78,9 @@
     <ClInclude Include="src\engine\core\log.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\core\mousecodes.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\core\startup.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
@@ -80,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\core\window.h">
       <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\debug\instrumentor.h">
+      <Filter>src\engine\debug</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\events\app_event.h">
       <Filter>src\engine\events</Filter>
@@ -100,6 +112,9 @@
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\camera.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\framebuffer.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\graphics_context.h">
@@ -133,6 +148,9 @@
       <Filter>src\platform\opengl</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_context.h">
+      <Filter>src\platform\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\opengl\opengl_framebuffer.h">
       <Filter>src\platform\opengl</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_renderer_api.h">
@@ -1401,14 +1419,12 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\debug\instrumentor.h" />
-    <ClInclude Include="src\engine\core\mousecodes.h" />
-    <ClInclude Include="src\engine\core\base.h">
-      <Filter>src\engine\core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
+      <Filter>src\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\input.cpp">
       <Filter>src\engine\core</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\core\layer.cpp">
@@ -1418,6 +1434,9 @@
       <Filter>src\engine\core</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\core\log.cpp">
+      <Filter>src\engine\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\core\window.cpp">
       <Filter>src\engine\core</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\imgui\imgui_build.cpp">
@@ -1430,6 +1449,12 @@
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\camera.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\framebuffer.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\graphics_context.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp">
@@ -1462,6 +1487,9 @@
     <ClCompile Include="src\platform\opengl\opengl_context.cpp">
       <Filter>src\platform\opengl</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\opengl\opengl_framebuffer.cpp">
+      <Filter>src\platform\opengl</Filter>
+    </ClCompile>
     <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp">
       <Filter>src\platform\opengl</Filter>
     </ClCompile>
@@ -1486,8 +1514,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\renderer\graphics_context.cpp" />
-    <ClCompile Include="src\engine\core\input.cpp" />
-    <ClCompile Include="src\engine\core\window.cpp" />
   </ItemGroup>
 </Project>

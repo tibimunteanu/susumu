@@ -14,7 +14,7 @@ namespace susumu
     class App
     {
     public:
-        App();
+        App(const std::string& name = "Susumu");
         virtual ~App();
 
         void OnEvent(Event& e);
@@ -26,6 +26,7 @@ namespace susumu
 
         Window& GetWindow() { return *m_Window; }
         float GetLastTimeStep() { return m_LastTimeStep; }
+        void Close();
         static App& Get() { return *s_Instance; }
     private:
         void Run();

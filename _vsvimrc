@@ -1,0 +1,5 @@
+cd c:/dev/susumu
+nnoremap <leader>es :tabnew C:/dev/susumu/_vsvimrc<CR>
+nnoremap <leader>ep :e premake5.lua<CR>
+nnoremap <leader>k :vsc Window.KeepTabOpen<CR>
+nnoremap <leader>ed :vsc Build.ConfigurationManager<CR>

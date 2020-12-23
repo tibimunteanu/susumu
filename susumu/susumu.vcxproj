@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>supch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SU_BUILD_DLL;GLFW_INCLUDE_NONE;SU_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SU_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -98,7 +98,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>supch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SU_BUILD_DLL;GLFW_INCLUDE_NONE;SU_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SU_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -123,7 +123,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>supch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SU_BUILD_DLL;GLFW_INCLUDE_NONE;SU_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;SU_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLFW\include;vendor\GLAD\include;vendor\imgui;vendor\glm;vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -163,6 +163,7 @@
     <ClInclude Include="src\engine\imgui\imgui_layer.h" />
     <ClInclude Include="src\engine\renderer\buffer.h" />
     <ClInclude Include="src\engine\renderer\camera.h" />
+    <ClInclude Include="src\engine\renderer\framebuffer.h" />
     <ClInclude Include="src\engine\renderer\graphics_context.h" />
     <ClInclude Include="src\engine\renderer\orthographic_camera_controller.h" />
     <ClInclude Include="src\engine\renderer\render_command.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\engine\renderer\vertex_array.h" />
     <ClInclude Include="src\platform\opengl\opengl_buffer.h" />
     <ClInclude Include="src\platform\opengl\opengl_context.h" />
+    <ClInclude Include="src\platform\opengl\opengl_framebuffer.h" />
     <ClInclude Include="src\platform\opengl\opengl_renderer_api.h" />
     <ClInclude Include="src\platform\opengl\opengl_shader.h" />
     <ClInclude Include="src\platform\opengl\opengl_texture.h" />
@@ -608,6 +610,7 @@
     <ClCompile Include="src\engine\imgui\imgui_layer.cpp" />
     <ClCompile Include="src\engine\renderer\buffer.cpp" />
     <ClCompile Include="src\engine\renderer\camera.cpp" />
+    <ClCompile Include="src\engine\renderer\framebuffer.cpp" />
     <ClCompile Include="src\engine\renderer\graphics_context.cpp" />
     <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp" />
     <ClCompile Include="src\engine\renderer\render_command.cpp" />
@@ -619,6 +622,7 @@
     <ClCompile Include="src\engine\renderer\vertex_array.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_buffer.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_context.cpp" />
+    <ClCompile Include="src\platform\opengl\opengl_framebuffer.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_shader.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_texture.cpp" />

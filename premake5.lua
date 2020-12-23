@@ -1,6 +1,6 @@
 workspace "susumu"
     architecture "x86_64"
-    startproject "sandbox"
+    startproject "susumu-editor"
 
     configurations
     {
@@ -30,6 +30,7 @@ group "Dependencies"
     include "susumu/vendor/imgui"
 group ""
 
+-----------------------SUSUMU--------------------------
 project "susumu"
     location "susumu"
     kind "StaticLib"
@@ -96,8 +97,59 @@ project "susumu"
         runtime "Release"
         optimize "on"
 
+
+-----------------------SANDBOX--------------------------
 project "sandbox"
     location "sandbox"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++17"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files
+    {
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp",
+    }
+
+    includedirs
+    {
+        "susumu/vendor/spdlog/include",
+        "susumu/src",
+        "susumu/vendor",
+        "%{IncludeDir.glm}",
+    }
+
+    links
+    {
+        "susumu"
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+
+    filter "configurations:Debug"
+        defines "SU_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "SU_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+    filter "configurations:Dist"
+        defines "SU_DIST"
+        runtime "Release"
+        optimize "on"
+
+
+-----------------------EDITOR--------------------------
+project "susumu-editor"
+    location "susumu-editor"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"

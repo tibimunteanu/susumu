@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Sandbox2D::Sandbox2D()
-    : Layer("Sandbox2D"), m_CameraController(960.0f / 540.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
+    : Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
 {
 }
 
@@ -17,7 +17,7 @@ void Sandbox2D::OnAttach()
     m_EarthTexture = susumu::Texture2D::Create("assets/textures/earth.png");
 
     //set vsync
-    susumu::App::Get().GetWindow().SetVSync(false);
+    susumu::App::Get().GetWindow().SetVSync(true);
 }
 
 void Sandbox2D::OnDetach()

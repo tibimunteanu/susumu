@@ -12,14 +12,14 @@ namespace susumu
 {
     App* App::s_Instance = nullptr;
 
-    App::App()
+    App::App(const std::string& name)
     {
         SU_PROFILE_FUNCTION();
 
         SU_CORE_ASSERT(!s_Instance, "App already exists");
         s_Instance = this;
 
-        m_Window = Window::Create();
+        m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(SU_BIND_EVENT_FN(App::OnEvent));
 
         Renderer::Init();
@@ -47,6 +47,11 @@ namespace susumu
             }
             (*it)->OnEvent(e);
         }
+    }
+
+    void App::Close()
+    {
+        m_Running = false;
     }
 
     void App::Run()

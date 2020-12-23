@@ -15,11 +15,13 @@ namespace susumu
         void OnUpdate(Timestep dt);
         void OnEvent(Event& e);
 
+        void OnResize(float width, float height);
+
         OrthographicCamera& GetCamera() { return m_Camera; }
         const OrthographicCamera& GetCamera() const { return m_Camera; }
 
         float GetZoomLevel() const { return m_ZoomLevel; }
-        void SetzoomLevel(float level) { m_ZoomLevel = level; }
+        void SetZoomLevel(float level) { m_ZoomLevel = level; }
     private:
         bool OnMouseScrolled(MouseScrolledEvent& e);
         bool OnWindowResized(WindowResizeEvent& e);
