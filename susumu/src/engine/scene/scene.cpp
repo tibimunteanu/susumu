@@ -2,6 +2,7 @@
 #include "scene.h"
 
 #include "engine/scene/components.h"
+#include "engine/scene/entity.h"
 #include "engine/renderer/renderer_2d.h"
 
 namespace susumu
@@ -14,9 +15,13 @@ namespace susumu
     {
     }
 
-    entt::entity Scene::CreateEntity()
+    Entity Scene::CreateEntity(const std::string& name)
     {
-        return m_Registry.create();
+        Entity entity = { m_Registry.create(), this };
+        entity.AddComponent<TransformComponent>();
+        auto& tag = entity.AddComponent<TagComponent>();
+        tag.Tag = name.empty() ? "Untagged" : name;
+        return entity;
     }
 
     void Scene::OnUpdate(Timestep dt)
