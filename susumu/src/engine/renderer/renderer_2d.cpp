@@ -167,12 +167,26 @@ namespace susumu
         DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color);
     }
 
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+    {
+        DrawQuad(transform, nullptr, color);
+    }
+
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
     {
         DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, texture, color);
     }
 
     void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
+    {
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) //translation
+            * glm::rotate(glm::mat4(1.0f), rotationRad, { 0.0f, 0.0f, 1.0f }) //rotation
+            * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }); //scale
+
+        DrawQuad(transform, texture, color);
+    }
+
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color)
     {
         SU_PROFILE_FUNCTION();
 
@@ -206,10 +220,6 @@ namespace susumu
                 s_Data.TextureSlotIndex++;
             }
         }
-
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) //translation
-            * glm::rotate(glm::mat4(1.0f), rotationRad, { 0.0f, 0.0f, 1.0f }) //rotation
-            * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }); //scale
 
 		for (size_t i = 0; i < 4; i++)
 		{

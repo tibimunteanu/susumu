@@ -23,7 +23,9 @@ namespace susumu
         Ref<Texture2D> m_EarthTexture;
         Ref<Framebuffer> m_Framebuffer;
 
-        glm::vec4 m_SquareColor;
+        Ref<Scene> m_ActiveScene;
+        entt::entity m_SquareEntity;
+
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         bool m_ViewportFocused = false;
         bool m_ViewportHovered = false;

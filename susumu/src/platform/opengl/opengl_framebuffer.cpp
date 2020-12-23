@@ -72,7 +72,7 @@ namespace susumu
             return;
         }
 
-        SU_CORE_INFO("Resizing framebuffer to {0}, {1}", width, height);
+        //SU_CORE_INFO("Resizing framebuffer to {0}, {1}", width, height);
 
         m_Spec.Width = width;
         m_Spec.Height = height;

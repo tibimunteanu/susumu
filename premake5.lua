@@ -19,10 +19,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "susumu/vendor/GLFW/include"
-IncludeDir["Glad"] = "susumu/vendor/GLAD/include"
+IncludeDir["Glad"] = "susumu/vendor/Glad/include"
 IncludeDir["ImGui"] = "susumu/vendor/imgui"
 IncludeDir["glm"] = "susumu/vendor/glm"
 IncludeDir["stb_image"] = "susumu/vendor/stb_image"
+IncludeDir["entt"] = "susumu/vendor/entt/include"
 
 group "Dependencies"
     include "susumu/vendor/GLFW"
@@ -69,6 +70,7 @@ project "susumu"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.entt}",
     }
 
     links
@@ -121,6 +123,7 @@ project "sandbox"
         "susumu/src",
         "susumu/vendor",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}",
     }
 
     links
@@ -170,6 +173,7 @@ project "susumu-editor"
         "susumu/src",
         "susumu/vendor",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}",
     }
 
     links

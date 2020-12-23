@@ -14,6 +14,8 @@
 #include "engine/core/mousecodes.h"
 #include "engine/debug/instrumentor.h"
 #include "engine/imgui/imgui_layer.h"
+#include "engine/scene/scene.h"
+#include "engine/scene/components.h"
 
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/renderer_2d.h"
