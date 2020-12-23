@@ -180,7 +180,6 @@
     <ClInclude Include="src\platform\opengl\opengl_shader.h" />
     <ClInclude Include="src\platform\opengl\opengl_texture.h" />
     <ClInclude Include="src\platform\opengl\opengl_vertex_array.h" />
-    <ClInclude Include="src\platform\windows\windows_input.h" />
     <ClInclude Include="src\platform\windows\windows_window.h" />
     <ClInclude Include="src\supch.h" />
     <ClInclude Include="src\susumu.h" />
@@ -601,7 +600,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp" />
-    <ClCompile Include="src\engine\core\input.cpp" />
     <ClCompile Include="src\engine\core\layer.cpp" />
     <ClCompile Include="src\engine\core\layer_stack.cpp" />
     <ClCompile Include="src\engine\core\log.cpp" />
