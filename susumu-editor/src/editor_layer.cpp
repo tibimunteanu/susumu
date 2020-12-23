@@ -194,26 +194,6 @@ namespace susumu
 
             m_SceneHierarchyPanel.OnImGuiRender();
 
-            ImGui::Begin("Inspector");
-            {
-                if (m_SquareEntity)
-                {
-                    ImGui::Text("%s", m_SquareEntity.GetComponent<TagComponent>().Tag.c_str());
-                    auto& squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
-                    ImGui::ColorEdit4("Color", glm::value_ptr(squareColor));
-
-                    ImGui::Separator();
-
-                    auto& camera = m_CameraEntity.GetComponent<CameraComponent>().Camera;
-                    float orthoSize = camera.GetOrthographicSize();
-                    if (ImGui::DragFloat("CamSize", &orthoSize))
-                    {
-                        camera.SetOrthographicSize(orthoSize);
-                    }
-                }
-            }
-            ImGui::End();
-
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             ImGui::Begin("Scene");
             {
