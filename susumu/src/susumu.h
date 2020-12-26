@@ -7,6 +7,7 @@
 #include "engine/core/base.h"
 #include "engine/core/app.h"
 #include "engine/core/log.h"
+#include "engine/core/assert.h"
 #include "engine/core/layer.h"
 #include "engine/core/timestep.h"
 #include "engine/core/input.h"

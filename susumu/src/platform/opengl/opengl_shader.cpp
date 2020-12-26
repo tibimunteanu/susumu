@@ -180,7 +180,6 @@ namespace susumu
                 result.resize(size);
                 in.seekg(0, std::ios::beg);
                 in.read(&result[0], result.size());
-                in.close();
             }
             else
             {
@@ -227,7 +226,7 @@ namespace susumu
 
         GLuint program = glCreateProgram();
         const int maxShadersInFile = 4;
-        SU_CORE_ASSERT(shaderSources.size() <= maxShadersInFile, "Cannot have more than {0} shaders in file!", maxShadersInFile);
+        SU_CORE_ASSERT(shaderSources.size() <= maxShadersInFile, "Cannot have more than 4 shaders in file!");
         std::array<GLint, maxShadersInFile> glShaderIDs;
         int glShaderIDIndex = 0;
 

@@ -14,3 +14,6 @@
 	path = susumu/vendor/glm
 	url = https://github.com/g-truc/glm
 	branch = master
+[submodule "susumu/vendor/yaml-cpp"]
+	path = susumu/vendor/yaml-cpp
+	url = https://github.com/thecherno/yaml-cpp

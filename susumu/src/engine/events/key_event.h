@@ -1,7 +1,7 @@
 #pragma once
 
 #include "engine/events/event.h"
-#include "engine/core/input.h"
+#include "engine/core/keycodes.h"
 
 namespace susumu
 {
@@ -12,7 +12,7 @@ namespace susumu
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
     protected:
-        KeyEvent(KeyCode keyCode)
+        KeyEvent(const KeyCode keyCode)
             : m_KeyCode(keyCode)
         {
         }
@@ -23,12 +23,12 @@ namespace susumu
     class KeyPressedEvent : public KeyEvent
     {
     public:
-        KeyPressedEvent(KeyCode keyCode, int repeatCount)
+        KeyPressedEvent(const KeyCode keyCode, const uint16_t repeatCount)
             : KeyEvent(keyCode), m_RepeatCount(repeatCount)
         {
         }
 
-        int GetRepeatCount() const { return m_RepeatCount; }
+        uint16_t GetRepeatCount() const { return m_RepeatCount; }
 
         std::string ToString() const override
         {
@@ -39,13 +39,13 @@ namespace susumu
 
         EVENT_CLASS_TYPE(KeyPressed)
     private:
-        int m_RepeatCount;
+        uint16_t m_RepeatCount;
     };
 
     class KeyReleasedEvent : public KeyEvent
     {
     public:
-        KeyReleasedEvent(KeyCode keyCode)
+        KeyReleasedEvent(const KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }
@@ -63,7 +63,7 @@ namespace susumu
     class KeyTypedEvent : public KeyEvent
     {
     public:
-        KeyTypedEvent(KeyCode keyCode)
+        KeyTypedEvent(const KeyCode keyCode)
             : KeyEvent(keyCode)
         {
         }

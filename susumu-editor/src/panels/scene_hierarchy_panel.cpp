@@ -91,53 +91,6 @@ namespace susumu
         }
     }
 
-    template<typename T>
-    static void DrawComponent(Entity entity, const std::string& name, std::function<void(T&)> lambda)
-    {
-        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen
-            | ImGuiTreeNodeFlags_Framed
-            | ImGuiTreeNodeFlags_SpanAvailWidth
-            | ImGuiTreeNodeFlags_FramePadding
-            | ImGuiTreeNodeFlags_AllowItemOverlap;
-
-        if (entity.HasComponent<T>())
-        {
-            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-            ImGui::Separator();
-            bool isOpen = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
-            ImGui::PopStyleVar();
-
-            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-            if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
-            {
-                ImGui::OpenPopup("ComponentSettings");
-            }
-
-            bool removeComponent = false;
-            if (ImGui::BeginPopup("ComponentSettings"))
-            {
-                if (ImGui::MenuItem("Remove Component"))
-                {
-                    removeComponent = true;
-                }
-                ImGui::EndPopup();
-            }
-
-            if (isOpen)
-            {
-                lambda(entity.GetComponent<T>());
-                ImGui::TreePop();
-            }
-
-            if (removeComponent)
-            {
-                entity.RemoveComponent<T>();
-            }
-        }
-    }
-
     static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -201,6 +154,55 @@ namespace susumu
         ImGui::PopID();
     }
 
+    template<typename T>
+    static void DrawComponent(const std::string& name, Entity entity, std::function<void(T&)> drawComponent)
+    {
+        const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen
+            | ImGuiTreeNodeFlags_Framed
+            | ImGuiTreeNodeFlags_SpanAvailWidth
+            | ImGuiTreeNodeFlags_FramePadding
+            | ImGuiTreeNodeFlags_AllowItemOverlap;
+
+        if (entity.HasComponent<T>())
+        {
+            auto& component = entity.GetComponent<T>();
+            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+            ImGui::Separator();
+            bool isOpen = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
+            ImGui::PopStyleVar();
+
+            ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+            if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+            {
+                ImGui::OpenPopup("ComponentSettings");
+            }
+
+            bool removeComponent = false;
+            if (ImGui::BeginPopup("ComponentSettings"))
+            {
+                if (ImGui::MenuItem("Remove Component"))
+                {
+                    removeComponent = true;
+                }
+                ImGui::EndPopup();
+            }
+
+            if (isOpen)
+            {
+                drawComponent(component);
+                ImGui::TreePop();
+            }
+
+            if (removeComponent)
+            {
+                entity.RemoveComponent<T>();
+            }
+        }
+    }
+
     void SceneHierarchyPanel::DrawComponents(Entity entity)
     {
         if (entity.HasComponent<TagComponent>())
@@ -209,7 +211,7 @@ namespace susumu
 
             char buffer[256];
             memset(buffer, 0, sizeof(buffer));
-            strcpy_s(buffer, sizeof(buffer), tag.c_str());
+            std::strncpy(buffer, tag.c_str(), sizeof(buffer));
             if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
             {
                 tag = std::string(buffer);
@@ -227,13 +229,27 @@ namespace susumu
         {
             if (ImGui::MenuItem("Camera"))
             {
-                m_SelectionContext.AddComponent<CameraComponent>();
+                if (!m_SelectionContext.HasComponent<CameraComponent>())
+                {
+                    m_SelectionContext.AddComponent<CameraComponent>();
+                }
+                else
+                {
+                    SU_CORE_ERROR("This entity already has the Camera component!");
+                }
                 ImGui::CloseCurrentPopup();
             }
 
             if (ImGui::MenuItem("Sprite Renderer"))
             {
-                m_SelectionContext.AddComponent<SpriteRendererComponent>();
+                if (!m_SelectionContext.HasComponent<SpriteRendererComponent>())
+                {
+                    m_SelectionContext.AddComponent<SpriteRendererComponent>();
+                }
+                else
+                {
+                    SU_CORE_ERROR("This entity already has the SpriteRenderer component!");
+                }
                 ImGui::CloseCurrentPopup();
             }
 
@@ -241,7 +257,7 @@ namespace susumu
         }
         ImGui::PopItemWidth();
 
-        DrawComponent<TransformComponent>(entity, "Transform", [](TransformComponent& component)
+        DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
         {
             DrawVec3Control("Position", component.Translation);
             glm::vec3 rotation = glm::degrees(component.Rotation);
@@ -250,7 +266,7 @@ namespace susumu
             DrawVec3Control("Scale", component.Scale, 1.0f);
         });
 
-        DrawComponent<CameraComponent>(entity, "Camera", [](CameraComponent& component)
+        DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
         {
             auto& camera = component.Camera;
 
@@ -322,7 +338,7 @@ namespace susumu
             }
         });
 
-        DrawComponent<SpriteRendererComponent>(entity, "SpriteRenderer", [](SpriteRendererComponent& component)
+        DrawComponent<SpriteRendererComponent>("SpriteRenderer", entity, [](auto& component)
         {
             ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
         });

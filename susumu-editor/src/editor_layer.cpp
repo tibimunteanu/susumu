@@ -1,4 +1,5 @@
 #include "editor_layer.h"
+#include "engine/scene/scene_serializer.h"
 
 #include <imgui/imgui.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -27,7 +28,9 @@ namespace susumu
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
+    #if 0
         m_SquareEntity = m_ActiveScene->CreateEntity("Square");
         m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.8f, 0.2f, 1.0f });
 
@@ -59,7 +62,7 @@ namespace susumu
 
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    #endif
     }
 
     void EditorLayer::OnDetach()
@@ -125,10 +128,6 @@ namespace susumu
             window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         }
-        else
-        {
-            dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-        }
 
         if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
         {
@@ -167,7 +166,19 @@ namespace susumu
             {
                 if (ImGui::BeginMenu("File"))
                 {
-                    if (ImGui::MenuItem("Exit", ""))
+                    if (ImGui::MenuItem("Serialize"))
+                    {
+                        SceneSerializer serializer(m_ActiveScene);
+                        serializer.Serialize("assets/scenes/ExampleScene.su");
+                    }
+
+                    if (ImGui::MenuItem("Deserialize"))
+                    {
+                        SceneSerializer serializer(m_ActiveScene);
+                        serializer.Deserialize("assets/scenes/ExampleScene.su");
+                    }
+
+                    if (ImGui::MenuItem("Exit"))
                     {
                         App::Get().Close();
                     }
@@ -176,13 +187,15 @@ namespace susumu
                 ImGui::EndMenuBar();
             }
 
+            m_SceneHierarchyPanel.OnImGuiRender();
+
             ImGui::Begin("Console");
             {
 
             }
             ImGui::End();
 
-            ImGui::Begin("Renderer2D Stats");
+            ImGui::Begin("Stats");
             {
                 auto stats = Renderer2D::GetStats();
                 App& app = App::Get();
@@ -197,18 +210,16 @@ namespace susumu
             }
             ImGui::End();
 
-            m_SceneHierarchyPanel.OnImGuiRender();
-
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
             ImGui::Begin("Scene");
             {
                 m_ViewportFocused = ImGui::IsWindowFocused();
                 m_ViewportHovered = ImGui::IsWindowHovered();
-                App::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+                App::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
                 ImVec2 viewportSize = ImGui::GetContentRegionAvail();
                 m_ViewportSize = { viewportSize.x, viewportSize.y };
-                ImGui::Image((void*)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::Image(reinterpret_cast<void*>(m_Framebuffer->GetColorAttachmentRendererID()), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
             }
             ImGui::End();
             ImGui::PopStyleVar();

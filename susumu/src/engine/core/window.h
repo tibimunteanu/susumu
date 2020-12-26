@@ -3,6 +3,8 @@
 #include "engine/core/base.h"
 #include "engine/events/event.h"
 
+#include <sstream>
+
 namespace susumu
 {
     struct WindowProps

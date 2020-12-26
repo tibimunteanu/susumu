@@ -1,6 +1,9 @@
 #pragma once
 
 #include "engine/core/base.h"
+#include "engine/debug/instrumentor.h"
+
+#include <functional>
 
 namespace susumu
 {

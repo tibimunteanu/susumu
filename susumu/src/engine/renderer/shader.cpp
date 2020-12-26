@@ -50,7 +50,7 @@ namespace susumu
     void ShaderLibrary::Add(const Ref<Shader>& shader)
     {
         auto& name = shader->GetName();
-        SU_CORE_ASSERT(!Exists(name), "Shader '{0}' already exists!", name);
+        SU_CORE_ASSERT(!Exists(name), "Shader already exists!");
         m_Shaders[name] = shader;
     }
 
@@ -70,7 +70,7 @@ namespace susumu
 
     Ref<Shader> ShaderLibrary::Get(const std::string& name)
     {
-        SU_CORE_ASSERT(Exists(name), "Shader '{0}' not found!", name);
+        SU_CORE_ASSERT(Exists(name), "Shader not found!");
         return m_Shaders[name];
     }
 

@@ -5,7 +5,6 @@
 #include "engine/renderer/render_command.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace susumu
 {
@@ -22,7 +21,7 @@ namespace susumu
         static const uint32_t MaxQuads = 50000;
         static const uint32_t MaxVertices = MaxQuads * 4;
         static const uint32_t MaxIndices = MaxQuads * 6;
-        static const uint32_t MaxTextureSlots = 32;
+        static const uint32_t MaxTextureSlots = 32; //TODO: render caps
 
         Ref<VertexArray> QuadVertexArray;
         Ref<VertexBuffer> QuadVertexBuffer;
@@ -111,6 +110,16 @@ namespace susumu
         delete[] s_Data.QuadVertexBufferBase;
     }
 
+    void Renderer2D::BeginScene(const OrthographicCamera& camera)
+    {
+        SU_PROFILE_FUNCTION();
+
+        s_Data.TextureShader->Bind();
+        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+
+        StartBatch();
+    }
+
     void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
     {
         SU_PROFILE_FUNCTION();
@@ -120,38 +129,29 @@ namespace susumu
         s_Data.TextureShader->Bind();
         s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
 
-        s_Data.QuadIndexCount = 0;
-        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-        s_Data.TextureSlotIndex = 1;
-    }
-
-    void Renderer2D::BeginScene(const OrthographicCamera& camera)
-    {
-        SU_PROFILE_FUNCTION();
-
-        s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-
-        s_Data.QuadIndexCount = 0;
-        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-        s_Data.TextureSlotIndex = 1;
+        StartBatch();
     }
 
     void Renderer2D::EndScene()
     {
         SU_PROFILE_FUNCTION();
 
-        uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
-        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
-
         Flush();
+    }
+
+    void Renderer2D::StartBatch()
+    {
+        s_Data.QuadIndexCount = 0;
+        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+        s_Data.TextureSlotIndex = 1;
     }
 
     void Renderer2D::Flush()
     {
-        SU_PROFILE_FUNCTION();
+        if (s_Data.QuadIndexCount == 0) return; //nothing to draw
 
-        if (s_Data.QuadIndexCount == 0) return;
+        uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+        s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
         {
@@ -162,13 +162,10 @@ namespace susumu
         s_Data.Stats.DrawCalls++;
     }
 
-    void Renderer2D::FlushAndReset()
+    void Renderer2D::NextBatch()
     {
-        EndScene();
-
-        s_Data.QuadIndexCount = 0;
-        s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-        s_Data.TextureSlotIndex = 1;
+        Flush();
+        StartBatch();
     }
 
     void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const glm::vec4& color)
@@ -204,12 +201,13 @@ namespace susumu
     {
         SU_PROFILE_FUNCTION();
 
+        constexpr size_t quadVertexCount = 4;
+        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
         if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
         {
-            FlushAndReset();
+            NextBatch();
         }
-
-        constexpr glm::vec2 texCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 
         float texIndex = 0.0f; //white texture
         if (texture)
@@ -226,7 +224,7 @@ namespace susumu
             {
                 if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
                 {
-                    FlushAndReset();
+                    NextBatch();
                 }
 
                 texIndex = (float)s_Data.TextureSlotIndex;
@@ -235,7 +233,7 @@ namespace susumu
             }
         }
 
-		for (size_t i = 0; i < 4; i++)
+		for (size_t i = 0; i < quadVertexCount; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 			s_Data.QuadVertexBufferPtr->Color = color;

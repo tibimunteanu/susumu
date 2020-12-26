@@ -22,6 +22,9 @@
     <Filter Include="src\engine\renderer">
       <UniqueIdentifier>{388D297C-A4EE-068A-2D5C-4D3C99BC3D49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\scene">
+      <UniqueIdentifier>{EFCFE6C9-DBC8-051C-04FB-EAA0F052E527}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
     </Filter>
@@ -60,6 +63,9 @@
     <ClInclude Include="src\engine\core\app.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\core\assert.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\core\base.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
@@ -79,6 +85,9 @@
       <Filter>src\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\core\mousecodes.h">
+      <Filter>src\engine\core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\core\platform_detection.h">
       <Filter>src\engine\core</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\core\startup.h">
@@ -143,6 +152,24 @@
     </ClInclude>
     <ClInclude Include="src\engine\renderer\vertex_array.h">
       <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\components.h">
+      <Filter>src\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\entity.h">
+      <Filter>src\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\scene.h">
+      <Filter>src\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\scene_camera.h">
+      <Filter>src\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\scene_serializer.h">
+      <Filter>src\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scene\scriptable_entity.h">
+      <Filter>src\engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_buffer.h">
       <Filter>src\platform\opengl</Filter>
@@ -1416,11 +1443,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\scene\scene.h" />
-    <ClInclude Include="src\engine\scene\components.h" />
-    <ClInclude Include="src\engine\scene\entity.h" />
-    <ClInclude Include="src\engine\scene\scene_camera.h" />
-    <ClInclude Include="src\engine\scene\scriptable_entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
@@ -1480,6 +1502,18 @@
     <ClCompile Include="src\engine\renderer\vertex_array.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\scene\entity.cpp">
+      <Filter>src\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\scene\scene.cpp">
+      <Filter>src\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\scene\scene_camera.cpp">
+      <Filter>src\engine\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\scene\scene_serializer.cpp">
+      <Filter>src\engine\scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\platform\opengl\opengl_buffer.cpp">
       <Filter>src\platform\opengl</Filter>
     </ClCompile>
@@ -1513,8 +1547,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\scene\scene.cpp" />
-    <ClCompile Include="src\engine\scene\entity.cpp" />
-    <ClCompile Include="src\engine\scene\scene_camera.cpp" />
   </ItemGroup>
 </Project>
