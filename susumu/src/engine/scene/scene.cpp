@@ -24,6 +24,11 @@ namespace susumu
         return entity;
     }
 
+    void Scene::DestroyEntity(Entity entity)
+    {
+        m_Registry.destroy(entity);
+    }
+
     void Scene::OnUpdate(Timestep dt)
     {
         //update scripts
@@ -43,7 +48,7 @@ namespace susumu
 
         //render
         Camera* mainCamera = nullptr;
-        glm::mat4* mainCameraTransform = nullptr;
+        glm::mat4 mainCameraTransform;
         {
             auto view = m_Registry.view<TransformComponent, CameraComponent>();
             for (auto entity : view)
@@ -52,7 +57,7 @@ namespace susumu
                 if (camera.IsPrimary)
                 {
                     mainCamera = &camera.Camera;
-                    mainCameraTransform = &transform.Transform;
+                    mainCameraTransform = transform.GetTransform();
                     break;
                 }
             }
@@ -60,14 +65,14 @@ namespace susumu
 
         if (mainCamera)
         {
-            Renderer2D::BeginScene(mainCamera->GetProjection(), *mainCameraTransform);
+            Renderer2D::BeginScene(mainCamera->GetProjection(), mainCameraTransform);
 
             auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
             for (auto entity : group)
             {
                 auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                Renderer2D::DrawQuad(transform, sprite.Color);
+                Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
             }
 
             Renderer2D::EndScene();
@@ -89,5 +94,33 @@ namespace susumu
                 cameraComponent.Camera.SetViewportSize(width, height);
             }
         }
+    }
+
+    //TODO: do this another way without specialized templates
+    template<typename T>
+    void Scene::OnComponentAdded(Entity entity, T& component)
+    {
+        static_assert(false);
+    }
+    template<>
+    void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<SpriteRendererComponent>(Entity entity, SpriteRendererComponent& component)
+    {
+    }
+    template<>
+    void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component)
+    {
+        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
 }

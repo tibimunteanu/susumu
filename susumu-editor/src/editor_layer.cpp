@@ -31,7 +31,7 @@ namespace susumu
         m_SquareEntity = m_ActiveScene->CreateEntity("Square");
         m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.8f, 0.2f, 1.0f });
 
-        m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+        m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
         m_CameraEntity.AddComponent<CameraComponent>();
 
         class CameraController : public ScriptableEntity
@@ -47,13 +47,13 @@ namespace susumu
 
             void OnUpdate(Timestep dt)
             {
-                auto& transform = GetComponent<TransformComponent>().Transform;
+                auto& position = GetComponent<TransformComponent>().Translation;
                 float speed = 5.0f;
 
-                if (Input::IsKeyPressed(Key::A)) transform[3][0] -= speed * dt;
-                if (Input::IsKeyPressed(Key::D)) transform[3][0] += speed * dt;
-                if (Input::IsKeyPressed(Key::W)) transform[3][1] += speed * dt;
-                if (Input::IsKeyPressed(Key::S)) transform[3][1] -= speed * dt;
+                if (Input::IsKeyPressed(Key::A)) position.x -= speed * dt;
+                if (Input::IsKeyPressed(Key::D)) position.x += speed * dt;
+                if (Input::IsKeyPressed(Key::W)) position.y += speed * dt;
+                if (Input::IsKeyPressed(Key::S)) position.y -= speed * dt;
             }
         };
 
@@ -152,11 +152,16 @@ namespace susumu
 
             // DockSpace
             ImGuiIO& io = ImGui::GetIO();
+            ImGuiStyle& style = ImGui::GetStyle();
+            //float minWinSizeX = style.WindowMinSize.x;
+            //style.WindowMinSize.x = 360.0f;
+
             if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
             {
                 ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
                 ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
             }
+            //style.WindowMinSize.x = minWinSizeX;
 
             if (ImGui::BeginMenuBar())
             {
