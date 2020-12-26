@@ -44,6 +44,8 @@ namespace susumu
         };
         std::vector<ProfileResult> m_ProfileResults;
 
+        int m_GizmoType = -1;
+
         //panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
     };

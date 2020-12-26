@@ -2,24 +2,6 @@ Scene: Untitled
 Entities:
   - Entity: 12837192831273
     TagComponent:
-      Tag: Square2
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [0.861771047, 0.0837574452, 0.0837574452, 1]
-  - Entity: 12837192831273
-    TagComponent:
-      Tag: Square1
-    TransformComponent:
-      Translation: [-3.79999995, 0, -9]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [0.887688994, 0.670354426, 0.0939454585, 1]
-  - Entity: 12837192831273
-    TagComponent:
       Tag: Camera
     TransformComponent:
       Translation: [0, 0, 5]
@@ -36,3 +18,21 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Square1
+    TransformComponent:
+      Translation: [-3.79999995, 0, -9]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.887688994, 0.670354426, 0.0939454585, 1]
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Square2
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [-0.87266463, 0.86219269, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.861771047, 0.0837574452, 0.0837574452, 1]

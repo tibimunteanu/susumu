@@ -25,6 +25,9 @@
     <Filter Include="src\engine\scene">
       <UniqueIdentifier>{EFCFE6C9-DBC8-051C-04FB-EAA0F052E527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\utils">
+      <UniqueIdentifier>{326414CA-1E5D-331C-478F-18A133E71228}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\platform">
       <UniqueIdentifier>{41663D6D-2DC9-CC11-D64E-05C8C2909894}</UniqueIdentifier>
     </Filter>
@@ -36,6 +39,9 @@
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -171,6 +177,9 @@
     <ClInclude Include="src\engine\scene\scriptable_entity.h">
       <Filter>src\engine\scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\utils\platform_utils.h">
+      <Filter>src\engine\utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\platform\opengl\opengl_buffer.h">
       <Filter>src\platform\opengl</Filter>
     </ClInclude>
@@ -200,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="src\susumu.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\Imguizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1443,7 +1455,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\utils\platform_utils.h" />
+    <ClInclude Include="src\engine\math\math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
@@ -1539,15 +1551,21 @@
     <ClCompile Include="src\platform\windows\windows_input.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\platform\windows\windows_platform_utils.cpp">
+      <Filter>src\platform\windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\platform\windows\windows_window.cpp">
       <Filter>src\platform\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\supch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\Imguizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\platform\windows\windows_platform_utils.cpp" />
+    <ClCompile Include="src\engine\math\math.cpp" />
   </ItemGroup>
 </Project>

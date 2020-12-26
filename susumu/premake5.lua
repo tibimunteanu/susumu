@@ -18,6 +18,8 @@ project "susumu"
         "vendor/stb_image/**.cpp",
         "vendor/glm/glm/**.hpp",
         "vendor/glm/glm/**.inl",
+        "vendor/ImGuizmo/Imguizmo.h",
+        "vendor/ImGuizmo/Imguizmo.cpp"
     }
 
     defines
@@ -37,6 +39,7 @@ project "susumu"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml_cpp}",
+        "%{IncludeDir.ImGuizmo}"
     }
 
     links
@@ -47,6 +50,9 @@ project "susumu"
         "yaml-cpp",
         "opengl32.lib"
     }
+
+    filter "files:vendor/ImGuizmo/**.cpp"
+    flags { "NoPCH" }
 
     filter "system:windows"
         systemversion "latest"

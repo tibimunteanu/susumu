@@ -19,7 +19,8 @@ project "susumu-editor"
         "%{wks.location}/susumu/src",
         "%{wks.location}/susumu/vendor",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.entt}"
+        "%{IncludeDir.entt}",
+        "%{IncludeDir.ImGuizmo}"
     }
 
     links

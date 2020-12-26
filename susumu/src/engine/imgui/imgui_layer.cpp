@@ -9,6 +9,7 @@
 //TEMP:
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <ImGuizmo.h>
 
 namespace susumu
 {
@@ -83,6 +84,7 @@ namespace susumu
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
     }
 
     void ImGuiLayer::End()
@@ -109,7 +111,7 @@ namespace susumu
     void ImGuiLayer::SetDarkThemeColors()
     {
         auto& colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+        colors[ImGuiCol_WindowBg] = ImVec4{ 0.086f, 0.086f, 0.086f, 1.0f };
 
         // Headers
         colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
