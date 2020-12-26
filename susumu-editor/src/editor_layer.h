@@ -1,6 +1,7 @@
 #pragma once
 
 #include "susumu.h"
+#include "engine/renderer/editor_camera.h"
 #include "panels/scene_hierarchy_panel.h"
 
 namespace susumu
@@ -32,6 +33,8 @@ namespace susumu
         Ref<Scene> m_ActiveScene;
         Entity m_SquareEntity;
         Entity m_CameraEntity;
+
+        EditorCamera m_EditorCamera;
 
         glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
         bool m_ViewportFocused = false;

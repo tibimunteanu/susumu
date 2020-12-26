@@ -166,6 +166,7 @@
     <ClInclude Include="src\engine\math\math.h" />
     <ClInclude Include="src\engine\renderer\buffer.h" />
     <ClInclude Include="src\engine\renderer\camera.h" />
+    <ClInclude Include="src\engine\renderer\editor_camera.h" />
     <ClInclude Include="src\engine\renderer\framebuffer.h" />
     <ClInclude Include="src\engine\renderer\graphics_context.h" />
     <ClInclude Include="src\engine\renderer\orthographic_camera_controller.h" />
@@ -620,6 +621,7 @@
     <ClCompile Include="src\engine\math\math.cpp" />
     <ClCompile Include="src\engine\renderer\buffer.cpp" />
     <ClCompile Include="src\engine\renderer\camera.cpp" />
+    <ClCompile Include="src\engine\renderer\editor_camera.cpp" />
     <ClCompile Include="src\engine\renderer\framebuffer.cpp" />
     <ClCompile Include="src\engine\renderer\graphics_context.cpp" />
     <ClCompile Include="src\engine\renderer\orthographic_camera_controller.cpp" />
