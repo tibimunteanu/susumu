@@ -16,7 +16,11 @@ namespace susumu
         void OnUpdate(Timestep dt) override;
         void OnEvent(Event& e) override;
         void OnImGuiRender() override;
-
+    private:
+        bool OnKeyPressed(KeyPressedEvent e);
+        void NewScene();
+        void OpenScene();
+        void SaveSceneAs();
     private:
         OrthographicCameraController m_CameraController;
 

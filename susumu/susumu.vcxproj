@@ -181,6 +181,7 @@
     <ClInclude Include="src\engine\scene\scene_camera.h" />
     <ClInclude Include="src\engine\scene\scene_serializer.h" />
     <ClInclude Include="src\engine\scene\scriptable_entity.h" />
+    <ClInclude Include="src\engine\utils\platform_utils.h" />
     <ClInclude Include="src\platform\opengl\opengl_buffer.h" />
     <ClInclude Include="src\platform\opengl\opengl_context.h" />
     <ClInclude Include="src\platform\opengl\opengl_framebuffer.h" />
@@ -638,6 +639,7 @@
     <ClCompile Include="src\platform\opengl\opengl_texture.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_vertex_array.cpp" />
     <ClCompile Include="src\platform\windows\windows_input.cpp" />
+    <ClCompile Include="src\platform\windows\windows_platform_utils.cpp" />
     <ClCompile Include="src\platform\windows\windows_window.cpp" />
     <ClCompile Include="src\supch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

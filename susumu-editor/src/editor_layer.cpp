@@ -1,5 +1,6 @@
 #include "editor_layer.h"
 #include "engine/scene/scene_serializer.h"
+#include "engine/utils/platform_utils.h"
 
 #include <imgui/imgui.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -76,7 +77,7 @@ namespace susumu
 
         //handle resize
         FramebufferSpec spec = m_Framebuffer->GetSpec();
-        if (m_ViewportSize.x > 0.0f 
+        if (m_ViewportSize.x > 0.0f
             && m_ViewportSize.y > 0.0f
             && (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
         {
@@ -96,7 +97,7 @@ namespace susumu
         //render a scene
         Renderer2D::ResetStats();
         m_Framebuffer->Bind();
-        RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+        RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
         RenderCommand::Clear();
         m_ActiveScene->OnUpdate(dt);
         m_Framebuffer->Unbind();
@@ -105,6 +106,9 @@ namespace susumu
     void EditorLayer::OnEvent(Event& e)
     {
         m_CameraController.OnEvent(e);
+
+        EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(SU_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
     }
 
     void EditorLayer::OnImGuiRender()
@@ -166,22 +170,12 @@ namespace susumu
             {
                 if (ImGui::BeginMenu("File"))
                 {
-                    if (ImGui::MenuItem("Serialize"))
-                    {
-                        SceneSerializer serializer(m_ActiveScene);
-                        serializer.Serialize("assets/scenes/ExampleScene.su");
-                    }
+                    if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
+                    if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
+                    if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) SaveSceneAs();
 
-                    if (ImGui::MenuItem("Deserialize"))
-                    {
-                        SceneSerializer serializer(m_ActiveScene);
-                        serializer.Deserialize("assets/scenes/ExampleScene.su");
-                    }
+                    if (ImGui::MenuItem("Exit")) App::Get().Close();
 
-                    if (ImGui::MenuItem("Exit"))
-                    {
-                        App::Get().Close();
-                    }
                     ImGui::EndMenu();
                 }
                 ImGui::EndMenuBar();
@@ -225,5 +219,70 @@ namespace susumu
             ImGui::PopStyleVar();
         }
         ImGui::End();
+    }
+
+    bool EditorLayer::OnKeyPressed(KeyPressedEvent e)
+    {
+        //shortcuts
+        if (e.GetRepeatCount() > 0) return false;
+        bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+        bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+        switch (e.GetKeyCode())
+        {
+            case Key::N:
+            {
+                if (control)
+                {
+                    NewScene();
+                }
+            }
+            break;
+            case Key::O:
+            {
+                if (control)
+                {
+                    OpenScene();
+                }
+            }
+            break;
+            case Key::S:
+            {
+                if (control && shift)
+                {
+                    SaveSceneAs();
+                }
+            }
+            break;
+            default: break;
+        }
+    }
+
+    void EditorLayer::NewScene()
+    {
+        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+    }
+
+    void EditorLayer::OpenScene()
+    {
+        std::string filepath = FileDialogs::OpenFile("Susumu Scene (*.su)\0*.su\0)");
+        if (!filepath.empty())
+        {
+            NewScene();
+
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Deserialize(filepath);
+        }
+    }
+
+    void EditorLayer::SaveSceneAs()
+    {
+        std::string filepath = FileDialogs::SaveFile("Susumu Scene (*.su)\0*.su\0)");
+        if (!filepath.empty())
+        {
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Serialize(filepath);
+        }
     }
 }
