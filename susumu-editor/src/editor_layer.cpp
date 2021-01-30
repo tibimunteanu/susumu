@@ -26,6 +26,7 @@ namespace susumu
         m_EarthTexture = Texture2D::Create("assets/textures/earth.png");
 
         FramebufferSpec fbSpec;
+        fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -105,6 +106,20 @@ namespace susumu
         RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
         RenderCommand::Clear();
         m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);
+
+        auto [mx, my] = ImGui::GetMousePos();
+        mx -= m_ViewportBounds[0].x;
+        my -= m_ViewportBounds[0].y;
+        glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+        my = viewportSize.y - my;
+        int mouseX = (int)mx;
+        int mouseY = (int)my;
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
+        {
+            int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+            SU_CORE_WARN("{0}", pixelData);
+        }
+
         m_Framebuffer->Unbind();
     }
 
@@ -122,38 +137,31 @@ namespace susumu
         SU_PROFILE_FUNCTION();
 
         static bool dockspaceOpen = true;
-        static bool opt_fullscreen = true;
-        static bool opt_padding = false;
+        static bool opt_fullscreen_persistent = true;
+        bool opt_fullscreen = opt_fullscreen_persistent;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         if (opt_fullscreen)
         {
             ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->GetWorkPos());
-            ImGui::SetNextWindowSize(viewport->GetWorkSize());
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
             ImGui::SetNextWindowViewport(viewport->ID);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
             window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         }
-
         if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
         {
             window_flags |= ImGuiWindowFlags_NoBackground;
         }
-        if (!opt_padding)
-        {
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        }
 
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
+        ImGui::PopStyleVar();
         {
-            if (!opt_padding)
-            {
-                ImGui::PopStyleVar();
-            }
             if (opt_fullscreen)
             {
                 ImGui::PopStyleVar(2);
@@ -211,15 +219,27 @@ namespace susumu
             ImGui::End();
 
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-            ImGui::Begin("Scene");
+            ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoTitleBar);
             {
                 m_ViewportFocused = ImGui::IsWindowFocused();
                 m_ViewportHovered = ImGui::IsWindowHovered();
                 App::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
-                ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-                m_ViewportSize = { viewportSize.x, viewportSize.y };
-                ImGui::Image(reinterpret_cast<void*>(m_Framebuffer->GetColorAttachmentRendererID()), ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+                //compute panel viewport bounds and size
+                ImVec2 panelPos = ImGui::GetWindowPos();
+                ImVec2 minBound = ImGui::GetWindowContentRegionMin();
+                ImVec2 maxBound = ImGui::GetWindowContentRegionMax();
+                minBound.x += panelPos.x;
+                minBound.y += panelPos.y;
+                maxBound.x += panelPos.x;
+                maxBound.y += panelPos.y;
+                m_ViewportSize = { maxBound.x - minBound.x, maxBound.y - minBound.y };
+                m_ViewportBounds[0] = { minBound.x, minBound.y };
+                m_ViewportBounds[1] = { maxBound.x, maxBound.y };
+
+                //draw scene texture
+                uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID(0);
+                ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
                 //Gizmos
                 Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();

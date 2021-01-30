@@ -1,0 +1,1936 @@
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
+using Unity.Burst;
+using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
+using UnityEngine.Rendering;
+using Unity.Jobs.LowLevel.Unsafe;
+using Rewired;
+using System;
+
+public class NeonSystem : ESManager<NeonSystem>
+{
+    public int DrawMaxIndex;
+    public List<Vector2> StartNeons;
+    private bool startNeonsInitialized;
+
+    public float NeonSize;
+    public Neon NeonPrefab;
+
+    private List<Neon> neons;
+
+    private MeshRenderer meshRenderer;
+    private MeshFilter meshFilter;
+    private Mesh mesh;
+
+    public void AddNeon(Neon neon)
+    {
+        if (!neons.Contains(neon))
+        {
+            neons.Add(neon);
+        }
+    }
+
+    public void RemoveNeon(Neon neon)
+    {
+        neons.Remove(neon);
+    }
+
+    private void Awake()
+    {
+        neons = new List<Neon>(256);
+
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshFilter = GetComponent<MeshFilter>();
+        meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+        meshRenderer.receiveShadows = false;
+        meshRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+        if (meshFilter.sharedMesh == null)
+        {
+            meshFilter.sharedMesh = new Mesh();
+            meshFilter.sharedMesh.MarkDynamic();
+        }
+        mesh = meshFilter.sharedMesh;
+    }
+
+    private void Update()
+    {
+        //var mouse = ReInput.controllers.Mouse;
+        //var mousePos = Game.Graphics.Camera.ScreenToWorldPoint(mouse.screenPosition);
+        //if (mouse.GetButtonDown(1))
+        //{
+        //    NeonSize += 1f;
+        //}
+        //else if (mouse.GetButtonDown(2))
+        //{
+        //    NeonSize -= 1f;
+        //}
+        //else if (mouse.GetButtonDown(0))
+        //{
+        //    var neon = Instantiate(NeonPrefab, mousePos, Quaternion.identity, transform);
+        //    neon.Size = new Vector2(NeonSize, NeonSize);
+        //}
+
+        //Utils.DrawRect(new Rect(mousePos.x - NeonSize * 0.5f, mousePos.y - NeonSize * 0.5f, NeonSize, NeonSize), Color.red);
+
+        if (!startNeonsInitialized
+            && (Game.Global.Location?.NeonData?.IsReady ?? false))
+        {
+            for (int i = 0; i < StartNeons.Count; i++)
+            {
+                var neon = Instantiate(NeonPrefab, StartNeons[i], Quaternion.identity, transform);
+                neon.transform.localScale = new Vector3(NeonSize, NeonSize, 1f);
+                neon.Init();
+            }
+            startNeonsInitialized = true;
+        }
+    }
+
+    private unsafe void LateUpdate()
+    {
+        var location = Game.Global.Location;
+        var neonData = location?.NeonData;
+        var neonCount = neons.Count;
+
+        if (neonData == null
+            || !neonData.IsReady
+            || neonData.Hash == -1
+            || neonCount == 0) return;
+
+        //sort active neons by dirtiness
+        Utils.Quicksort(neons, 0, neonCount - 1, (a, b) => ((int)a.DirtyParts).CompareTo((int)b.DirtyParts));
+        var meshAndUvsNeonRangeStart = -1;
+        var uvsNeonRangeStart = -1;
+        var cachedNeonRangeStart = -1;
+        var meshAndUvsNeonCount = 0;
+        var uvsNeonCount = 0;
+        var cachedNeonCount = 0;
+        for (int n = 0; n < neonCount; n++)
+        {
+            var parts = neons[n].DirtyParts;
+            if (parts == Neon.Dirty.MeshAndUvs)
+            {
+                if (meshAndUvsNeonRangeStart == -1)
+                {
+                    meshAndUvsNeonRangeStart = n;
+                }
+                meshAndUvsNeonCount++;
+            }
+            else if (parts == Neon.Dirty.Uvs)
+            {
+                if (uvsNeonRangeStart == -1)
+                {
+                    uvsNeonRangeStart = n;
+                }
+                uvsNeonCount++;
+            }
+            else if (parts == Neon.Dirty.None)
+            {
+                if (cachedNeonRangeStart == -1)
+                {
+                    cachedNeonRangeStart = n;
+                }
+                cachedNeonCount++;
+            }
+        }
+        meshAndUvsNeonRangeStart = meshAndUvsNeonRangeStart != -1 ? meshAndUvsNeonRangeStart : 0;
+        var meshAndUvsNeonRangeEnd = meshAndUvsNeonRangeStart + meshAndUvsNeonCount;
+
+        uvsNeonRangeStart = uvsNeonRangeStart != -1 ? uvsNeonRangeStart : meshAndUvsNeonRangeEnd;
+        var uvsNeonRangeEnd = uvsNeonRangeStart + uvsNeonCount;
+
+        cachedNeonRangeStart = cachedNeonRangeStart != -1 ? cachedNeonRangeStart : uvsNeonRangeEnd;
+        var cachedNeonRangeEnd = cachedNeonRangeStart + cachedNeonCount;
+
+        var partitionDim = Cnt.segmentPartitionDim;
+        var partitionsCountX = Cnt.extendedSegmentPartitionsCountX;
+        var partitionsCountY = Cnt.extendedSegmentPartitionsCountY;
+        var lastPartitionX = partitionsCountX - 1;
+        var lastPartitionY = partitionsCountY - 1;
+
+        //precomputed buffers containing data about segments
+        var locPartSegRangeStartArray = neonData.PartitionSegmentRangeStart;
+        var locPartSegCountArray = neonData.PartitionSegmentCount;
+        var locPartPointRangeStartArray = neonData.PartitionPointRangeStart;
+        var locPartPointCountArray = neonData.PartitionPointCount;
+        var locSegX1Array = neonData.SegmentX1Array;
+        var locSegY1Array = neonData.SegmentY1Array;
+        var locSegX2Array = neonData.SegmentX2Array;
+        var locSegY2Array = neonData.SegmentY2Array;
+        var locPointXArray = neonData.PointXArray;
+        var locPointYArray = neonData.PointYArray;
+
+        //per neon buffers containing bounds
+        var nBoundsX1Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsY1Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsX2Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsY2Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsX3Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsY3Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsX4Array = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nBoundsY4Array = new RawArray<float>(neonCount, Allocator.TempJob);
+
+        //per neon buffers containing partition bounds
+        var nPartBoundsXMinArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nPartBoundsYMinArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nPartBoundsXMaxArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nPartBoundsYMaxArray = new RawArray<int>(neonCount, Allocator.TempJob);
+
+        //per neon buffers containing positions
+        var nPosXArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nPosYArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nWidthArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nHeightArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nUvRectXArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nUvRectYArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nUvRectWidthArray = new RawArray<float>(neonCount, Allocator.TempJob);
+        var nUvRectHeightArray = new RawArray<float>(neonCount, Allocator.TempJob);
+
+
+        //per neon buffers containing segment and point ranges
+        var nSegRangeStartArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nSegCountArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nPointRangeStartArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nPointCountArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nVertexBufferRangeStartArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nVertexBufferCountArray = new RawArray<int>(neonCount, Allocator.TempJob);
+        var nBoundPointCountArray = new RawArray<int>(neonCount, Allocator.TempJob);
+
+        //compute nBounds, nPartBounds, nSegCount, nPointCount
+        var setNeonsJobHandles = new RawArray<JobHandle>(neonCount, Allocator.Temp);
+        for (int n = 0; n < neonCount; n++)
+        {
+            var neon = neons[n];
+            var position = (float2)(Vector2)neon.Transform.position;
+            var rotation = math.radians(neon.Transform.rotation.eulerAngles.z);
+            var scale = (float2)(Vector2)neon.Transform.lossyScale;
+
+            float2 pivot;
+            float2 size;
+            float2 uvPos;
+            float2 uvSize;
+            var sprite = neon.Sprite;
+            if (sprite != null)
+            {
+                var texture = sprite.texture;
+                var spriteRect = sprite.rect;
+                var spriteSizePx = spriteRect.size;
+                var texSize = new Vector2(texture.width, texture.height);
+
+                pivot = neon.Sprite.pivot / spriteSizePx;
+                pivot = new float2(math.max(pivot.x, 0.001f), math.max(pivot.y, 0.001f)); //pivot must be inside
+                size = spriteSizePx.Px();
+                uvPos = spriteRect.min / texSize;
+                uvSize = spriteRect.size / texSize;
+            }
+            else
+            {
+                pivot = new float2(0.5f, 0.5f);
+                size = new float2(1f, 1f);
+                uvPos = new float2(0f, 0f);
+                uvSize = new float2(1f, 1f);
+            }
+
+            setNeonsJobHandles[n] = new SetNeonsJob
+            {
+                neonIndex = n,
+                partitionDim = partitionDim,
+                partitionCountX = partitionsCountX,
+                partitionCountY = partitionsCountY,
+                neonPosition = position,
+                neonPivot = pivot,
+                neonRotation = rotation,
+                neonLossyScale = scale,
+                neonSize = size,
+                neonUvPos = uvPos,
+                neonUvSize = uvSize,
+                locPartSegCountArray = locPartSegCountArray,
+                locPartPointCountArray = locPartPointCountArray,
+                nPosXArray = nPosXArray,
+                nPosYArray = nPosYArray,
+                nBoundsX1Array = nBoundsX1Array,
+                nBoundsY1Array = nBoundsY1Array,
+                nBoundsX2Array = nBoundsX2Array,
+                nBoundsY2Array = nBoundsY2Array,
+                nBoundsX3Array = nBoundsX3Array,
+                nBoundsY3Array = nBoundsY3Array,
+                nBoundsX4Array = nBoundsX4Array,
+                nBoundsY4Array = nBoundsY4Array,
+                nPartBoundsXMinArray = nPartBoundsXMinArray,
+                nPartBoundsYMinArray = nPartBoundsYMinArray,
+                nPartBoundsXMaxArray = nPartBoundsXMaxArray,
+                nPartBoundsYMaxArray = nPartBoundsYMaxArray,
+                nPointCountArray = nPointCountArray,
+                nSegCountArray = nSegCountArray,
+                nWidthArray = nWidthArray,
+                nHeightArray = nHeightArray,
+                nUvRectXArray = nUvRectXArray,
+                nUvRectYArray = nUvRectYArray,
+                nUvRectWidthArray = nUvRectWidthArray,
+                nUvRectHeightArray = nUvRectHeightArray
+            }.Schedule();
+        }
+
+        JobHandleUnsafeUtility.CombineDependencies(setNeonsJobHandles.GetPtr(), neonCount).Complete();
+        setNeonsJobHandles.Dispose();
+
+        //set nSegStartRangeArray and total segmentCount
+        var segmentCount = 0;
+        for (int n = meshAndUvsNeonRangeStart; n < meshAndUvsNeonRangeEnd; n++)
+        {
+            nSegRangeStartArray[n] = segmentCount;
+            segmentCount += nSegCountArray[n];
+        }
+
+        var sx1Array = new RawArray<float>(segmentCount, Allocator.TempJob);
+        var sy1Array = new RawArray<float>(segmentCount, Allocator.TempJob);
+        var sx2Array = new RawArray<float>(segmentCount, Allocator.TempJob);
+        var sy2Array = new RawArray<float>(segmentCount, Allocator.TempJob);
+        var boundPointXArray = new RawArray<float>(segmentCount * 4, Allocator.TempJob);
+        var boundPointYArray = new RawArray<float>(segmentCount * 4, Allocator.TempJob);
+
+        //set segments
+        var setSegmentsJobHandle = new SetSegmentsJob
+        {
+            partitionsCountX = partitionsCountX,
+            nBoundsX1Array = nBoundsX1Array,
+            nBoundsY1Array = nBoundsY1Array,
+            nBoundsX2Array = nBoundsX2Array,
+            nBoundsY2Array = nBoundsY2Array,
+            nBoundsX3Array = nBoundsX3Array,
+            nBoundsY3Array = nBoundsY3Array,
+            nBoundsX4Array = nBoundsX4Array,
+            nBoundsY4Array = nBoundsY4Array,
+            nPartBoundsXMinArray = nPartBoundsXMinArray,
+            nPartBoundsYMinArray = nPartBoundsYMinArray,
+            nPartBoundsXMaxArray = nPartBoundsXMaxArray,
+            nPartBoundsYMaxArray = nPartBoundsYMaxArray,
+            nSegRangeStartArray = nSegRangeStartArray,
+            locPartSegRangeStartArray = locPartSegRangeStartArray,
+            locPartSegCountArray = locPartSegCountArray,
+            locSegX1Array = locSegX1Array,
+            locSegY1Array = locSegY1Array,
+            locSegX2Array = locSegX2Array,
+            locSegY2Array = locSegY2Array,
+            sx1Array = sx1Array,
+            sy1Array = sy1Array,
+            sx2Array = sx2Array,
+            sy2Array = sy2Array
+        }.Schedule(meshAndUvsNeonCount, 1);
+
+        //intersect bounds with segments to get additional points on the bounds, and update nPointCountArray
+        new ComputeBoundPointsJob
+        {
+            nBoundsX1Array = nBoundsX1Array,
+            nBoundsY1Array = nBoundsY1Array,
+            nBoundsX2Array = nBoundsX2Array,
+            nBoundsY2Array = nBoundsY2Array,
+            nBoundsX3Array = nBoundsX3Array,
+            nBoundsY3Array = nBoundsY3Array,
+            nBoundsX4Array = nBoundsX4Array,
+            nBoundsY4Array = nBoundsY4Array,
+            nSegStartRangeArray = nSegRangeStartArray,
+            nSegCountArray = nSegCountArray,
+            sx1Array = sx1Array,
+            sy1Array = sy1Array,
+            sx2Array = sx2Array,
+            sy2Array = sy2Array,
+            boundPointXArray = boundPointXArray,
+            boundPointYArray = boundPointYArray,
+            nBoundPointCountArray = nBoundPointCountArray,
+            nPointCountArray = nPointCountArray
+        }.Schedule(meshAndUvsNeonCount, 1, setSegmentsJobHandle).Complete();
+
+        //set nPointStartRangeArray and total pointCount
+        var pointCount = 0;
+        for (int n = meshAndUvsNeonRangeStart; n < meshAndUvsNeonRangeEnd; n++)
+        {
+            nPointRangeStartArray[n] = pointCount;
+            pointCount += nPointCountArray[n];
+        }
+
+        var raysPerPoint = 2;
+        var meshAndUvsVertexBufferCount = pointCount * raysPerPoint + meshAndUvsNeonCount;
+
+        //set vertex buffer ranges for neons with Dirty.Uvs and Dirty.None and add to vertexBufferCount
+        var vertexBufferCount = meshAndUvsVertexBufferCount;
+        for (int n = uvsNeonRangeStart; n < cachedNeonRangeEnd; n++)
+        {
+            var count = neons[n].VertexBuffer.Length;
+            nVertexBufferRangeStartArray[n] = vertexBufferCount;
+            nVertexBufferCountArray[n] = count;
+            vertexBufferCount += count;
+        }
+        var indexBufferCount = (vertexBufferCount - neonCount) * 3;
+
+        var pxArray = new RawArray<float>(pointCount, Allocator.TempJob);
+        var pyArray = new RawArray<float>(pointCount, Allocator.TempJob);
+        var pNeonIndexArray = new RawArray<int>(pointCount, Allocator.TempJob);
+        var vertexBuffer = new RawArray<float3>(vertexBufferCount, Allocator.TempJob);
+        var uvsBuffer = new RawArray<float2>(vertexBufferCount, Allocator.TempJob);
+        var indexBuffer = new RawArray<int>(indexBufferCount, Allocator.TempJob);
+        var indexBufferNeonIndexArray = new RawArray<int>(indexBufferCount, Allocator.TempJob);
+
+        for (int n = meshAndUvsNeonRangeStart; n < meshAndUvsNeonRangeEnd; n++)
+        {
+            //set nVertexBufferStartArray and nVertexBufferCountArray
+            var vertexStartRangeIndex = nVertexBufferRangeStartArray[n] = nPointRangeStartArray[n] * raysPerPoint + n;
+            var vertexCount = nVertexBufferCountArray[n] = nPointCountArray[n] * raysPerPoint + 1;
+            var vertexEndRangeIndex = vertexStartRangeIndex + vertexCount;
+
+            //add neon center vertex as the last vertex for each neon
+            vertexBuffer[vertexEndRangeIndex - 1] = new float3(nPosXArray[n], nPosYArray[n], 0f);
+        }
+
+        //add cached vertex buffer for neons with Dirty.Uvs and Dirty.None
+        var vertexBufferPtr = vertexBuffer.GetPtr();
+        for (int n = uvsNeonRangeStart; n < cachedNeonRangeEnd; n++)
+        {
+            UnsafeUtility.MemCpy(vertexBufferPtr + nVertexBufferRangeStartArray[n], neons[n].VertexBuffer.GetPtr(), nVertexBufferCountArray[n] * sizeof(float3));
+        }
+
+        //set pointNeonIndexArray
+        var computeVertexBufferJobDeps = new RawArray<JobHandle>(meshAndUvsNeonCount + 1, Allocator.Temp);
+        for (int n = meshAndUvsNeonRangeStart; n < meshAndUvsNeonRangeEnd; n++)
+        {
+            var startRangeIndex = nPointRangeStartArray[n];
+            var count = nPointCountArray[n];
+
+            var handle = new MemsetRawArrayJob<int>
+            {
+                array = pNeonIndexArray.GetSubArray(startRangeIndex, count),
+                val = n
+            }.Schedule(count, 32);
+
+            computeVertexBufferJobDeps[n] = handle;
+        }
+
+        // set points
+        computeVertexBufferJobDeps[meshAndUvsNeonCount] = new SetPointsJob
+        {
+            partitionsCountX = partitionsCountX,
+            locPointXArray = locPointXArray,
+            locPointYArray = locPointYArray,
+            locPartPointRangeStartArray = locPartPointRangeStartArray,
+            locPartPointCountArray = locPartPointCountArray,
+            nBoundsX1Array = nBoundsX1Array,
+            nBoundsY1Array = nBoundsY1Array,
+            nBoundsX2Array = nBoundsX2Array,
+            nBoundsY2Array = nBoundsY2Array,
+            nBoundsX3Array = nBoundsX3Array,
+            nBoundsY3Array = nBoundsY3Array,
+            nBoundsX4Array = nBoundsX4Array,
+            nBoundsY4Array = nBoundsY4Array,
+            nPartBoundsXMinArray = nPartBoundsXMinArray,
+            nPartBoundsYMinArray = nPartBoundsYMinArray,
+            nPartBoundsXMaxArray = nPartBoundsXMaxArray,
+            nPartBoundsYMaxArray = nPartBoundsYMaxArray,
+            boundPointXArray = boundPointXArray,
+            boundPointYArray = boundPointYArray,
+            nSegRangeStartArray = nSegRangeStartArray,
+            nBoundPointCountArray = nBoundPointCountArray,
+            nPointRangeStartArray = nPointRangeStartArray,
+            pxArray = pxArray,
+            pyArray = pyArray
+        }.Schedule(meshAndUvsNeonCount, 1);
+
+        var computeVertexBufferJobDep = JobHandleUnsafeUtility.CombineDependencies(computeVertexBufferJobDeps.GetPtr(), meshAndUvsNeonCount + 1);
+        computeVertexBufferJobDeps.Dispose();
+
+        //compute vertex buffer by doing ray intersections
+        var computeVertexBufferJobHandle = new ComputeVertexBufferJob
+        {
+            pxArray = pxArray,
+            pyArray = pyArray,
+            pNeonIndexArray = pNeonIndexArray,
+            nPosXArray = nPosXArray,
+            nPosYArray = nPosYArray,
+            nSegRangeStartArray = nSegRangeStartArray,
+            nSegCountArray = nSegCountArray,
+            sx1Array = sx1Array,
+            sy1Array = sy1Array,
+            sx2Array = sx2Array,
+            sy2Array = sy2Array,
+            vertexBuffer = vertexBuffer
+        }.Schedule(pointCount, 32, computeVertexBufferJobDep);
+
+        //sort the rays buffer by angle for each neon point range
+        var sortVertexBufferJobHandle = new SortVertexBufferJob
+        {
+            nVertexBufferRangeStartArray = nVertexBufferRangeStartArray,
+            nVertexBufferCountArray = nVertexBufferCountArray,
+            vertexBuffer = vertexBuffer
+        }.Schedule(meshAndUvsNeonCount, 1, computeVertexBufferJobHandle);
+
+        //clear the angle from z to 0
+        var clearVertexBufferZJobHandle = new ClearVertexBufferZJob
+        {
+            vertexBuffer = vertexBuffer
+        }.Schedule(meshAndUvsVertexBufferCount, 32, sortVertexBufferJobHandle);
+
+        //set indexBufferNeonIndexArray
+        var computeIndexBufferJobDeps = new RawArray<JobHandle>(neonCount, Allocator.Temp);
+        for (int n = 0; n < neonCount; n++)
+        {
+            var indexRangeStart = (nVertexBufferRangeStartArray[n] - n) * 3;
+            var indexCount = (nVertexBufferCountArray[n] - 1) * 3;
+
+            var setIndexBufferNeonIndexJobHandle = new MemsetRawArrayJob<int>
+            {
+                array = indexBufferNeonIndexArray.GetSubArray(indexRangeStart, indexCount),
+                val = n
+            }.Schedule(indexCount, 32);
+
+            computeIndexBufferJobDeps[n] = setIndexBufferNeonIndexJobHandle;
+        }
+        var computeIndexBufferJobDep = JobHandleUnsafeUtility.CombineDependencies(computeIndexBufferJobDeps.GetPtr(), neonCount);
+        computeIndexBufferJobDeps.Dispose();
+
+        //compute index buffer
+        var computeIndexBufferJobHandle = new ComputeIndexBufferJob
+        {
+            vertexBufferStartRangeArray = nVertexBufferRangeStartArray,
+            vertexBufferCountArray = nVertexBufferCountArray,
+            neonIndexArray = indexBufferNeonIndexArray,
+            indexBuffer = indexBuffer
+        }.Schedule(indexBufferCount, 32, computeIndexBufferJobDep);
+
+        clearVertexBufferZJobHandle.Complete();
+
+        var computeUvsJobHandle = new ComputeUvsJob
+        {
+            nWidthArray = nWidthArray,
+            nHeightArray = nHeightArray,
+            nUvRectXArray = nUvRectXArray,
+            nUvRectYArray = nUvRectYArray,
+            nUvRectWidthArray = nUvRectWidthArray,
+            nUvRectHeightArray = nUvRectHeightArray,
+            nBoundsX1Array = nBoundsX1Array,
+            nBoundsY1Array = nBoundsY1Array,
+            nBoundsX2Array = nBoundsX2Array,
+            nBoundsY2Array = nBoundsY2Array,
+            nBoundsX4Array = nBoundsX4Array,
+            nBoundsY4Array = nBoundsY4Array,
+            nVertexBufferRangeStartArray = nVertexBufferRangeStartArray,
+            nVertexBufferCountArray = nVertexBufferCountArray,
+        }.Schedule(meshAndUvsNeonCount + uvsNeonCount, 1);
+
+        //store vertex buffers in neons
+        for (int n = 0; n < neonCount; n++)
+        {
+            var neon = neons[n];
+            var startRangeIndex = nVertexBufferRangeStartArray[n];
+            var count = nVertexBufferCountArray[n];
+            var bytesLength = count * sizeof(float3);
+
+            neon.SegmentsHash = neonData.Hash;
+            if (neon.VertexBuffer.IsCreated)
+            {
+                neon.VertexBuffer.Dispose();
+            }
+            neon.VertexBuffer = new RawArray<float3>(count, Allocator.Persistent);
+            UnsafeUtility.MemCpy(neon.VertexBuffer.GetPtr(), vertexBufferPtr + startRangeIndex, bytesLength);
+        }
+        vertexBufferPtr = null;
+
+        //compute uvs
+        for (int n = 0; n < neonCount; n++)
+        {
+            var width = nWidthArray[n];
+            var height = nHeightArray[n];
+            var uvPosX = nUvRectXArray[n];
+            var uvPosY = nUvRectYArray[n];
+            var uvWidth = nUvRectWidthArray[n];
+            var uvHeight = nUvRectHeightArray[n];
+            var bX1 = nBoundsX1Array[n];
+            var bY1 = nBoundsY1Array[n];
+            var bX2 = nBoundsX2Array[n];
+            var bY2 = nBoundsY2Array[n];
+            var bX4 = nBoundsX4Array[n];
+            var bY4 = nBoundsY4Array[n];
+            var vertexBufferRangeStart = nVertexBufferRangeStartArray[n];
+            var vertexBufferRangeEnd = vertexBufferRangeStart + nVertexBufferCountArray[n];
+
+            var hhx = bX4 - bX1;
+            var hhy = bY4 - bY1;
+            var hvx = bX2 - bX1;
+            var hvy = bY2 - bY1;
+
+            var hSqrtInv = 1f / math.sqrt(hhx * hhx + hhy * hhy);
+            var vSqrtInv = 1f / math.sqrt(hvx * hvx + hvy * hvy);
+
+            hhx *= hSqrtInv;
+            hhy *= hSqrtInv;
+            hvx *= vSqrtInv;
+            hvy *= vSqrtInv;
+
+            var widthInv = 1f / width;
+            var heightInv = 1f / height;
+
+            for (int i = vertexBufferRangeStart; i < vertexBufferRangeEnd; i++)
+            {
+                var p = vertexBuffer[i];
+                var px = p.x;
+                var py = p.y;
+
+                var hpx = px - bX1;
+                var hpy = py - bY1;
+
+                var doth = hpx * hhx + hpy * hhy;
+                var dotv = hpx * hvx + hpy * hvy;
+
+                var a = doth * widthInv;
+                var b = dotv * heightInv;
+
+                var uvx = uvWidth * a + uvPosX;
+                var uvy = uvHeight * b + uvPosY;
+
+                uvsBuffer[i] = new float2(uvx, uvy);
+            }
+        }
+
+        computeIndexBufferJobHandle.Complete();
+
+        //set mesh data
+        mesh.Clear();
+        mesh.SetVertices(vertexBuffer.AsNativeArray(), 0, vertexBufferCount);
+        mesh.SetIndices(indexBuffer.AsNativeArray(), 0, indexBufferCount, MeshTopology.Triangles, 0);
+        mesh.SetUVs(0, uvsBuffer.AsNativeArray(), 0, vertexBufferCount);
+        mesh.UploadMeshData(false);
+
+        //dispose all buffers
+        indexBufferNeonIndexArray.Dispose();
+        pNeonIndexArray.Dispose();
+        indexBuffer.Dispose();
+        uvsBuffer.Dispose();
+        vertexBuffer.Dispose();
+        pyArray.Dispose();
+        pxArray.Dispose();
+        boundPointYArray.Dispose();
+        boundPointXArray.Dispose();
+        sy2Array.Dispose();
+        sy1Array.Dispose();
+        sx2Array.Dispose();
+        sx1Array.Dispose();
+        nBoundPointCountArray.Dispose();
+        nVertexBufferCountArray.Dispose();
+        nVertexBufferRangeStartArray.Dispose();
+        nPointCountArray.Dispose();
+        nPointRangeStartArray.Dispose();
+        nSegCountArray.Dispose();
+        nSegRangeStartArray.Dispose();
+        nPosXArray.Dispose();
+        nPosYArray.Dispose();
+        nWidthArray.Dispose();
+        nHeightArray.Dispose();
+        nUvRectXArray.Dispose();
+        nUvRectYArray.Dispose();
+        nUvRectWidthArray.Dispose();
+        nUvRectHeightArray.Dispose();
+        nPartBoundsXMinArray.Dispose();
+        nPartBoundsYMinArray.Dispose();
+        nPartBoundsXMaxArray.Dispose();
+        nPartBoundsYMaxArray.Dispose();
+        nBoundsX1Array.Dispose();
+        nBoundsY1Array.Dispose();
+        nBoundsX2Array.Dispose();
+        nBoundsY2Array.Dispose();
+        nBoundsX3Array.Dispose();
+        nBoundsY3Array.Dispose();
+        nBoundsX4Array.Dispose();
+        nBoundsY4Array.Dispose();
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct MemsetRawArrayJob<T> : IJobParallelFor
+        where T : unmanaged
+    {
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<T> array;
+
+        [Unity.Collections.ReadOnly]
+        public T val;
+
+        public void Execute(int index)
+        {
+            array[index] = val;
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct SetNeonsJob : IJob
+    {
+        [Unity.Collections.ReadOnly]
+        public int neonIndex;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonPosition;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonPivot;
+
+        [Unity.Collections.ReadOnly]
+        public float neonRotation;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonLossyScale;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonSize;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonUvPos;
+
+        [Unity.Collections.ReadOnly]
+        public float2 neonUvSize;
+
+        [Unity.Collections.ReadOnly]
+        public float partitionDim;
+
+        [Unity.Collections.ReadOnly]
+        public int partitionCountX;
+
+        [Unity.Collections.ReadOnly]
+        public int partitionCountY;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartSegCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartPointCountArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX1Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY1Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX2Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY2Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX3Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY3Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX4Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY4Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nPosXArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nPosYArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMinArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMinArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMaxArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMaxArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegCountArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPointCountArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nWidthArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nHeightArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectXArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectYArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectWidthArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectHeightArray;
+
+        public unsafe void Execute()
+        {
+            var scaledSizeX = neonSize.x * neonLossyScale.x;
+            var scaledSizeY = neonSize.y * neonLossyScale.y;
+            var posX = neonPosition.x;
+            var posY = neonPosition.y;
+            var xMin = posX - scaledSizeX * neonPivot.x;
+            var yMin = posY - scaledSizeY * neonPivot.y;
+            var xMax = xMin + scaledSizeX;
+            var yMax = yMin + scaledSizeY;
+
+            nWidthArray[neonIndex] = scaledSizeX;
+            nHeightArray[neonIndex] = scaledSizeY;
+            nUvRectXArray[neonIndex] = neonUvPos.x;
+            nUvRectYArray[neonIndex] = neonUvPos.y;
+            nUvRectWidthArray[neonIndex] = neonUvSize.x;
+            nUvRectHeightArray[neonIndex] = neonUvSize.y;
+
+            if (neonRotation == 0f)
+            {
+                nBoundsX1Array[neonIndex] = xMin;
+                nBoundsY1Array[neonIndex] = yMin;
+                nBoundsX2Array[neonIndex] = xMin;
+                nBoundsY2Array[neonIndex] = yMax;
+                nBoundsX3Array[neonIndex] = xMax;
+                nBoundsY3Array[neonIndex] = yMax;
+                nBoundsX4Array[neonIndex] = xMax;
+                nBoundsY4Array[neonIndex] = yMin;
+            }
+            else
+            {
+                var cos = math.cos(neonRotation);
+                var sin = math.sin(neonRotation);
+
+                var hxMin = xMin - posX;
+                var hyMin = yMin - posY;
+                var hxMax = xMax - posX;
+                var hyMax = yMax - posY;
+
+                var hxMinCos = hxMin * cos;
+                var hyMinCos = hyMin * cos;
+                var hxMaxCos = hxMax * cos;
+                var hyMaxCos = hyMax * cos;
+                var hxMinSin = hxMin * sin;
+                var hyMinSin = hyMin * sin;
+                var hxMaxSin = hxMax * sin;
+                var hyMaxSin = hyMax * sin;
+
+                var rotX1 = hxMinCos - hyMinSin;
+                var rotX2 = hxMinCos - hyMaxSin;
+                var rotX3 = hxMaxCos - hyMaxSin;
+                var rotX4 = hxMaxCos - hyMinSin;
+                var rotY1 = hxMinSin + hyMinCos;
+                var rotY2 = hxMinSin + hyMaxCos;
+                var rotY3 = hxMaxSin + hyMaxCos;
+                var rotY4 = hxMaxSin + hyMinCos;
+
+                var x1 = rotX1 + posX;
+                var y1 = rotY1 + posY;
+                var x2 = rotX2 + posX;
+                var y2 = rotY2 + posY;
+                var x3 = rotX3 + posX;
+                var y3 = rotY3 + posY;
+                var x4 = rotX4 + posX;
+                var y4 = rotY4 + posY;
+
+                //let xMin, yMin, xMax, yMax be the AABB
+                var minX12 = math.min(x1, x2);
+                var minX34 = math.min(x3, x4);
+                var minY12 = math.min(y1, y2);
+                var minY34 = math.min(y3, y4);
+                var maxX12 = math.max(x1, x2);
+                var maxX34 = math.max(x3, x4);
+                var maxY12 = math.max(y1, y2);
+                var maxY34 = math.max(y3, y4);
+
+                xMin = math.min(minX12, minX34);
+                yMin = math.min(minY12, minY34);
+                xMax = math.max(maxX12, maxX34);
+                yMax = math.max(maxY12, maxY34);
+
+                nBoundsX1Array[neonIndex] = x1;
+                nBoundsY1Array[neonIndex] = y1;
+                nBoundsX2Array[neonIndex] = x2;
+                nBoundsY2Array[neonIndex] = y2;
+                nBoundsX3Array[neonIndex] = x3;
+                nBoundsY3Array[neonIndex] = y3;
+                nBoundsX4Array[neonIndex] = x4;
+                nBoundsY4Array[neonIndex] = y4;
+            }
+
+            var pxMin = Mathf.Clamp(Mathf.FloorToInt(xMin / partitionDim), 0, partitionCountX - 1);
+            var pyMin = Mathf.Clamp(Mathf.FloorToInt(yMin / partitionDim), 0, partitionCountY - 1);
+            var pxMax = Mathf.Clamp(Mathf.CeilToInt(xMax / partitionDim), 0, partitionCountX - 1);
+            var pyMax = Mathf.Clamp(Mathf.CeilToInt(yMax / partitionDim), 0, partitionCountY - 1);
+
+            nPartBoundsXMinArray[neonIndex] = pxMin;
+            nPartBoundsYMinArray[neonIndex] = pyMin;
+            nPartBoundsXMaxArray[neonIndex] = pxMax;
+            nPartBoundsYMaxArray[neonIndex] = pyMax;
+
+            nPosXArray[neonIndex] = neonPosition.x;
+            nPosYArray[neonIndex] = neonPosition.y;
+
+            var segmentCount = 0;
+            var pointCount = 0;
+            for (int py = pyMin; py < pyMax; py++)
+            {
+                for (int px = pxMin; px < pxMax; px++)
+                {
+                    var pIndex = py * partitionCountX + px;
+                    segmentCount += locPartSegCountArray[pIndex];
+                    pointCount += locPartPointCountArray[pIndex];
+                }
+            }
+            segmentCount += 4; //leave room for the bounds segments
+            pointCount += 4; //leave room for the bounds points
+
+            nSegCountArray[neonIndex] = segmentCount;
+            nPointCountArray[neonIndex] = pointCount;
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct SetSegmentsJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        public int partitionsCountX;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMinArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMinArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMaxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMaxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locSegX1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locSegY1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locSegX2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locSegY2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartSegRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartSegCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegRangeStartArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx1Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy1Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx2Array;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy2Array;
+
+        public unsafe void Execute(int index)
+        {
+            var segStartIndex = nSegRangeStartArray[index];
+
+            var sx1ArrayPtr = sx1Array.GetPtr() + segStartIndex;
+            var sy1ArrayPtr = sy1Array.GetPtr() + segStartIndex;
+            var sx2ArrayPtr = sx2Array.GetPtr() + segStartIndex;
+            var sy2ArrayPtr = sy2Array.GetPtr() + segStartIndex;
+
+            //add segments from partitions
+            var locSegX1ArrayPtr = locSegX1Array.GetPtr();
+            var locSegY1ArrayPtr = locSegY1Array.GetPtr();
+            var locSegX2ArrayPtr = locSegX2Array.GetPtr();
+            var locSegY2ArrayPtr = locSegY2Array.GetPtr();
+
+            var partBoundsXMin = nPartBoundsXMinArray[index];
+            var partBoundsYMin = nPartBoundsYMinArray[index];
+            var partBoundsXMax = nPartBoundsXMaxArray[index];
+            var partBoundsYMax = nPartBoundsYMaxArray[index];
+
+            for (int py = partBoundsYMin; py < partBoundsYMax; py++)
+            {
+                for (int px = partBoundsXMin; px < partBoundsXMax; px++)
+                {
+                    var pIndex = py * partitionsCountX + px;
+
+                    var locPartSegRangeStart = locPartSegRangeStartArray[pIndex];
+                    var locPartSegCount = locPartSegCountArray[pIndex];
+                    if (locPartSegCount > 0)
+                    {
+                        var bytesLength = locPartSegCount * sizeof(float);
+
+                        UnsafeUtility.MemCpy(sx1ArrayPtr, locSegX1ArrayPtr + locPartSegRangeStart, bytesLength);
+                        UnsafeUtility.MemCpy(sy1ArrayPtr, locSegY1ArrayPtr + locPartSegRangeStart, bytesLength);
+                        UnsafeUtility.MemCpy(sx2ArrayPtr, locSegX2ArrayPtr + locPartSegRangeStart, bytesLength);
+                        UnsafeUtility.MemCpy(sy2ArrayPtr, locSegY2ArrayPtr + locPartSegRangeStart, bytesLength);
+
+                        sx1ArrayPtr += locPartSegCount;
+                        sy1ArrayPtr += locPartSegCount;
+                        sx2ArrayPtr += locPartSegCount;
+                        sy2ArrayPtr += locPartSegCount;
+                    }
+                }
+            }
+
+            //add bounds segments
+            var boundsX1 = nBoundsX1Array[index];
+            var boundsY1 = nBoundsY1Array[index];
+            var boundsX2 = nBoundsX2Array[index];
+            var boundsY2 = nBoundsY2Array[index];
+            var boundsX3 = nBoundsX3Array[index];
+            var boundsY3 = nBoundsY3Array[index];
+            var boundsX4 = nBoundsX4Array[index];
+            var boundsY4 = nBoundsY4Array[index];
+
+            *sx1ArrayPtr = boundsX1;
+            *sy1ArrayPtr = boundsY1;
+            *sx2ArrayPtr = boundsX2;
+            *sy2ArrayPtr = boundsY2;
+            sx1ArrayPtr++;
+            sy1ArrayPtr++;
+            sx2ArrayPtr++;
+            sy2ArrayPtr++;
+
+            *sx1ArrayPtr = boundsX2;
+            *sy1ArrayPtr = boundsY2;
+            *sx2ArrayPtr = boundsX3;
+            *sy2ArrayPtr = boundsY3;
+            sx1ArrayPtr++;
+            sy1ArrayPtr++;
+            sx2ArrayPtr++;
+            sy2ArrayPtr++;
+
+            *sx1ArrayPtr = boundsX3;
+            *sy1ArrayPtr = boundsY3;
+            *sx2ArrayPtr = boundsX4;
+            *sy2ArrayPtr = boundsY4;
+            sx1ArrayPtr++;
+            sy1ArrayPtr++;
+            sx2ArrayPtr++;
+            sy2ArrayPtr++;
+
+            *sx1ArrayPtr = boundsX4;
+            *sy1ArrayPtr = boundsY4;
+            *sx2ArrayPtr = boundsX1;
+            *sy2ArrayPtr = boundsY1;
+            sx1ArrayPtr++;
+            sy1ArrayPtr++;
+            sx2ArrayPtr++;
+            sy2ArrayPtr++;
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct ComputeBoundPointsJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegStartRangeArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegCountArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> boundPointXArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> boundPointYArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nBoundPointCountArray;
+
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPointCountArray;
+
+        public void Execute(int index)
+        {
+            var nBoundsX1 = nBoundsX1Array[index];
+            var nBoundsY1 = nBoundsY1Array[index];
+            var nBoundsX2 = nBoundsX2Array[index];
+            var nBoundsY2 = nBoundsY2Array[index];
+            var nBoundsX3 = nBoundsX3Array[index];
+            var nBoundsY3 = nBoundsY3Array[index];
+            var nBoundsX4 = nBoundsX4Array[index];
+            var nBoundsY4 = nBoundsY4Array[index];
+
+            var segStartIndex = nSegStartRangeArray[index];
+            var segCount = nSegCountArray[index] - 4; //don't intersect bounds with bounds
+            var segEndIndex = segStartIndex + segCount;
+            var boundPointStartIndex = segStartIndex * 4;
+
+            var boundPointIndex = boundPointStartIndex;
+            for (int b = 0; b < 4; b++)
+            {
+                var bx1 = 0f;
+                var by1 = 0f;
+                var bx2 = 0f;
+                var by2 = 0f;
+                switch (b)
+                {
+                    case 0: bx1 = nBoundsX1; by1 = nBoundsY1; bx2 = nBoundsX2; by2 = nBoundsY2; break;
+                    case 1: bx1 = nBoundsX2; by1 = nBoundsY2; bx2 = nBoundsX3; by2 = nBoundsY3; break;
+                    case 2: bx1 = nBoundsX3; by1 = nBoundsY3; bx2 = nBoundsX4; by2 = nBoundsY4; break;
+                    case 3: bx1 = nBoundsX4; by1 = nBoundsY4; bx2 = nBoundsX1; by2 = nBoundsY1; break;
+                }
+
+                var bhx = bx2 - bx1;
+                var bhy = by2 - by1;
+
+                for (int s = segStartIndex; s < segEndIndex; s++)
+                {
+                    var sx1 = sx1Array[s];
+                    var sy1 = sy1Array[s];
+                    var sx2 = sx2Array[s];
+                    var sy2 = sy2Array[s];
+
+                    var shx = sx2 - sx1;
+                    var shy = sy2 - sy1;
+
+                    var den = shx * bhy - shy * bhx;
+                    if (den != 0f)
+                    {
+                        var dox = bx1 - sx1;
+                        var doy = by1 - sy1;
+
+                        var bT = -(shx * doy - shy * dox) / den;
+                        var sT = (dox * bhy - doy * bhx) / den;
+                        if (sT >= 0f && sT <= 1f && bT >= 0f && bT <= 1f)
+                        {
+                            boundPointXArray[boundPointIndex] = sx1 + shx * sT;
+                            boundPointYArray[boundPointIndex] = sy1 + shy * sT;
+                            boundPointIndex++;
+                        }
+                    }
+                }
+            }
+
+            var boundPointCount = boundPointIndex - boundPointStartIndex;
+            var pointCount = nPointCountArray[index];
+
+            nBoundPointCountArray[index] = boundPointCount;
+            nPointCountArray[index] = pointCount + boundPointCount;
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct SetPointsJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        public int partitionsCountX;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY3Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMinArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMinArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsXMaxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPartBoundsYMaxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locPointXArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> locPointYArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartPointRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> locPartPointCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> boundPointXArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> boundPointYArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nBoundPointCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nPointRangeStartArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> pxArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> pyArray;
+
+        public unsafe void Execute(int index)
+        {
+            var pointStartIndex = nPointRangeStartArray[index];
+            var pxArrayPtr = pxArray.GetPtr() + pointStartIndex;
+            var pyArrayPtr = pyArray.GetPtr() + pointStartIndex;
+
+            //add points from partitions
+            var partBoundsXMin = nPartBoundsXMinArray[index];
+            var partBoundsYMin = nPartBoundsYMinArray[index];
+            var partBoundsXMax = nPartBoundsXMaxArray[index];
+            var partBoundsYMax = nPartBoundsYMaxArray[index];
+
+            var locPointXArrayPtr = locPointXArray.GetPtr();
+            var locPointYArrayPtr = locPointYArray.GetPtr();
+
+            for (int py = partBoundsYMin; py < partBoundsYMax; py++)
+            {
+                for (int px = partBoundsXMin; px < partBoundsXMax; px++)
+                {
+                    var pIndex = py * partitionsCountX + px;
+                    var locPartPointRangeStart = locPartPointRangeStartArray[pIndex];
+                    var locPartPointCount = locPartPointCountArray[pIndex];
+                    if (locPartPointCount > 0)
+                    {
+                        var bytesLength = locPartPointCount * sizeof(float);
+
+                        UnsafeUtility.MemCpy(pxArrayPtr, locPointXArrayPtr + locPartPointRangeStart, bytesLength);
+                        UnsafeUtility.MemCpy(pyArrayPtr, locPointYArrayPtr + locPartPointRangeStart, bytesLength);
+
+                        pxArrayPtr += locPartPointCount;
+                        pyArrayPtr += locPartPointCount;
+                    }
+                }
+            }
+
+            //add points from bound intersection buffers
+            var boundPointStartIndex = nSegRangeStartArray[index] * 4;
+            var boundPointCount = nBoundPointCountArray[index];
+
+            if (boundPointCount > 0)
+            {
+                var bytesLength = boundPointCount * sizeof(float);
+                UnsafeUtility.MemCpy(pxArrayPtr, boundPointXArray.GetPtr() + boundPointStartIndex, bytesLength);
+                UnsafeUtility.MemCpy(pyArrayPtr, boundPointYArray.GetPtr() + boundPointStartIndex, bytesLength);
+
+                pxArrayPtr += boundPointCount;
+                pyArrayPtr += boundPointCount;
+            }
+
+            //add bounds points
+            *pxArrayPtr = nBoundsX1Array[index];
+            *pyArrayPtr = nBoundsY1Array[index];
+            pxArrayPtr++;
+            pyArrayPtr++;
+
+            *pxArrayPtr = nBoundsX2Array[index];
+            *pyArrayPtr = nBoundsY2Array[index];
+            pxArrayPtr++;
+            pyArrayPtr++;
+
+            *pxArrayPtr = nBoundsX3Array[index];
+            *pyArrayPtr = nBoundsY3Array[index];
+            pxArrayPtr++;
+            pyArrayPtr++;
+
+            *pxArrayPtr = nBoundsX4Array[index];
+            *pyArrayPtr = nBoundsY4Array[index];
+            pxArrayPtr++;
+            pyArrayPtr++;
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct ComputeVertexBufferJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> pxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> pyArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> pNeonIndexArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nPosXArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nPosYArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nSegCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sx2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sy2Array;
+
+        [WriteOnly]
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float3> vertexBuffer;
+
+        public void Execute(int index)
+        {
+            var neonIndex = pNeonIndexArray[index];
+            var segmentStartIndex = nSegRangeStartArray[neonIndex];
+            var segmentCount = nSegCountArray[neonIndex];
+            var segmentEndIndex = segmentStartIndex + segmentCount;
+            var rox = nPosXArray[neonIndex];
+            var roy = nPosYArray[neonIndex];
+
+            //do primary ray
+            var rex = pxArray[index];
+            var rey = pyArray[index];
+
+            //do only secondary rays
+            var t = 0.001f;
+            var mainRhx = rex - rox;
+            var mainRhy = rey - roy;
+            var resultIndex = index * 2 + neonIndex;
+            var resultIndexOffset = 0;
+            for (int d = -1; d <= 1; d += 2)
+            {
+                var rhx = mainRhx + t * (d * mainRhy - mainRhx);
+                var rhy = mainRhy + t * (-d * mainRhx - mainRhy);
+
+                var closestRT = -1f;
+                for (int s = segmentStartIndex; s < segmentEndIndex; s++)
+                {
+                    var sx1 = sx1Array[s];
+                    var sy1 = sy1Array[s];
+                    var sx2 = sx2Array[s];
+                    var sy2 = sy2Array[s];
+
+                    var shx = sx2 - sx1;
+                    var shy = sy2 - sy1;
+
+                    var den = shx * rhy - shy * rhx;
+                    if (den != 0f)
+                    {
+                        var droxsx1 = rox - sx1;
+                        var droysy1 = roy - sy1;
+
+                        var rayT = -(shx * droysy1 - shy * droxsx1) / den;
+                        var segT = (droxsx1 * rhy - droysy1 * rhx) / den;
+
+                        if (rayT >= 0f && segT >= 0f && segT <= 1f
+                            && (closestRT == -1f || rayT < closestRT))
+                        {
+                            closestRT = rayT;
+                        }
+                    }
+                }
+
+                vertexBuffer[resultIndex + resultIndexOffset] = new float3(rox + rhx * closestRT, roy + rhy * closestRT, math.atan2(rhy, rhx));
+                resultIndexOffset++;
+            }
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct SortVertexBufferJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nVertexBufferRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nVertexBufferCountArray;
+
+        [NativeDisableParallelForRestriction]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float3> vertexBuffer;
+
+        public void Execute(int index)
+        {
+            var startRangeIndex = nVertexBufferRangeStartArray[index];
+            var count = nVertexBufferCountArray[index];
+            var endRangeIndex = startRangeIndex + count - 2;
+
+            Utils.QuicksortVector3ByZ(vertexBuffer, startRangeIndex, endRangeIndex);
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct ClearVertexBufferZJob : IJobParallelFor
+    {
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float3> vertexBuffer;
+
+        public void Execute(int index)
+        {
+            vertexBuffer[index] = new float3(vertexBuffer[index].x, vertexBuffer[index].y, 0f);
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct ComputeIndexBufferJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableParallelForRestriction]
+        public RawArray<int> vertexBufferStartRangeArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        [NativeDisableParallelForRestriction]
+        public RawArray<int> vertexBufferCountArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> neonIndexArray;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> indexBuffer;
+
+        public void Execute(int index)
+        {
+            var neonIndex = neonIndexArray[index];
+            var vertexBufferStartRangeIndex = vertexBufferStartRangeArray[neonIndex];
+            var vertexBufferCount = vertexBufferCountArray[neonIndex];
+            var vertexBufferEndRangeIndex = vertexBufferStartRangeIndex + vertexBufferCount;
+            var vertexBufferIndex = index / 3 + neonIndex;
+
+            switch (index % 3)
+            {
+                case 0: indexBuffer[index] = vertexBufferEndRangeIndex - 1; break;
+                case 1: indexBuffer[index] = vertexBufferIndex; break;
+                case 2: indexBuffer[index] = vertexBufferIndex < vertexBufferEndRangeIndex - 2 ? vertexBufferIndex + 1 : vertexBufferStartRangeIndex; break;
+            }
+        }
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]
+    private struct ComputeUvsJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nWidthArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nHeightArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectXArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectYArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectWidthArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nUvRectHeightArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY1Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX2Array;
+        
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY2Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsX4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> nBoundsY4Array;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nVertexBufferRangeStartArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> nVertexBufferCountArray;
+
+        public void Execute(int index)
+        {
+            var neonIndex = neonIndexArray[index];
+            var vertexBufferStartRangeIndex = vertexBufferStartRangeArray[neonIndex];
+            var vertexBufferCount = vertexBufferCountArray[neonIndex];
+            var vertexBufferEndRangeIndex = vertexBufferStartRangeIndex + vertexBufferCount;
+            var vertexBufferIndex = index / 3 + neonIndex;
+
+            switch (index % 3)
+            {
+                case 0: indexBuffer[index] = vertexBufferEndRangeIndex - 1; break;
+                case 1: indexBuffer[index] = vertexBufferIndex; break;
+                case 2: indexBuffer[index] = vertexBufferIndex < vertexBufferEndRangeIndex - 2 ? vertexBufferIndex + 1 : vertexBufferStartRangeIndex; break;
+            }
+        }
+    }
+}
+
+public class NeonData
+{
+    public RawArray<int> PartitionSegmentRangeStart;
+    public RawArray<int> PartitionSegmentCount;
+    public RawArray<int> PartitionPointRangeStart;
+    public RawArray<int> PartitionPointCount;
+    public RawArray<float> SegmentX1Array;
+    public RawArray<float> SegmentY1Array;
+    public RawArray<float> SegmentX2Array;
+    public RawArray<float> SegmentY2Array;
+    public RawArray<float> PointXArray;
+    public RawArray<float> PointYArray;
+
+    public int Hash;
+    public bool IsReady;
+
+    public NeonData()
+    {
+        Hash = -1;
+        IsReady = false;
+    }
+
+    public void Clear()
+    {
+        if (PartitionSegmentRangeStart.IsCreated) PartitionSegmentRangeStart.Dispose();
+        if (PartitionSegmentCount.IsCreated) PartitionSegmentCount.Dispose();
+        if (PartitionPointRangeStart.IsCreated) PartitionPointRangeStart.Dispose();
+        if (PartitionPointCount.IsCreated) PartitionPointCount.Dispose();
+        if (SegmentX1Array.IsCreated) SegmentX1Array.Dispose();
+        if (SegmentY1Array.IsCreated) SegmentY1Array.Dispose();
+        if (SegmentX2Array.IsCreated) SegmentX2Array.Dispose();
+        if (SegmentY2Array.IsCreated) SegmentY2Array.Dispose();
+        if (PointXArray.IsCreated) PointXArray.Dispose();
+        if (PointYArray.IsCreated) PointYArray.Dispose();
+
+        IsReady = false;
+    }
+
+    public void Set(List<Segment>[][] SegmentPartitions)
+    {
+        IsReady = false;
+
+        var partitionCountX = Cnt.extendedSegmentPartitionsCountX;
+        var partitionCountY = Cnt.extendedSegmentPartitionsCountY;
+        var partitionCount = partitionCountX * partitionCountY;
+        var segmentCount = 0;
+        for (var py = 0; py < partitionCountY; py++)
+        {
+            for (var px = 0; px < partitionCountX; px++)
+            {
+                segmentCount += SegmentPartitions[px][py].Count;
+            }
+        }
+        var pointCount = segmentCount * 2;
+
+        RecreateBuffers(partitionCount, segmentCount, pointCount);
+        SetSegments(SegmentPartitions, segmentCount);
+        SetUniquePoints(segmentCount, pointCount);
+
+        IsReady = true;
+        Hash++;
+    }
+
+    private void RecreateBuffers(int partitionCount, int segmentCount, int pointCount)
+    {
+        Clear();
+        PartitionSegmentRangeStart = new RawArray<int>(partitionCount, Allocator.Persistent);
+        PartitionSegmentCount = new RawArray<int>(partitionCount, Allocator.Persistent);
+        PartitionPointRangeStart = new RawArray<int>(partitionCount, Allocator.Persistent);
+        PartitionPointCount = new RawArray<int>(partitionCount, Allocator.Persistent);
+        SegmentX1Array = new RawArray<float>(segmentCount, Allocator.Persistent);
+        SegmentY1Array = new RawArray<float>(segmentCount, Allocator.Persistent);
+        SegmentX2Array = new RawArray<float>(segmentCount, Allocator.Persistent);
+        SegmentY2Array = new RawArray<float>(segmentCount, Allocator.Persistent);
+        PointXArray = new RawArray<float>(pointCount, Allocator.Persistent);
+        PointYArray = new RawArray<float>(pointCount, Allocator.Persistent);
+    }
+
+    private void SetSegments(List<Segment>[][] SegmentPartitions, int segmentCount)
+    {
+        var partitionCountX = Cnt.extendedSegmentPartitionsCountX;
+        var partitionCountY = Cnt.extendedSegmentPartitionsCountY;
+        var index = 0;
+        for (var py = 0; py < partitionCountY; py++)
+        {
+            for (var px = 0; px < partitionCountX; px++)
+            {
+                var pIndex = py * partitionCountX + px;
+                var pSegStartIndex = index;
+                var segments = SegmentPartitions[px][py];
+
+                if (segments.Count > 0)
+                {
+                    for (int s = 0, sl = segments.Count; s < sl; s++)
+                    {
+                        var segment = segments[s];
+                        SegmentX1Array[index] = segment.start.x;
+                        SegmentY1Array[index] = segment.start.y;
+                        SegmentX2Array[index] = segment.end.x;
+                        SegmentY2Array[index] = segment.end.y;
+                        index++;
+                    }
+                }
+                PartitionSegmentRangeStart[pIndex] = pSegStartIndex;
+                PartitionSegmentCount[pIndex] = index - pSegStartIndex;
+            }
+        }
+        Debug.Assert(index == segmentCount);
+    }
+
+    private unsafe void SetUniquePoints(int segmentCount, int pointCount)
+    {
+        var hashSet = new RawHashSet<float2>(pointCount, Allocator.Temp);
+        var p1HashBucketArray = new RawArray<int>(segmentCount, Allocator.TempJob);
+        var p2HashBucketArray = new RawArray<int>(segmentCount, Allocator.TempJob);
+
+        var computeHashBuckets1JobHandle = new ComputePointHashSetBucketsJob
+        {
+            sxArray = SegmentX1Array,
+            syArray = SegmentY1Array,
+            capacityMinusOne = hashSet.CapacityMinusOne,
+            pHashBucketArray = p1HashBucketArray
+        }.Schedule(segmentCount, 32);
+
+        var computeHashBuckets2JobHandle = new ComputePointHashSetBucketsJob
+        {
+            sxArray = SegmentX2Array,
+            syArray = SegmentY2Array,
+            capacityMinusOne = hashSet.CapacityMinusOne,
+            pHashBucketArray = p2HashBucketArray
+        }.Schedule(segmentCount, 32);
+
+        JobHandle.CombineDependencies(computeHashBuckets1JobHandle, computeHashBuckets2JobHandle).Complete();
+
+        var partitionDim = Cnt.segmentPartitionDim;
+        var partitionCountX = Cnt.extendedSegmentPartitionsCountX;
+        var partitionCountY = Cnt.extendedSegmentPartitionsCountY;
+        pointCount = 0;
+        for (var py = 0; py < partitionCountY; py++)
+        {
+            for (var px = 0; px < partitionCountX; px++)
+            {
+                var pIndex = py * partitionCountX + px;
+                var pPointStartIndex = pointCount;
+                var segCount = PartitionSegmentCount[pIndex];
+
+                if (segCount > 0)
+                {
+                    hashSet.Clear();
+
+                    var pXMin = px * partitionDim;
+                    var pYMin = py * partitionDim;
+                    var pXMax = partitionDim + px * partitionDim;
+                    var pYMax = partitionDim + py * partitionDim;
+
+                    var segStart = PartitionSegmentRangeStart[pIndex];
+                    var segEnd = segStart + segCount;
+
+                    for (int s = segStart; s < segEnd; s++)
+                    {
+                        var sx1 = SegmentX1Array[s];
+                        var sy1 = SegmentY1Array[s];
+                        var sx2 = SegmentX2Array[s];
+                        var sy2 = SegmentY2Array[s];
+                        var p1 = new float2(sx1, sy1);
+                        var p2 = new float2(sx2, sy2);
+                        var bucket1 = p1HashBucketArray[s];
+                        var bucket2 = p2HashBucketArray[s];
+
+                        if (!hashSet.Contains(bucket1, p1))
+                        {
+                            hashSet.Add(bucket1, p1);
+                            if (sx1 >= pXMin && sx1 <= pXMax && sy1 >= pYMin && sy1 <= pYMax)
+                            {
+                                PointXArray[pointCount] = sx1;
+                                PointYArray[pointCount] = sy1;
+                                pointCount++;
+                            }
+                        }
+                        if (!hashSet.Contains(bucket2, p2))
+                        {
+                            hashSet.Add(bucket2, p2);
+                            if (sx2 >= pXMin && sx2 <= pXMax && sy2 >= pYMin && sy2 <= pYMax)
+                            {
+                                PointXArray[pointCount] = sx2;
+                                PointYArray[pointCount] = sy2;
+                                pointCount++;
+                            }
+                        }
+                    }
+                }
+                PartitionPointRangeStart[pIndex] = pPointStartIndex;
+                PartitionPointCount[pIndex] = pointCount - pPointStartIndex;
+            }
+        }
+        hashSet.Dispose();
+        p1HashBucketArray.Dispose();
+        p2HashBucketArray.Dispose();
+    }
+
+    [BurstCompile(CompileSynchronously = true, Debug = false)]//, FloatMode = FloatMode.Fast, FloatPrecision = FloatPrecision.Low)]
+    private struct ComputePointHashSetBucketsJob : IJobParallelFor
+    {
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> sxArray;
+
+        [Unity.Collections.ReadOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<float> syArray;
+
+        [Unity.Collections.ReadOnly]
+        public int capacityMinusOne;
+
+        [WriteOnly]
+        [NativeDisableContainerSafetyRestriction]
+        public RawArray<int> pHashBucketArray;
+
+        public unsafe void Execute(int index)
+        {
+            var x = sxArray[index];
+            var y = syArray[index];
+
+            var bpx = (byte*)&x;
+            var bpy = (byte*)&y;
+            var bex = bpx + sizeof(float);
+            var bey = bpy + sizeof(float);
+
+            var hash = 0;
+            while (bpx < bex)
+            {
+                hash *= 0x01000193;
+                hash ^= *bpx++;
+            }
+            while (bpy < bey)
+            {
+                hash *= 0x01000193;
+                hash ^= *bpy++;
+            }
+
+            pHashBucketArray[index] = hash & capacityMinusOne;
+        }
+    }
+}

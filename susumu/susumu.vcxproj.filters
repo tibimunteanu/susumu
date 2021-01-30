@@ -19,6 +19,9 @@
     <Filter Include="src\engine\imgui">
       <UniqueIdentifier>{1C6037C9-0859-561B-318B-3BA01DE33527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\engine\math">
+      <UniqueIdentifier>{6BB52225-D740-90E9-E051-13DE4C5CECE9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\engine\renderer">
       <UniqueIdentifier>{388D297C-A4EE-068A-2D5C-4D3C99BC3D49}</UniqueIdentifier>
     </Filter>
@@ -123,10 +126,16 @@
     <ClInclude Include="src\engine\imgui\imgui_layer.h">
       <Filter>src\engine\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\math\math.h">
+      <Filter>src\engine\math</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\renderer\buffer.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\camera.h">
+      <Filter>src\engine\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderer\editor_camera.h">
       <Filter>src\engine\renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\renderer\framebuffer.h">
@@ -1455,8 +1464,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\math\math.h" />
-    <ClInclude Include="src\engine\renderer\editor_camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
@@ -1480,10 +1487,16 @@
     <ClCompile Include="src\engine\imgui\imgui_layer.cpp">
       <Filter>src\engine\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\math\math.cpp">
+      <Filter>src\engine\math</Filter>
+    </ClCompile>
     <ClCompile Include="src\engine\renderer\buffer.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\camera.cpp">
+      <Filter>src\engine\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderer\editor_camera.cpp">
       <Filter>src\engine\renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\renderer\framebuffer.cpp">
@@ -1567,7 +1580,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\math\math.cpp" />
-    <ClCompile Include="src\engine\renderer\editor_camera.cpp" />
   </ItemGroup>
 </Project>
