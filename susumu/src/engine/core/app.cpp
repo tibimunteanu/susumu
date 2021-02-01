@@ -14,15 +14,11 @@ namespace susumu
 
     App::App(const std::string& name)
     {
-        SU_PROFILE_FUNCTION();
-
         SU_CORE_ASSERT(!s_Instance, "App already exists");
         s_Instance = this;
 
         m_Window = Window::Create(WindowProps(name));
         m_Window->SetEventCallback(SU_BIND_EVENT_FN(App::OnEvent));
-
-        Renderer::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -30,7 +26,6 @@ namespace susumu
 
     App::~App()
     {
-        Renderer::Shutdown();
     }
 
     void App::OnEvent(Event& e)
@@ -56,30 +51,22 @@ namespace susumu
 
     void App::Run()
     {
-        SU_PROFILE_FUNCTION();
-
         while (m_Running)
         {
-            SU_PROFILE_SCOPE("RunLoop");
-
             float time = (float)glfwGetTime(); //TODO: Platform::GetTime
             m_LastTimeStep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
             if (!m_Minimized)
             {
+                for (Layer* layer : m_LayerStack)
                 {
-                    SU_PROFILE_SCOPE("LayerStack OnUpdate");
-                    for (Layer* layer : m_LayerStack)
-                    {
-                        layer->OnUpdate(m_LastTimeStep);
-                    }
+                    layer->OnUpdate(m_LastTimeStep);
                 }
             }
 
             m_ImGuiLayer->Begin();
             {
-                SU_PROFILE_SCOPE("LayerStack OnImGuiRender");
                 for (Layer* layer : m_LayerStack)
                 {
                     layer->OnImGuiRender();
@@ -87,6 +74,7 @@ namespace susumu
             }
             m_ImGuiLayer->End();
 
+            Renderer::Get().WaitAndRender();
             m_Window->OnUpdate();
         }
     }
@@ -99,8 +87,6 @@ namespace susumu
 
     bool App::OnWindowResize(WindowResizeEvent& e)
     {
-        SU_PROFILE_FUNCTION();
-
         if (e.GetWidth() == 0 || e.GetHeight() == 0)
         {
             m_Minimized = true;
@@ -108,7 +94,6 @@ namespace susumu
         }
 
         m_Minimized = false;
-        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
         return false;
     }

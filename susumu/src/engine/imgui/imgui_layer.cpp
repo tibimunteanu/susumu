@@ -20,8 +20,6 @@ namespace susumu
 
     void ImGuiLayer::OnAttach()
     {
-        SU_PROFILE_FUNCTION();
-
         //Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -30,10 +28,6 @@ namespace susumu
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;	// Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport/Platform Windows
-
-        const float fontSize = 15.5f;
-        io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", fontSize);
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", fontSize);
 
         //Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -60,8 +54,6 @@ namespace susumu
 
     void ImGuiLayer::OnDetach()
     {
-        SU_PROFILE_FUNCTION();
-
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -79,8 +71,6 @@ namespace susumu
 
     void ImGuiLayer::Begin()
     {
-        SU_PROFILE_FUNCTION();
-
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -89,8 +79,6 @@ namespace susumu
 
     void ImGuiLayer::End()
     {
-        SU_PROFILE_FUNCTION();
-
         ImGuiIO& io = ImGui::GetIO();
         App& app = App::Get();
         io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());

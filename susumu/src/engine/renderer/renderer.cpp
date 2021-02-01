@@ -1,45 +1,38 @@
 #include "supch.h"
 #include "engine/renderer/renderer.h"
-#include "engine/renderer/renderer_2d.h"
+#include "engine/renderer/render_command.h"
 
 namespace susumu
 {
-    Scope<Renderer::SceneData> Renderer::m_SceneData = CreateScope<Renderer::SceneData>();
+    Renderer* Renderer::s_Instance = new Renderer();
 
     void Renderer::Init()
     {
-        SU_PROFILE_FUNCTION();
-
-        RenderCommand::Init();
-        Renderer2D::Init();
     }
 
-    void Renderer::Shutdown()
+    void Renderer::Clear()
     {
-        Renderer2D::Shutdown();
+        //SU_RENDER(Clear());
     }
 
-    void Renderer::OnWindowResize(uint32_t width, uint32_t height)
+    void Renderer::Clear(float r, float g, float b, float a)
     {
-        RenderCommand::SetViewport(0, 0, width, height);
+        float params[4] = { r, g, b, a };
+        s_Instance->m_CommandQueue.SubmitCommand(RenderCommand::Clear, params, sizeof(float) * 4);
     }
 
-    void Renderer::BeginScene(OrthographicCamera& camera)
+    void Renderer::ClearMagenta()
     {
-        m_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+        Clear(1, 0, 1);
     }
 
-    void Renderer::EndScene()
+    void Renderer::SetClearColor(float r, float g, float b, float a)
     {
+        //SU_RENDER(SetClearColor(r, g, b, a));
     }
 
-    void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
+    void Renderer::WaitAndRender()
     {
-        shader->Bind();
-        shader->SetMat4("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-        shader->SetMat4("u_Transform", transform);
-
-        vertexArray->Bind();
-        RenderCommand::DrawIndexed(vertexArray);
+        s_Instance->m_CommandQueue.Execute();
     }
 }

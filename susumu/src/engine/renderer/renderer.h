@@ -1,30 +1,34 @@
 #pragma once
 
-#include "engine/renderer/render_command.h"
-#include "engine/renderer/camera.h"
-#include "engine/renderer/shader.h"
+#include "engine/renderer/render_command_queue.h"
+#include "engine/renderer/renderer_api.h"
 
 namespace susumu
 {
     class Renderer
     {
     public:
+        static void Clear();
+        static void Clear(float r, float g, float b, float a = 1.0f);
+        static void SetClearColor(float r, float g, float b, float a);
+
+        static void ClearMagenta();
+
         static void Init();
-        static void Shutdown();
-        static void OnWindowResize(uint32_t width, uint32_t height);
 
-        static void BeginScene(OrthographicCamera& camera);
-        static void EndScene();
-
-        static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-
-        static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-    private:
-        struct SceneData
+        static void Submit(const std::function<void()>& command)
         {
-            glm::mat4 ViewProjectionMatrix;
-        };
+            //s_Instance->m_CommandQueue.Submit(command);
+        }
 
-        static Scope<SceneData> m_SceneData;
+        void WaitAndRender();
+
+        inline static Renderer& Get() { return *s_Instance; }
+    private:
+        static Renderer* s_Instance;
+
+        RenderCommandQueue m_CommandQueue;
     };
+
+#define SU_RENDER(x) ::susumu::Renderer::Submit([=](){ RendererAPI::DrawIndexed; })
 }

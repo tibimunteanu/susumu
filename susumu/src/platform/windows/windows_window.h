@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/core/window.h"
-#include "engine/renderer/graphics_context.h"
 
 #include <GLFW/glfw3.h>
 
@@ -27,7 +26,7 @@ namespace susumu
         virtual void Shutdown();
     private:
         GLFWwindow* m_Window;
-        Scope<GraphicsContext> m_Context;
+		GLFWcursor* m_ImGuiMouseCursors[9] = { 0 };
 
         struct WindowData
         {

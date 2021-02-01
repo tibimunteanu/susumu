@@ -25,7 +25,6 @@
 
 #include "engine/core/base.h"
 #include "engine/core/log.h"
-#include "engine/debug/instrumentor.h"
 
 #ifdef SU_PLATFORM_WINDOWS
     #include <Windows.h>

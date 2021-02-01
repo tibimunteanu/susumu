@@ -135,11 +135,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\sandbox_2d.h" />
+    <ClInclude Include="src\game_layer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\game_layer.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
-    <ClCompile Include="src\sandbox_2d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\susumu\susumu.vcxproj">

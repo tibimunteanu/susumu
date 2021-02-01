@@ -6,6 +6,9 @@
 #include "engine/events/mouse_event.h"
 #include "engine/renderer/renderer.h"
 
+#include <glad/glad.h>
+#include <imgui.h>
+
 namespace susumu
 {
     static uint8_t s_GLFWWindowCount = 0;
@@ -17,22 +20,16 @@ namespace susumu
 
     WindowsWindow::WindowsWindow(const WindowProps& props)
     {
-        SU_PROFILE_FUNCTION();
-
         Init(props);
     }
 
     WindowsWindow::~WindowsWindow()
     {
-        SU_PROFILE_FUNCTION();
-
         Shutdown();
     }
 
     void WindowsWindow::Init(const WindowProps& props)
     {
-        SU_PROFILE_FUNCTION();
-
         m_Data.Title = props.Title;
         m_Data.Width = props.Width;
         m_Data.Height = props.Height;
@@ -42,7 +39,6 @@ namespace susumu
         if (s_GLFWWindowCount == 0)
         {
             {
-                SU_PROFILE_SCOPE("glfwInit");
                 int glfwSuccess = glfwInit();
                 SU_CORE_ASSERT(glfwSuccess, "Could not initialize GLFW!");
                 glfwSetErrorCallback(GLFWErrorCallback);
@@ -50,17 +46,14 @@ namespace susumu
         }
 
         {
-            SU_PROFILE_SCOPE("glfwCreateWindow");
-        #if defined(SU_DEBUG)
-            if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-        #endif
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
             m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
             s_GLFWWindowCount++;
         }
 
-        m_Context = GraphicsContext::Create(m_Window);
-        m_Context->Init();
+        glfwMakeContextCurrent(m_Window);
+        int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        SU_CORE_ASSERT(status, "Failed to initialize Glad!");
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
@@ -153,12 +146,19 @@ namespace susumu
             MouseMovedEvent event((float)xPos, (float)yPos);
             data.EventCallback(event);
         });
+
+        m_ImGuiMouseCursors[ImGuiMouseCursor_Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+        m_ImGuiMouseCursors[ImGuiMouseCursor_TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+        m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);   // FIXME: GLFW doesn't have this.
+        m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+        m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+        m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
+        m_ImGuiMouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);  // FIXME: GLFW doesn't have this.
+        m_ImGuiMouseCursors[ImGuiMouseCursor_Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
     }
 
     void WindowsWindow::Shutdown()
     {
-        SU_PROFILE_FUNCTION();
-
         glfwDestroyWindow(m_Window);
 
         s_GLFWWindowCount--;
@@ -170,16 +170,16 @@ namespace susumu
 
     void WindowsWindow::OnUpdate()
     {
-        SU_PROFILE_FUNCTION();
-
         glfwPollEvents();
-        m_Context->SwapBuffers();
+        glfwSwapBuffers(m_Window);
+
+        ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
+        glfwSetCursor(m_Window, m_ImGuiMouseCursors[imgui_cursor] ? m_ImGuiMouseCursors[imgui_cursor] : m_ImGuiMouseCursors[ImGuiMouseCursor_Arrow]);
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     void WindowsWindow::SetVSync(bool enabled)
     {
-        SU_PROFILE_FUNCTION();
-
         glfwSwapInterval(enabled ? 1 : 0);
         m_Data.VSync = enabled;
     }

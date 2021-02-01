@@ -1,14 +1,14 @@
 #include <susumu.h>
 #include <engine/core/startup.h>
 
-#include "sandbox_2d.h"
+#include "game_layer.h"
 
 class Sandbox : public susumu::App
 {
 public:
     Sandbox()
     {
-        PushLayer(new Sandbox2D());
+        PushLayer(new GameLayer());
     }
 
     ~Sandbox()
