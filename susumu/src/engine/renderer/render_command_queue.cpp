@@ -17,46 +17,40 @@ namespace susumu
         delete[] m_CommandBuffer;
     }
 
-    void RenderCommandQueue::Submit(const RenderCommand& command)
+    void* RenderCommandQueue::Allocate(RenderCommandFn fn, unsigned int size)
     {
-        auto ptr = m_CommandBuffer;
+        //TODO: aligmnent
+        *(RenderCommandFn*)m_CommandBufferPtr = fn;
+        m_CommandBufferPtr += sizeof(RenderCommandFn);
 
-        memcpy(m_CommandBuffer, &command, sizeof(RenderCommand));
-        m_CommandBufferPtr += sizeof(RenderCommand);
-        m_RenderCommandCount++;
-    }
+        *(int*)m_CommandBufferPtr = size;
+        m_CommandBufferPtr += sizeof(unsigned int);
 
-    void RenderCommandQueue::SubmitCommand(RenderCommandFn fn, void* params, unsigned int size)
-    {
-        unsigned char*& buffer = m_CommandBufferPtr;
-        memcpy(buffer, &fn, sizeof(RenderCommandFn));
-        buffer += sizeof(RenderCommandFn);
-        memcpy(buffer, params, size);
-        buffer += size;
+        void* memory = m_CommandBufferPtr;
+        m_CommandBufferPtr += size;
 
-        auto totalSize = sizeof(RenderCommandFn) + size;
-        auto padding = totalSize % 16; //16-byte alignment
-        buffer += padding;
-        m_RenderCommandCount++;
+        m_CommandCount++;
+        return memory;
     }
 
     void RenderCommandQueue::Execute()
     {
-        SU_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_RenderCommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+        SU_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
         unsigned char* buffer = m_CommandBuffer;
 
-        for (int i = 0; i < m_RenderCommandCount; i++)
+        for (unsigned int i = 0; i < m_CommandCount; i++)
         {
             RenderCommandFn fn = *(RenderCommandFn*)buffer;
             buffer += sizeof(RenderCommandFn);
-            buffer += (*fn)(buffer);
 
-            auto padding = (int)buffer % 16;
-            buffer += padding;
+            unsigned int size = *(unsigned int*)buffer;
+            buffer += sizeof(unsigned int);
+            fn(buffer);
+            buffer += size;
         }
 
         m_CommandBufferPtr = m_CommandBuffer;
-        m_RenderCommandCount = 0;
+        m_CommandCount = 0;
     }
 }

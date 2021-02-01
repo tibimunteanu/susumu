@@ -65,18 +65,25 @@ namespace susumu
                 }
             }
 
-            m_ImGuiLayer->Begin();
-            {
-                for (Layer* layer : m_LayerStack)
-                {
-                    layer->OnImGuiRender();
-                }
-            }
-            m_ImGuiLayer->End();
+            App* app = this;
+            SU_RENDER_1(app, { app->RenderImGui(); });
 
             Renderer::Get().WaitAndRender();
+
             m_Window->OnUpdate();
         }
+    }
+
+    void App::RenderImGui()
+    {
+        m_ImGuiLayer->Begin();
+        {
+            for (Layer* layer : m_LayerStack)
+            {
+                layer->OnImGuiRender();
+            }
+        }
+        m_ImGuiLayer->End();
     }
 
     bool App::OnWindowClosed(WindowCloseEvent& e)

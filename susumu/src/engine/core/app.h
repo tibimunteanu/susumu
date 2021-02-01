@@ -23,6 +23,7 @@ namespace susumu
         void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
         void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
         void PopOverlay(Layer* overlay) { m_LayerStack.PopOverlay(overlay); }
+        void RenderImGui();
 
         Window& GetWindow() { return *m_Window; }
         float GetLastTimeStep() { return m_LastTimeStep; }

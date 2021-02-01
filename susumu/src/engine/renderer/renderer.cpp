@@ -1,6 +1,5 @@
 #include "supch.h"
 #include "engine/renderer/renderer.h"
-#include "engine/renderer/render_command.h"
 
 namespace susumu
 {
@@ -12,13 +11,13 @@ namespace susumu
 
     void Renderer::Clear()
     {
-        //SU_RENDER(Clear());
     }
 
     void Renderer::Clear(float r, float g, float b, float a)
     {
-        float params[4] = { r, g, b, a };
-        s_Instance->m_CommandQueue.SubmitCommand(RenderCommand::Clear, params, sizeof(float) * 4);
+        SU_RENDER_4(r, g, b, a, {
+            RendererAPI::Clear(r, g, b, a);
+        });
     }
 
     void Renderer::ClearMagenta()
@@ -28,7 +27,6 @@ namespace susumu
 
     void Renderer::SetClearColor(float r, float g, float b, float a)
     {
-        //SU_RENDER(SetClearColor(r, g, b, a));
     }
 
     void Renderer::WaitAndRender()
