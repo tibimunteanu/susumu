@@ -105,6 +105,10 @@ namespace susumu
         m_Framebuffer->Bind();
         RenderCommand::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
         RenderCommand::Clear();
+
+        //Clear entityID attachment to -1
+        m_Framebuffer->ClearAttachment(1, -1);
+
         m_ActiveScene->OnUpdateEditor(dt, m_EditorCamera);
 
         auto [mx, my] = ImGui::GetMousePos();
