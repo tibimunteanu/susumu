@@ -31,6 +31,22 @@ public:
 
     virtual void OnAttach() override
     {
+        static float vertices[] = 
+        {
+            -0.5f, -0.5f, 0.0f,
+             0.5f, -0.5f, 0.0f,
+             0.0f,  0.5f, 0.0f
+        };
+
+        static unsigned int indices[] = {
+            0, 1, 2
+        };
+
+        m_VB = std::unique_ptr<susumu::VertexBuffer>(susumu::VertexBuffer::Create());
+        m_VB->SetData(vertices, sizeof(vertices));
+
+        m_IB = std::unique_ptr<susumu::IndexBuffer>(susumu::IndexBuffer::Create());
+        m_IB->SetData(indices, sizeof(indices));
     }
 
     virtual void OnDetach() override
@@ -40,6 +56,10 @@ public:
     virtual void OnUpdate(susumu::Timestep dt) override
     {
         susumu::Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
+
+        m_VB->Bind();
+        m_IB->Bind();
+        susumu::Renderer::DrawIndexed(3);
     }
 
     virtual void OnImGuiRender() override
@@ -110,7 +130,7 @@ public:
                 if (ImGui::MenuItem("Close DockSpace", NULL, false, p_open != NULL))
                     p_open = false;
                 ImGui::EndMenu();
-            }
+}
             ImGuiShowHelpMarker(
                 "You can _always_ dock _any_ window into another by holding the SHIFT key while moving a window. Try it now!" "\n"
                 "This demo app has nothing to do with it!" "\n\n"
@@ -130,6 +150,8 @@ public:
     {
     }
 private:
+    std::unique_ptr<susumu::VertexBuffer> m_VB;
+    std::unique_ptr<susumu::IndexBuffer> m_IB;
     float m_ClearColor[4];
 };
 
@@ -138,12 +160,11 @@ class Sandbox : public susumu::App
 public:
     Sandbox()
     {
-        PushLayer(new EditorLayer());
     }
 
-    ~Sandbox()
+    virtual void OnInit() override
     {
-
+        PushLayer(new EditorLayer());
     }
 };
 

@@ -15,6 +15,8 @@ namespace susumu
         static void Clear(float r, float g, float b, float a = 1.0f);
         static void SetClearColor(float r, float g, float b, float a);
 
+        static void DrawIndexed(unsigned int count);
+
         static void ClearMagenta();
 
         static void Init();
@@ -47,19 +49,20 @@ namespace susumu
         }\
     };\
 	{\
-		auto mem = RenderCommandQueue::Submit(sizeof(SU_RENDER_UNIQUE(SURenderCommand)), SU_RENDER_UNIQUE(SURenderCommand)::Execute);\
+		auto mem = ::susumu::Renderer::Submit(SU_RENDER_UNIQUE(SURenderCommand)::Execute, sizeof(SU_RENDER_UNIQUE(SURenderCommand)));\
 		new (mem) SU_RENDER_UNIQUE(SURenderCommand)();\
 	}\
 
 #define SU_RENDER_1(arg0, code) \
+	do {\
     struct SU_RENDER_UNIQUE(SURenderCommand) \
     {\
 		SU_RENDER_UNIQUE(SURenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(arg0)>::type>::type arg0) \
 		: arg0(arg0) {}\
 		\
-        static void Execute(void* self)\
+        static void Execute(void* argBuffer)\
         {\
-			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg0;\
+			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg0;\
             code\
         }\
 		\
@@ -68,7 +71,7 @@ namespace susumu
 	{\
 		auto mem = ::susumu::Renderer::Submit(SU_RENDER_UNIQUE(SURenderCommand)::Execute, sizeof(SU_RENDER_UNIQUE(SURenderCommand)));\
 		new (mem) SU_RENDER_UNIQUE(SURenderCommand)(arg0);\
-	}\
+	} } while(0)
 
 #define SU_RENDER_2(arg0, arg1, code) \
     struct SU_RENDER_UNIQUE(SURenderCommand) \
@@ -77,10 +80,10 @@ namespace susumu
 											typename ::std::remove_const<typename ::std::remove_reference<decltype(arg1)>::type>::type arg1) \
 		: arg0(arg0), arg1(arg1) {}\
 		\
-        static void Execute(void* self)\
+        static void Execute(void* argBuffer)\
         {\
-			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg0;\
-			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg1;\
+			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg0;\
+			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg1;\
             code\
         }\
 		\
@@ -100,11 +103,11 @@ namespace susumu
 											typename ::std::remove_const<typename ::std::remove_reference<decltype(arg2)>::type>::type arg2) \
 		: arg0(arg0), arg1(arg1), arg2(arg2) {}\
 		\
-        static void Execute(void* self)\
+        static void Execute(void* argBuffer)\
         {\
-			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg0;\
-			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg1;\
-			auto& arg2 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg2;\
+			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg0;\
+			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg1;\
+			auto& arg2 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg2;\
             code\
         }\
 		\
@@ -126,12 +129,12 @@ namespace susumu
 											typename ::std::remove_const<typename ::std::remove_reference<decltype(arg3)>::type>::type arg3)\
 		: arg0(arg0), arg1(arg1), arg2(arg2), arg3(arg3) {}\
 		\
-        static void Execute(void* self)\
+        static void Execute(void* argBuffer)\
         {\
-			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg0;\
-			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg1;\
-			auto& arg2 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg2;\
-			auto& arg3 = ((SU_RENDER_UNIQUE(SURenderCommand)*)self)->arg3;\
+			auto& arg0 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg0;\
+			auto& arg1 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg1;\
+			auto& arg2 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg2;\
+			auto& arg3 = ((SU_RENDER_UNIQUE(SURenderCommand)*)argBuffer)->arg3;\
             code\
         }\
 		\
@@ -143,5 +146,16 @@ namespace susumu
 	{\
 		auto mem = Renderer::Submit(SU_RENDER_UNIQUE(SURenderCommand)::Execute, sizeof(SU_RENDER_UNIQUE(SURenderCommand)));\
 		new (mem) SU_RENDER_UNIQUE(SURenderCommand)(arg0, arg1, arg2, arg3);\
-	}\
+	}
 
+#define SU_RENDER_S(code) auto self = this;\
+	SU_RENDER_1(self, code)
+
+#define SU_RENDER_S1(arg0, code) auto self = this;\
+	SU_RENDER_2(self, arg0, code)
+
+#define SU_RENDER_S2(arg0, arg1, code) auto self = this;\
+	SU_RENDER_3(self, arg0, arg1, code)
+
+#define SU_RENDER_S3(arg0, arg1, arg2, code) auto self = this;\
+	SU_RENDER_4(self, arg0, arg1, arg2, code)

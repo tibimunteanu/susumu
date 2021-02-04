@@ -17,7 +17,10 @@ namespace susumu
         App(const std::string& name = "Susumu");
         virtual ~App();
 
-        void OnEvent(Event& e);
+        virtual void OnInit() {}
+        virtual void OnShutdown() {}
+        virtual void OnUpdate() {}
+        virtual void OnEvent(Event& e);
 
         void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
         void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }

@@ -22,6 +22,8 @@ namespace susumu
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
+
+        Renderer::Init();
     }
 
     App::~App()
@@ -51,6 +53,7 @@ namespace susumu
 
     void App::Run()
     {
+        OnInit();
         while (m_Running)
         {
             float time = (float)glfwGetTime(); //TODO: Platform::GetTime
@@ -72,6 +75,7 @@ namespace susumu
 
             m_Window->OnUpdate();
         }
+        OnShutdown();
     }
 
     void App::RenderImGui()
