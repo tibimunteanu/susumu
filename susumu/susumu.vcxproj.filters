@@ -1383,6 +1383,8 @@
     <ClInclude Include="src\platform\opengl\opengl_vertex_buffer.h" />
     <ClInclude Include="src\engine\renderer\texture.h" />
     <ClInclude Include="src\platform\opengl\opengl_texture.h" />
+    <ClInclude Include="src\engine\renderer\shader.h" />
+    <ClInclude Include="src\platform\opengl\opengl_shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine\core\app.cpp">
@@ -1439,5 +1441,7 @@
     <ClCompile Include="src\platform\opengl\opengl_vertex_buffer.cpp" />
     <ClCompile Include="src\engine\renderer\texture.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_texture.cpp" />
+    <ClCompile Include="src\engine\renderer\shader.cpp" />
+    <ClCompile Include="src\platform\opengl\opengl_shader.cpp" />
   </ItemGroup>
 </Project>

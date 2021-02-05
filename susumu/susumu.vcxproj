@@ -167,9 +167,11 @@
     <ClInclude Include="src\engine\renderer\render_command_queue.h" />
     <ClInclude Include="src\engine\renderer\renderer.h" />
     <ClInclude Include="src\engine\renderer\renderer_api.h" />
+    <ClInclude Include="src\engine\renderer\shader.h" />
     <ClInclude Include="src\engine\renderer\texture.h" />
     <ClInclude Include="src\engine\renderer\vertex_buffer.h" />
     <ClInclude Include="src\platform\opengl\opengl_index_buffer.h" />
+    <ClInclude Include="src\platform\opengl\opengl_shader.h" />
     <ClInclude Include="src\platform\opengl\opengl_texture.h" />
     <ClInclude Include="src\platform\opengl\opengl_vertex_buffer.h" />
     <ClInclude Include="src\platform\windows\windows_window.h" />
@@ -603,10 +605,12 @@
     <ClCompile Include="src\engine\renderer\render_command.cpp" />
     <ClCompile Include="src\engine\renderer\render_command_queue.cpp" />
     <ClCompile Include="src\engine\renderer\renderer.cpp" />
+    <ClCompile Include="src\engine\renderer\shader.cpp" />
     <ClCompile Include="src\engine\renderer\texture.cpp" />
     <ClCompile Include="src\engine\renderer\vertex_buffer.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_index_buffer.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_renderer_api.cpp" />
+    <ClCompile Include="src\platform\opengl\opengl_shader.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_texture.cpp" />
     <ClCompile Include="src\platform\opengl\opengl_vertex_buffer.cpp" />
     <ClCompile Include="src\platform\windows\windows_input.cpp" />

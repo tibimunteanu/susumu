@@ -3,6 +3,8 @@
 #include "engine/imgui/imgui_layer.h"
 
 #include <imgui/imgui.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 static void ImGuiShowHelpMarker(const char* desc)
 {
@@ -21,7 +23,7 @@ class EditorLayer : public susumu::Layer
 {
 public:
     EditorLayer()
-        : m_ClearColor{ 0.2f, 0.3f, 0.8f, 1.0f }
+        : m_ClearColor{ 0.2f, 0.3f, 0.8f, 1.0f }, m_TriangleColor{ 0.8f, 0.2f, 0.3f, 1.0f }
     {
     }
 
@@ -42,11 +44,13 @@ public:
             0, 1, 2
         };
 
-        m_VB = std::unique_ptr<susumu::VertexBuffer>(susumu::VertexBuffer::Create());
+        m_VB.reset(susumu::VertexBuffer::Create());
         m_VB->SetData(vertices, sizeof(vertices));
 
-        m_IB = std::unique_ptr<susumu::IndexBuffer>(susumu::IndexBuffer::Create());
+        m_IB.reset(susumu::IndexBuffer::Create());
         m_IB->SetData(indices, sizeof(indices));
+
+        m_Shader.reset(susumu::Shader::Create("assets/shaders/shader.glsl"));
     }
 
     virtual void OnDetach() override
@@ -57,6 +61,11 @@ public:
     {
         susumu::Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
 
+        susumu::UniformBufferDeclaration<sizeof(glm::vec4), 1> buffer;
+        buffer.Push("u_Color", m_TriangleColor);
+        m_Shader->UploadUniformBuffer(buffer);
+
+        m_Shader->Bind();
         m_VB->Bind();
         m_IB->Bind();
         susumu::Renderer::DrawIndexed(3);
@@ -64,12 +73,9 @@ public:
 
     virtual void OnImGuiRender() override
     {
-        static bool show_demo_window = true;
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
-
         ImGui::Begin("GameLayer");
         ImGui::ColorEdit4("Clear Color", m_ClearColor);
+        ImGui::ColorEdit4("Triangle Color", glm::value_ptr(m_TriangleColor));
         ImGui::End();
 
     #if ENABLE_DOCKSPACE
@@ -152,7 +158,9 @@ public:
 private:
     std::unique_ptr<susumu::VertexBuffer> m_VB;
     std::unique_ptr<susumu::IndexBuffer> m_IB;
+    std::unique_ptr<susumu::Shader> m_Shader;
     float m_ClearColor[4];
+    glm::vec4 m_TriangleColor;
 };
 
 class Sandbox : public susumu::App
