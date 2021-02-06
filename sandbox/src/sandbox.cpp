@@ -40,7 +40,7 @@ public:
              0.0f,  0.5f, 0.0f
         };
 
-        static unsigned int indices[] = {
+        static uint32_t indices[] = {
             0, 1, 2
         };
 

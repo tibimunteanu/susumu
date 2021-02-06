@@ -31,7 +31,7 @@ namespace susumu
     {
     }
 
-    void Renderer::DrawIndexed(unsigned int count)
+    void Renderer::DrawIndexed(uint32_t count)
     {
         SU_RENDER_1(count, {
             RendererAPI::DrawIndexed(count);

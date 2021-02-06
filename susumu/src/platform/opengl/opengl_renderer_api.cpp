@@ -7,7 +7,7 @@ namespace susumu
 {
     void RendererAPI::Init()
     {
-        unsigned int vao;
+        uint32_t vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
     }
@@ -27,7 +27,7 @@ namespace susumu
         glClearColor(r, g, b, a);
     }
 
-    void RendererAPI::DrawIndexed(unsigned int count)
+    void RendererAPI::DrawIndexed(uint32_t count)
     {
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
     }

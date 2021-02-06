@@ -4,7 +4,7 @@
 
 namespace susumu
 {
-    unsigned int RenderCommand::Clear(void* datablock)
+    uint32_t RenderCommand::Clear(void* datablock)
     {
         float* data = (float*)datablock;
 

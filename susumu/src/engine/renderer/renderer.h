@@ -15,13 +15,13 @@ namespace susumu
         static void Clear(float r, float g, float b, float a = 1.0f);
         static void SetClearColor(float r, float g, float b, float a);
 
-        static void DrawIndexed(unsigned int count);
+        static void DrawIndexed(uint32_t count);
 
         static void ClearMagenta();
 
         static void Init();
 
-        static void* Submit(RenderCommandFn fn, unsigned int size)
+        static void* Submit(RenderCommandFn fn, uint32_t size)
         {
             return s_Instance->m_CommandQueue.Allocate(fn, size);
         }

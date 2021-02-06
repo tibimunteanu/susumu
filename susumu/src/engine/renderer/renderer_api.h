@@ -2,7 +2,7 @@
 
 namespace susumu
 {
-    using RendererID = unsigned int;
+    using RendererID = uint32_t;
 
     enum class RendererAPIType
     {
@@ -17,7 +17,7 @@ namespace susumu
         static void Shutdown();
         static void Clear(float r, float g, float b, float a);
         static void SetClearColor(float r, float g, float b, float a);
-        static void DrawIndexed(unsigned int count);
+        static void DrawIndexed(uint32_t count);
 
         static RendererAPIType Current() { return s_CurrentRendererAPI; }
     private:

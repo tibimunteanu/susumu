@@ -35,27 +35,27 @@ namespace susumu
 
     struct UniformBuffer
     {
-        char* Buffer;
+        uint8_t* Buffer;
         std::vector<UniformDecl> Uniforms;
     };
 
     struct UniformBufferBase
     {
-        virtual const char* GetBuffer() const = 0;
+        virtual const uint8_t* GetBuffer() const = 0;
         virtual const UniformDecl* GetUniforms() const = 0;
-        virtual unsigned int GetUniformCount() const = 0;
+        virtual uint32_t GetUniformCount() const = 0;
     };
 
-    template<unsigned int N, unsigned int U>
+    template<uint32_t N, uint32_t U>
     struct UniformBufferDeclaration : public UniformBufferBase
     {
-        char Buffer[N];
+        uint8_t Buffer[N];
         UniformDecl Uniforms[U];
         std::ptrdiff_t Cursor = 0;
 
-        virtual const char* GetBuffer() const override { return Buffer; }
+        virtual const uint8_t* GetBuffer() const override { return Buffer; }
         virtual const UniformDecl* GetUniforms() const override { return Uniforms; }
-        virtual unsigned int GetUniformCount() const override { return U; }
+        virtual uint32_t GetUniformCount() const override { return U; }
 
         template<typename T>
         void Push(const std::string& name, const T& data) {}

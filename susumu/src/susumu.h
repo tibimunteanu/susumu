@@ -17,7 +17,6 @@
 
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/render_command.h"
-#include "engine/renderer/vertex_buffer.h"
-#include "engine/renderer/index_buffer.h"
+#include "engine/renderer/buffer.h"
 #include "engine/renderer/texture.h"
 #include "engine/renderer/shader.h"

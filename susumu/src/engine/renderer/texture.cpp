@@ -5,7 +5,7 @@
 
 namespace susumu
 {
-    Texture2D* Texture2D::Create(TextureFormat format, unsigned int width, unsigned int height)
+    Texture2D* Texture2D::Create(TextureFormat format, uint32_t width, uint32_t height)
     {
         switch (RendererAPI::Current())
         {

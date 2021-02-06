@@ -5,6 +5,6 @@ namespace susumu
     class RenderCommand
     {
     public:
-        static unsigned int Clear(void* datablock);
+        static uint32_t Clear(void* datablock);
     };
 }

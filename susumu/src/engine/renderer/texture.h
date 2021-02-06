@@ -20,10 +20,10 @@ namespace susumu
     class Texture2D : public Texture
     {
     public:
-        static Texture2D* Create(TextureFormat format, unsigned int width, unsigned int height);
+        static Texture2D* Create(TextureFormat format, uint32_t width, uint32_t height);
 
         virtual TextureFormat GetFormat() const = 0;
-        virtual unsigned int GetWidth() const = 0;
-        virtual unsigned int GetHeight() const = 0;
+        virtual uint32_t GetWidth() const = 0;
+        virtual uint32_t GetHeight() const = 0;
     };
 }

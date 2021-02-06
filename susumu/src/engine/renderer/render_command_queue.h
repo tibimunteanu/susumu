@@ -12,12 +12,12 @@ namespace susumu
         RenderCommandQueue();
         ~RenderCommandQueue();
 
-        void* Allocate(RenderCommandFn fn, unsigned int size);
+        void* Allocate(RenderCommandFn fn, uint32_t size);
         void Execute();
 
     private:
-        unsigned char* m_CommandBuffer;
-        unsigned char* m_CommandBufferPtr;
-        unsigned int m_CommandCount = 0;
+        uint8_t* m_CommandBuffer;
+        uint8_t* m_CommandBufferPtr;
+        uint32_t m_CommandCount = 0;
     };
 }

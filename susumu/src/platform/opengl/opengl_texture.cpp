@@ -17,7 +17,7 @@ namespace susumu
         }
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, unsigned int width, unsigned int height)
+    OpenGLTexture2D::OpenGLTexture2D(TextureFormat format, uint32_t width, uint32_t height)
         : m_Format(format), m_Width(width), m_Height(height)
     {
         auto self = this;

@@ -14,8 +14,8 @@ namespace susumu
 
         void OnUpdate() override;
 
-        unsigned int GetWidth() const override { return m_Data.Width; }
-        unsigned int GetHeight() const override { return m_Data.Height; }
+        uint32_t GetWidth() const override { return m_Data.Width; }
+        uint32_t GetHeight() const override { return m_Data.Height; }
 
         void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
         void SetVSync(bool enabled) override;
@@ -31,8 +31,8 @@ namespace susumu
         struct WindowData
         {
             std::string Title;
-            unsigned int Width;
-            unsigned int Height;
+            uint32_t Width;
+            uint32_t Height;
             bool VSync;
 
             EventCallbackFn EventCallback;
