@@ -20,6 +20,3 @@
 [submodule "susumu/vendor/ImGuizmo"]
 	path = susumu/vendor/ImGuizmo
 	url = https://github.com/thecherno/imguizmo
-[submodule "susumu/vendor/assimp"]
-	path = susumu/vendor/assimp
-	url = https://github.com/assimp/assimp
