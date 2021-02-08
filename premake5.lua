@@ -33,6 +33,7 @@ IncludeDir["stb_image"] = "%{wks.location}/susumu/vendor/stb_image"
 IncludeDir["entt"] = "%{wks.location}/susumu/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "%{wks.location}/susumu/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "%{wks.location}/susumu/vendor/ImGuizmo"
+IncludeDir["assimp"] = "%{wks.location}/susumu/vendor/assimp/include"
 
 group "Dependencies"
     include "vendor/premake"
@@ -43,6 +44,5 @@ group "Dependencies"
 group ""
 
 include "susumu"
-include "susumu-editor"
 include "sandbox"
 

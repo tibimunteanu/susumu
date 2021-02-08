@@ -33,6 +33,7 @@ namespace susumu
 
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
+        virtual std::pair<float, float> GetWindowPos() const = 0;
 
         virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
         virtual void SetVSync(bool enabled) = 0;

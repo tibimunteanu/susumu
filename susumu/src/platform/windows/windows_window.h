@@ -16,6 +16,7 @@ namespace susumu
 
         uint32_t GetWidth() const override { return m_Data.Width; }
         uint32_t GetHeight() const override { return m_Data.Height; }
+        virtual std::pair<float, float> WindowsWindow::GetWindowPos() const override;
 
         void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
         void SetVSync(bool enabled) override;

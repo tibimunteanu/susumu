@@ -1,15 +1,55 @@
 #include "supch.h"
 #include "engine/renderer/renderer_api.h"
+#include "engine/renderer/shader.h"
 
 #include <glad/glad.h>
 
 namespace susumu
 {
+    static void OpenGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+    {
+        if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
+        {
+            SU_CORE_ERROR("{0}", message);
+            SU_CORE_ASSERT(false, "");
+        }
+        else
+        {
+            SU_CORE_TRACE("{0}", message);
+        }
+    }
+
     void RendererAPI::Init()
     {
+        glDebugMessageCallback(OpenGLLogMessage, nullptr);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
         uint32_t vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        glFrontFace(GL_CCW);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        auto& caps = RendererAPI::GetCapabilities();
+
+        caps.Vendor = (const char*)glGetString(GL_VENDOR);
+        caps.Renderer = (const char*)glGetString(GL_RENDERER);
+        caps.Version = (const char*)glGetString(GL_VERSION);
+
+        glGetIntegerv(GL_MAX_SAMPLES, &caps.MaxSamples);
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &caps.MaxAnisotropy);
+
+        GLenum error = glGetError();
+        while (error != GL_NO_ERROR)
+        {
+            SU_CORE_ERROR("OpenGL Error {0}", error);
+            error = glGetError();
+        }
     }
 
     void RendererAPI::Shutdown()
@@ -27,8 +67,18 @@ namespace susumu
         glClearColor(r, g, b, a);
     }
 
-    void RendererAPI::DrawIndexed(uint32_t count)
+    void RendererAPI::DrawIndexed(uint32_t count, bool depthTest)
     {
+        if (!depthTest)
+        {
+            glDisable(GL_DEPTH_TEST);
+        }
+
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+        if (!depthTest)
+        {
+            glEnable(GL_DEPTH_TEST);
+        }
     }
 }

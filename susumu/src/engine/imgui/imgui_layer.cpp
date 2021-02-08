@@ -29,9 +29,12 @@ namespace susumu
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// Enable Docking
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;		// Enable Multi-Viewport/Platform Windows
 
+        ImFont* pFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+		io.FontDefault = io.Fonts->Fonts.back();
+
         //Setup Dear ImGui style
         ImGui::StyleColorsDark();
-        ImGui::StyleColorsClassic();
+        //ImGui::StyleColorsClassic();
 
         // When viewports are enabled we tweak WindowRounding/WindowBg so
         // platform windows can look identical to regular ones.

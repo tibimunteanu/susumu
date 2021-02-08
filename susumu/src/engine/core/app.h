@@ -28,11 +28,13 @@ namespace susumu
         void PopOverlay(Layer* overlay) { m_LayerStack.PopOverlay(overlay); }
         void RenderImGui();
 
+        std::string OpenFile(const std::string& filter) const;
+
         Window& GetWindow() { return *m_Window; }
-        float GetLastTimeStep() { return m_LastTimeStep; }
         void Close();
         ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
         static App& Get() { return *s_Instance; }
+        float GetTime() const;
     private:
         void Run();
         bool OnWindowClosed(WindowCloseEvent& e);
@@ -45,7 +47,7 @@ namespace susumu
         bool m_Running = true;
         bool m_Minimized = false;
         float m_LastFrameTime = 0.0f;
-        Timestep m_LastTimeStep;
+        Timestep m_Timestep;
     private:
         static App* s_Instance;
         friend int ::main(int argc, char** argv);

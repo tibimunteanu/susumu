@@ -10,7 +10,9 @@ project "sandbox"
     files
     {
         "src/**.h",
+        "src/**.c",
         "src/**.cpp",
+        "src/**.hpp",
     }
 
     includedirs
@@ -24,7 +26,7 @@ project "sandbox"
 
     links
     {
-        "susumu"
+        "susumu",
     }
 
     filter "system:windows"
@@ -34,14 +36,26 @@ project "sandbox"
         defines "SU_DEBUG"
         runtime "Debug"
         symbols "on"
+        links
+		{
+			"%{wks.location}/susumu/vendor/assimp/bin/Debug/assimp-vc141-mtd.lib"
+		}
 
     filter "configurations:Release"
         defines "SU_RELEASE"
         runtime "Release"
         optimize "on"
+        links
+		{
+			"%{wks.location}/susumu/vendor/assimp/bin/Release/assimp-vc141-mtd.lib"
+		}
 
     filter "configurations:Dist"
         defines "SU_DIST"
         runtime "Release"
         optimize "on"
+        links
+		{
+			"%{wks.location}/susumu/vendor/assimp/bin/Release/assimp-vc141-mtd.lib"
+		}
 

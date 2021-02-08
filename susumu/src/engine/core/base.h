@@ -4,6 +4,7 @@
 
 #include "engine/core/platform_detection.h"
 
+
 #ifdef SU_DEBUG
 	#if defined(SU_PLATFORM_WINDOWS)
 		#define SU_DEBUGBREAK() __debugbreak()

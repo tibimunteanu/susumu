@@ -35,7 +35,7 @@ namespace susumu
 
     void RenderCommandQueue::Execute()
     {
-        SU_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+        //SU_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
         uint8_t* buffer = m_CommandBuffer;
 

@@ -13,7 +13,9 @@ project "susumu"
     files
     {
         "src/**.h",
+        "src/**.c",
         "src/**.cpp",
+        "src/**.hpp",
         "vendor/stb_image/**.h",
         "vendor/stb_image/**.cpp",
         "vendor/glm/glm/**.hpp",
@@ -39,7 +41,8 @@ project "susumu"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.yaml_cpp}",
-        "%{IncludeDir.ImGuizmo}"
+        "%{IncludeDir.ImGuizmo}",
+        "%{IncludeDir.assimp}"
     }
 
     links

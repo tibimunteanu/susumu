@@ -13,6 +13,9 @@ namespace susumu
 
     void Renderer::Clear()
     {
+        SU_RENDER({
+            RendererAPI::Clear(0.0f, 0.0f, 0.0f, 1.0f);
+        });
     }
 
     void Renderer::Clear(float r, float g, float b, float a)
@@ -31,10 +34,10 @@ namespace susumu
     {
     }
 
-    void Renderer::DrawIndexed(uint32_t count)
+    void Renderer::DrawIndexed(uint32_t count, bool depthTest)
     {
-        SU_RENDER_1(count, {
-            RendererAPI::DrawIndexed(count);
+        SU_RENDER_2(count, depthTest, {
+            RendererAPI::DrawIndexed(count, depthTest);
         });
     }
 
