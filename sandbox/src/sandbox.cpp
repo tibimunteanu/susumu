@@ -45,7 +45,7 @@ public:
 
         m_GridShader.reset(susumu::Shader::Create("assets/shaders/Grid.glsl"));
         m_Mesh.reset(new susumu::Mesh("assets/models/m1911/m1911.fbx"));
-        m_SphereMesh.reset(new susumu::Mesh("assets/models/Shpere1m.fbx"));
+        m_SphereMesh.reset(new susumu::Mesh("assets/models/Sphere1m.fbx"));
         m_PlaneMesh.reset(new susumu::Mesh("assets/models/Plane1m.obj"));
 
         // Editor

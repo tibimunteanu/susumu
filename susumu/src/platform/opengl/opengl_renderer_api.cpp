@@ -11,7 +11,7 @@ namespace susumu
         if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
         {
             SU_CORE_ERROR("{0}", message);
-            SU_CORE_ASSERT(false, "");
+            //SU_CORE_ASSERT(false, "");
         }
         else
         {
