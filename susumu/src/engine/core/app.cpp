@@ -32,6 +32,7 @@ namespace susumu
         PushOverlay(m_ImGuiLayer);
 
         Renderer::Init();
+        Renderer::Get().WaitAndRender();
     }
 
     App::~App()

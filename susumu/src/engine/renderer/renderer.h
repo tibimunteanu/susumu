@@ -2,9 +2,12 @@
 
 #include "engine/renderer/render_command_queue.h"
 #include "engine/renderer/renderer_api.h"
+#include "engine/renderer/shader.h"
 
 namespace susumu
 {
+    class ShaderLibrary;
+
     class Renderer
     {
     public:
@@ -21,6 +24,8 @@ namespace susumu
 
         static void Init();
 
+        static const Scope<ShaderLibrary>& GetShaderLibrary() { return Get().m_ShaderLibrary; }
+
         static void* Submit(RenderCommandFn fn, uint32_t size)
         {
             return s_Instance->m_CommandQueue.Allocate(fn, size);
@@ -31,6 +36,7 @@ namespace susumu
         inline static Renderer& Get() { return *s_Instance; }
     private:
         static Renderer* s_Instance;
+		Scope<ShaderLibrary> m_ShaderLibrary;
 
         RenderCommandQueue m_CommandQueue;
     };

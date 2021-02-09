@@ -1,190 +1,194 @@
 #include "supch.h"
+#include "engine/renderer/shader.h"
 #include "engine/renderer/material.h"
 
-namespace susumu
-{
-    Material::Material(const Ref<Shader>& shader)
-        : m_Shader(shader)
-    {
-        m_Shader->AddShaderReloadedCallback(std::bind(&Material::OnShaderReloaded, this));
-        AllocateStorage();
-    }
+namespace susumu {
 
-    Material::~Material()
-    {
-    }
+	//////////////////////////////////////////////////////////////////////////////////
+	// Material
+	//////////////////////////////////////////////////////////////////////////////////
 
-    void Material::AllocateStorage()
-    {
-        const auto& vsBuffer = m_Shader->GetVSMaterialUniformBuffer();
-        m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
-        m_VSUniformStorageBuffer.ZeroInitialize();
+	Ref<Material> Material::Create(const Ref<Shader>& shader)
+	{
+		return std::make_shared<Material>(shader);
+	}
 
-        const auto& psBuffer = m_Shader->GetPSMaterialUniformBuffer();
-        m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
-        m_PSUniformStorageBuffer.ZeroInitialize();
-    }
+	Material::Material(const Ref<Shader>& shader)
+		: m_Shader(shader)
+	{
+		m_Shader->AddShaderReloadedCallback(std::bind(&Material::OnShaderReloaded, this));
+		AllocateStorage();
+	}
 
-    void Material::OnShaderReloaded()
-    {
-        AllocateStorage();
+	Material::~Material()
+	{
+	}
 
-        for (auto mi : m_MaterialInstances)
-        {
-            mi->OnShaderReloaded();
-        }
-    }
+	void Material::AllocateStorage()
+	{
+		const auto& vsBuffer = m_Shader->GetVSMaterialUniformBuffer();
+		m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
+		m_VSUniformStorageBuffer.ZeroInitialize();
 
-    ShaderUniformDeclaration* Material::FindUniformDeclaration(const std::string& name)
-    {
-        if (m_VSUniformStorageBuffer)
-        {
-            auto& declarations = m_Shader->GetVSMaterialUniformBuffer().GetUniformDeclarations();
-            for (ShaderUniformDeclaration* uniform : declarations)
-            {
-                if (uniform->GetName() == name)
-                {
-                    return uniform;
-                }
-            }
-        }
+		const auto& psBuffer = m_Shader->GetPSMaterialUniformBuffer();
+		m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
+		m_PSUniformStorageBuffer.ZeroInitialize();
+	}
 
-        if (m_PSUniformStorageBuffer)
-        {
-            auto& declarations = m_Shader->GetPSMaterialUniformBuffer().GetUniformDeclarations();
-            for (ShaderUniformDeclaration* uniform : declarations)
-            {
-                if (uniform->GetName() == name)
-                {
-                    return uniform;
-                }
-            }
-        }
-        return nullptr;
-    }
+	void Material::OnShaderReloaded()
+	{
+		AllocateStorage();
+		
+		for (auto mi : m_MaterialInstances)
+			mi->OnShaderReloaded();
+	}
 
-    ShaderResourceDeclaration* Material::FindResourceDeclaration(const std::string& name)
-    {
-        auto& resources = m_Shader->GetResources();
-        for (ShaderResourceDeclaration* resource : resources)
-        {
-            if (resource->GetName() == name)
-            {
-                return resource;
-            }
-        }
-        return nullptr;
-    }
+	ShaderUniformDeclaration* Material::FindUniformDeclaration(const std::string& name)
+	{
+		if (m_VSUniformStorageBuffer)
+		{
+			auto& declarations = m_Shader->GetVSMaterialUniformBuffer().GetUniformDeclarations();
+			for (ShaderUniformDeclaration* uniform : declarations)
+			{
+				if (uniform->GetName() == name)
+					return uniform;
+			}
+		}
 
-    Buffer& Material::GetUniformBufferTarget(ShaderUniformDeclaration* uniformDeclaration)
-    {
-        switch (uniformDeclaration->GetDomain())
-        {
-            case ShaderDomain::Vertex:    return m_VSUniformStorageBuffer;
-            case ShaderDomain::Pixel:     return m_PSUniformStorageBuffer;
-        }
+		if (m_PSUniformStorageBuffer)
+		{
+			auto& declarations = m_Shader->GetPSMaterialUniformBuffer().GetUniformDeclarations();
+			for (ShaderUniformDeclaration* uniform : declarations)
+			{
+				if (uniform->GetName() == name)
+					return uniform;
+			}
+		}
+		return nullptr;
+	}
 
-        SU_CORE_ASSERT(false, "Invalid uniform declaration domain! Material does not support this shader type.");
-        return m_VSUniformStorageBuffer;
-    }
+	ShaderResourceDeclaration* Material::FindResourceDeclaration(const std::string& name)
+	{
+		auto& resources = m_Shader->GetResources();
+		for (ShaderResourceDeclaration* resource : resources)
+		{
+			if (resource->GetName() == name)
+				return resource;
+		}
+		return nullptr;
+	}
 
-    void Material::Bind() const
-    {
-        m_Shader->Bind();
+	Buffer& Material::GetUniformBufferTarget(ShaderUniformDeclaration* uniformDeclaration)
+	{
+		switch (uniformDeclaration->GetDomain())
+		{
+			case ShaderDomain::Vertex:    return m_VSUniformStorageBuffer;
+			case ShaderDomain::Pixel:     return m_PSUniformStorageBuffer;
+		}
 
-        if (m_VSUniformStorageBuffer)
-        {
-            m_Shader->SetVSMaterialUniformBuffer(m_VSUniformStorageBuffer);
-        }
-        if (m_PSUniformStorageBuffer)
-        {
-            m_Shader->SetPSMaterialUniformBuffer(m_PSUniformStorageBuffer);
-        }
+		SU_CORE_ASSERT(false, "Invalid uniform declaration domain! Material does not support this shader type.");
+		return m_VSUniformStorageBuffer;
+	}
 
-        BindTextures();
-    }
+	void Material::Bind() const
+	{
+		m_Shader->Bind();
 
-    void Material::BindTextures() const
-    {
-        for (size_t i = 0; i < m_Textures.size(); i++)
-        {
-            auto& texture = m_Textures[i];
-            if (texture)
-            {
-                texture->Bind(i);
-            }
-        }
-    }
+		if (m_VSUniformStorageBuffer)
+			m_Shader->SetVSMaterialUniformBuffer(m_VSUniformStorageBuffer);
 
-    MaterialInstance::MaterialInstance(const Ref<Material>& material)
-        : m_Material(material)
-    {
-        m_Material->m_MaterialInstances.insert(this);
-        AllocateStorage();
-    }
+		if (m_PSUniformStorageBuffer)
+			m_Shader->SetPSMaterialUniformBuffer(m_PSUniformStorageBuffer);
 
-    MaterialInstance::~MaterialInstance()
-    {
-        m_Material->m_MaterialInstances.erase(this);
-    }
+		BindTextures();
+	}
 
-    void MaterialInstance::OnShaderReloaded()
-    {
-        AllocateStorage();
-        m_OverriddenValues.clear();
-    }
+	void Material::BindTextures() const
+	{
+		for (size_t i = 0; i < m_Textures.size(); i++)
+		{
+			auto& texture = m_Textures[i];
+			if (texture)
+				texture->Bind(i);
+		}
+	}
 
-    void MaterialInstance::AllocateStorage()
-    {
-        const auto& vsBuffer = m_Material->m_Shader->GetVSMaterialUniformBuffer();
-        m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
-        memcpy(m_VSUniformStorageBuffer.Data, m_Material->m_VSUniformStorageBuffer.Data, vsBuffer.GetSize());
+	//////////////////////////////////////////////////////////////////////////////////
+	// MaterialInstance
+	//////////////////////////////////////////////////////////////////////////////////
 
-        const auto& psBuffer = m_Material->m_Shader->GetPSMaterialUniformBuffer();
-        m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
-        memcpy(m_PSUniformStorageBuffer.Data, m_Material->m_PSUniformStorageBuffer.Data, psBuffer.GetSize());
-    }
+	Ref<MaterialInstance> MaterialInstance::Create(const Ref<Material>& material)
+	{
+		return std::make_shared<MaterialInstance>(material);
+	}
 
-    void MaterialInstance::OnMaterialValueUpdated(ShaderUniformDeclaration* decl)
-    {
-        if (m_OverriddenValues.find(decl->GetName()) == m_OverriddenValues.end())
-        {
-            auto& buffer = GetUniformBufferTarget(decl);
-            auto& materialBuffer = m_Material->GetUniformBufferTarget(decl);
-            buffer.Write(materialBuffer.Data + decl->GetOffset(), decl->GetSize(), decl->GetOffset());
-        }
-    }
+	MaterialInstance::MaterialInstance(const Ref<Material>& material)
+		: m_Material(material)
+	{
+		m_Material->m_MaterialInstances.insert(this);
+		AllocateStorage();
+	}
 
-    Buffer& MaterialInstance::GetUniformBufferTarget(ShaderUniformDeclaration* uniformDeclaration)
-    {
-        switch (uniformDeclaration->GetDomain())
-        {
-            case ShaderDomain::Vertex:    return m_VSUniformStorageBuffer;
-            case ShaderDomain::Pixel:     return m_PSUniformStorageBuffer;
-        }
+	MaterialInstance::~MaterialInstance()
+	{
+		m_Material->m_MaterialInstances.erase(this);
+	}
 
-        SU_CORE_ASSERT(false, "Invalid uniform declaration domain! Material does not support this shader type.");
-        return m_VSUniformStorageBuffer;
-    }
+	void MaterialInstance::OnShaderReloaded()
+	{
+		AllocateStorage();
+		m_OverriddenValues.clear();
+	}
 
-    void MaterialInstance::Bind() const
-    {
-        if (m_VSUniformStorageBuffer)
-        {
-            m_Material->m_Shader->SetVSMaterialUniformBuffer(m_VSUniformStorageBuffer);
-        }
-        if (m_PSUniformStorageBuffer)
-        {
-            m_Material->m_Shader->SetPSMaterialUniformBuffer(m_PSUniformStorageBuffer);
-        }
-        m_Material->BindTextures();
-        for (size_t i = 0; i < m_Textures.size(); i++)
-        {
-            auto& texture = m_Textures[i];
-            if (texture)
-            {
-                texture->Bind(i);
-            }
-        }
-    }
+	void MaterialInstance::AllocateStorage()
+	{
+		const auto& vsBuffer = m_Material->m_Shader->GetVSMaterialUniformBuffer();
+		m_VSUniformStorageBuffer.Allocate(vsBuffer.GetSize());
+		memcpy(m_VSUniformStorageBuffer.Data, m_Material->m_VSUniformStorageBuffer.Data, vsBuffer.GetSize());
+
+		const auto& psBuffer = m_Material->m_Shader->GetPSMaterialUniformBuffer();
+		m_PSUniformStorageBuffer.Allocate(psBuffer.GetSize());
+		memcpy(m_PSUniformStorageBuffer.Data, m_Material->m_PSUniformStorageBuffer.Data, psBuffer.GetSize());
+	}
+
+	void MaterialInstance::OnMaterialValueUpdated(ShaderUniformDeclaration* decl)
+	{
+		if (m_OverriddenValues.find(decl->GetName()) == m_OverriddenValues.end())
+		{
+			auto& buffer = GetUniformBufferTarget(decl);
+			auto& materialBuffer = m_Material->GetUniformBufferTarget(decl);
+			buffer.Write(materialBuffer.Data + decl->GetOffset(), decl->GetSize(), decl->GetOffset());
+		}
+	}
+
+	Buffer& MaterialInstance::GetUniformBufferTarget(ShaderUniformDeclaration* uniformDeclaration)
+	{
+		switch (uniformDeclaration->GetDomain())
+		{
+			case ShaderDomain::Vertex:    return m_VSUniformStorageBuffer;
+			case ShaderDomain::Pixel:     return m_PSUniformStorageBuffer;
+		}
+
+		SU_CORE_ASSERT(false, "Invalid uniform declaration domain! Material does not support this shader type.");
+		return m_VSUniformStorageBuffer;
+	}
+
+	void MaterialInstance::Bind() const
+	{
+		if (m_VSUniformStorageBuffer)
+			m_Material->m_Shader->SetVSMaterialUniformBuffer(m_VSUniformStorageBuffer);
+
+		if (m_PSUniformStorageBuffer)
+			m_Material->m_Shader->SetPSMaterialUniformBuffer(m_PSUniformStorageBuffer);
+
+		m_Material->BindTextures();
+		for (size_t i = 0; i < m_Textures.size(); i++)
+		{
+			auto& texture = m_Textures[i];
+			if (texture)
+				texture->Bind(i);
+		}
+	}
+
 }
+

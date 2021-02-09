@@ -8,7 +8,11 @@ namespace susumu
 
     void Renderer::Init()
     {
+        s_Instance->m_ShaderLibrary = std::make_unique<ShaderLibrary>();
         SU_RENDER({ RendererAPI::Init(); });
+
+		Renderer::GetShaderLibrary()->Load("assets/shaders/susumuPBR_Static.glsl");
+		Renderer::GetShaderLibrary()->Load("assets/shaders/susumuPBR_Anim.glsl");
     }
 
     void Renderer::Clear()

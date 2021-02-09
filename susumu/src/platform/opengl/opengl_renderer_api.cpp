@@ -1,6 +1,5 @@
 #include "supch.h"
 #include "engine/renderer/renderer_api.h"
-#include "engine/renderer/shader.h"
 
 #include <glad/glad.h>
 
@@ -15,13 +14,14 @@ namespace susumu
         }
         else
         {
-            SU_CORE_TRACE("{0}", message);
+            //SU_CORE_TRACE("{0}", message);
         }
     }
 
     void RendererAPI::Init()
     {
         glDebugMessageCallback(OpenGLLogMessage, nullptr);
+        glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
         uint32_t vao;
@@ -50,9 +50,15 @@ namespace susumu
             SU_CORE_ERROR("OpenGL Error {0}", error);
             error = glGetError();
         }
+
+        LoadRequiredAssets();
     }
 
     void RendererAPI::Shutdown()
+    {
+    }
+
+    void RendererAPI::LoadRequiredAssets()
     {
     }
 
