@@ -14,6 +14,9 @@ namespace susumu
         glm::vec4 Color;
         glm::vec2 TexCoord;
         float TexIndex;
+
+        //Editor-only
+        int EntityID = -1;
     };
 
     struct Renderer2DData
@@ -78,6 +81,7 @@ namespace susumu
             { ShaderDataType::Float4, "a_Color" },
             { ShaderDataType::Float2, "a_TexCoord" },
             { ShaderDataType::Float, "a_TexIndex" },
+            { ShaderDataType::Int, "a_EntityID" },
         });
         s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
@@ -86,7 +90,7 @@ namespace susumu
         //create and add the quad index buffer
         uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
         uint32_t offset = 0;
-        for (uint32_t i = 0; i + 5 < s_Data.MaxIndices; i += 6)
+        for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
         {
             quadIndices[i + 0] = offset + 0;
             quadIndices[i + 1] = offset + 1;
@@ -180,36 +184,41 @@ namespace susumu
         StartBatch();
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const glm::vec4& color)
+    void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteRendererComponent& sprite, int entityID)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color);
+        DrawQuad(transform, sprite.Color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const glm::vec4& color, int entityID)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color);
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const glm::vec4& color, int entityID)
     {
-        DrawQuad(transform, nullptr, color);
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, nullptr, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID)
     {
-        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, texture, color);
+        DrawQuad(transform, nullptr, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color, int entityID)
+    {
+        DrawQuad({ position.x, position.y, 0.0f }, size, rotationRad, texture, color, entityID);
+    }
+
+    void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotationRad, const Ref<Texture2D>& texture, const glm::vec4& color, int entityID)
     {
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) //translation
             * glm::rotate(glm::mat4(1.0f), rotationRad, { 0.0f, 0.0f, 1.0f }) //rotation
             * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f }); //scale
 
-        DrawQuad(transform, texture, color);
+        DrawQuad(transform, texture, color, entityID);
     }
 
-    void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color)
+    void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, const glm::vec4& color, int entityID)
     {
         SU_PROFILE_FUNCTION();
 
@@ -251,6 +260,7 @@ namespace susumu
 			s_Data.QuadVertexBufferPtr->Color = color;
 			s_Data.QuadVertexBufferPtr->TexCoord = texCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = texIndex;
+            s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
