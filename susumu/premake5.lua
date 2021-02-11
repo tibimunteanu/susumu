@@ -21,7 +21,13 @@ project "susumu"
         "vendor/glm/glm/**.hpp",
         "vendor/glm/glm/**.inl",
         "vendor/ImGuizmo/Imguizmo.h",
-        "vendor/ImGuizmo/Imguizmo.cpp"
+        "vendor/ImGuizmo/Imguizmo.cpp",
+        "vendor/assimp/**.h",
+        "vendor/assimp/**.h.in",
+        "vendor/assimp/**.hpp",
+        "vendor/assimp/**.inl",
+        "vendor/assimp/**.c",
+        "vendor/assimp/**.cpp"
     }
 
     defines
