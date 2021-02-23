@@ -134,6 +134,7 @@ namespace susumu
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(SU_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(SU_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
     void EditorLayer::OnImGuiRender()
@@ -359,6 +360,19 @@ namespace susumu
 
             default: break;
         }
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent e)
+    {
+        if (m_ViewportHovered
+            && !ImGuizmo::IsUsing()
+            && !ImGuizmo::IsOver()
+            && !Input::IsKeyPressed(Key::LeftAlt)
+            && e.GetMouseButton() == Mouse::ButtonLeft)
+        {
+            m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+        }
+        return false;
     }
 
     void EditorLayer::NewScene()
